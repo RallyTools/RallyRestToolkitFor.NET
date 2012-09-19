@@ -76,49 +76,65 @@ namespace Rally.RestApi
 
         public string Post(Uri target, string data, IDictionary<string, string> headers = null)
         {
-            Trace.TraceInformation("Rally.RestApi Post: {0}\r\n\tPost Data: {1}", target.ToString(), data);
-            using (var webClient = GetWebClient(headers))
+            String response = "<No response>";
+            try
             {
-                string response = webClient.UploadString(target, data);
-                Trace.TraceInformation("Rally.RestApi Post Response: {0}\r\n", response);
-                return response;
+                using (var webClient = GetWebClient(headers))
+                {
+                    response = webClient.UploadString(target, data);
+                    return response;
+                }
+            }
+            finally
+            {
+                Trace.TraceInformation("Rally.RestApi Post: {0}\r\n{1}\r\nResponse:\r\n{2}", target.ToString(), data, response);
             }
         }
 
         public string Get(Uri target, IDictionary<string, string> headers = null)
         {
-            Trace.TraceInformation("Rally.RestApi Get: {0}", target.ToString());
-            using (var webClient = GetWebClient(headers))
+            String response = "<No response>";
+            try
             {
-                string response = webClient.DownloadString(target);
-                Trace.TraceInformation("Rally.RestApi Get Response: {0}\r\n", response);
-                return response;
+                using (var webClient = GetWebClient(headers))
+                {
+                    response = webClient.DownloadString(target);
+                    return response;
+                }
+            }
+            finally
+            {
+                Trace.TraceInformation("Rally.RestApi Get: {0}\r\nResponse:\r\n{1}", target.ToString(), response);
             }
         }
 
         public string Delete(Uri target, IDictionary<string, string> headers = null)
         {
-            Trace.TraceInformation("Rally.RestApi Delete: {0}", target.ToString());
-            var request = WebRequest.Create(target);
-            request.Method = "DELETE";
-            request.Credentials = credentials;
-            if (headers != null)
+            String response = "<No response>";
+            try
             {
-                foreach (var pairs in headers)
+                var request = WebRequest.Create(target);
+                request.Method = "DELETE";
+                request.Credentials = credentials;
+                if (headers != null)
                 {
-                    request.Headers.Add(pairs.Key, pairs.Value);
+                    foreach (var pairs in headers)
+                    {
+                        request.Headers.Add(pairs.Key, pairs.Value);
+                    }
                 }
+                var httpResponse = (HttpWebResponse)request.GetResponse();
+                httpResponse.StatusCode.ToString();
+                var enc = Encoding.ASCII;
+                var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
+                response = responseStream.ReadToEnd();
+                responseStream.Close();
+                return response;
             }
-            var httpResponse = (HttpWebResponse)request.GetResponse();
-            httpResponse.StatusCode.ToString();
-            var enc = Encoding.ASCII;
-            var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
-            var response = responseStream.ReadToEnd();
-            responseStream.Close();
-            Trace.TraceInformation("Rally.RestApi Delete Response: {0}\r\n", response);
-            return response;
+            finally
+            {
+                Trace.TraceInformation("Rally.RestApi Delete: {0}\r\nResponse:\r\n{1}", target.ToString(), response);
+            }
         }
-
-
     }
 }
