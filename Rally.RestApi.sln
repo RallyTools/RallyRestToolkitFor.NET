@@ -2,19 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4B3CA378-69AC-4AD4-9021-C1454F167870}"
-	ProjectSection(SolutionItems) = preProject
-		Rally.RestApi.vsmdi = Rally.RestApi.vsmdi
-		TestSettings.testsettings = TestSettings.testsettings
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rally.RestApi", "Rally.RestApi\Rally.RestApi.csproj", "{D8B8D5EC-7482-4742-9516-876CEE07C8AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rally.RestApi.Test", "Rally.RestApi.Test\Rally.RestApi.Test.csproj", "{89150ACC-C148-47A3-99DA-B97EC0A1E7E5}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = Rally.RestApi.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
