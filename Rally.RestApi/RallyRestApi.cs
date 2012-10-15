@@ -44,9 +44,9 @@ namespace Rally.RestApi
         }
 
         /// <summary>
-        /// The default WSAPI version to use: (1.34)
+        /// The default WSAPI version to use: 'x' means 'latest'
         /// </summary>
-        public const string DEFAULT_WSAPI_VERSION = "1.37";
+        public const string DEFAULT_WSAPI_VERSION = "x";
 
         /// <summary>
         /// The default server to use: (https://rally1.rallydev.com)
@@ -117,7 +117,7 @@ namespace Rally.RestApi
                             string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy=null)
         {
             Service = new HttpService(username, password, serverUrl, proxy);
-            wsapiVersion = webServiceVersion;
+            wsapiVersion = webServiceVersion ?? DEFAULT_WSAPI_VERSION;
         }
 
         internal Uri AdhocUri
@@ -490,10 +490,10 @@ namespace Rally.RestApi
         /// <returns>The attribute definitions for the specified type</returns>
         public QueryResult GetAttributesByType(string type)
         {
-            float apiVersion = float.Parse(DEFAULT_WSAPI_VERSION);
+            float apiVersion;
             float.TryParse(wsapiVersion, out apiVersion);
 
-            if (apiVersion >= 1.25)
+            if (wsapiVersion == DEFAULT_WSAPI_VERSION || apiVersion >= 1.25)
             {
                 //In 1.25 forward we can just use the typedefs endpoint
                 var attributesRequest = new Request("TypeDefinition");
