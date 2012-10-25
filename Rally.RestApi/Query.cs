@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Rally.RestApi
 {
@@ -233,7 +234,7 @@ namespace Rally.RestApi
                     return queryClause;
                 }
                 const char quote = '"';
-                var outValue = Value.Contains(" ") ? quote + Value + quote : Value;
+                var outValue = (Value.Contains(" ") ? quote + Value + quote : Value).Replace("&","%26");
                 return string.Format("({0} {1} {2})", Attribute, GetOperator(QueryOperator), outValue);
             }
 

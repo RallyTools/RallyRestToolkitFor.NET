@@ -71,6 +71,7 @@ namespace Rally.RestApi
 
         private readonly string wsapiVersion;
         internal HttpService Service { get; set; }
+        private readonly Dictionary<string, DynamicJsonObject> typeDefs = new Dictionary<string, DynamicJsonObject>();
 
         internal string DecodeHeaderName(HeaderType type)
         {
@@ -481,6 +482,57 @@ namespace Rally.RestApi
         public DynamicJsonObject GetAllowedAttributeValues(string type, string attribute)
         {
             return MakeRequest(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", type, attribute)));
+        }
+
+        public List<DynamicJsonObject> GetTypeAttributes(string typeName, Boolean cache)
+        {
+            DynamicJsonObject typeDef = GetTypeDef(typeName, cache);
+            var attributes = typeDef["Attributes"] as ArrayList;
+            return attributes.Cast<DynamicJsonObject>().OrderBy(a => a["Name"]).ToList();
+        }
+
+        public DynamicJsonObject GetTypeDef(string typeName, Boolean cache)
+        {
+            if (!wsapiVersion.ToLower().Equals(DEFAULT_WSAPI_VERSION.ToLower()))
+            {
+                float apiVersion;
+
+                if (float.TryParse(wsapiVersion, out apiVersion))
+                {
+                    if (apiVersion < 1.25)
+                        throw new ArgumentOutOfRangeException(String.Format("webServiveVersion must be '1.25' or greater to use this method.  Received '{1}'", wsapiVersion));
+                }
+                else
+                {
+                    throw new ArgumentException(String.Format("webServiveVersion must be '{0}' or a floating point number.  Received '{1}'", DEFAULT_WSAPI_VERSION, wsapiVersion));
+                }
+            }
+
+            DynamicJsonObject typeDef = null;
+
+            if (typeDefs.ContainsKey(typeName))
+            {
+                typeDef = typeDefs[typeName];
+            }
+            else
+            {
+                var typeDefRequest = new Request("TypeDefinition");
+                typeDefRequest.Fetch = new List<string>() { "true" };
+                typeDefRequest.Query = new Query("Name", RestApi.Query.Operator.Equals, typeName);
+                QueryResult result = Query(typeDefRequest);
+                if (!result.Success)
+                    throw new Exception(String.Format("Error fetching TypeDef for '{0}'\n\n{1}", typeName, String.Join("\n",result.Errors)));
+                else if (result.TotalResultCount == 0)
+                    throw new Exception(String.Format("No TypeDef found for '{0}'",typeName));
+                else if (result.TotalResultCount > 1)
+                    throw new Exception(String.Format("Too many ({0}) TypeDefs found for '{1}'", result.TotalResultCount, typeName));
+                typeDef = result.Results.First();
+
+                if (cache)
+                    typeDefs[typeName] = typeDef;
+            }
+
+            return typeDef;
         }
 
         /// <summary>

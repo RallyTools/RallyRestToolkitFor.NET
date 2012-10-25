@@ -2,10 +2,10 @@
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Collections;
+using System;
 
 namespace Rally.RestApi
 {
-
     internal class DynamicJsonSerializer
     {
         readonly JavaScriptSerializer deSerializer;
@@ -76,7 +76,7 @@ namespace Rally.RestApi
         {
             if (obj is string)
             {
-                return "\"" + obj + "\"";
+                return "\"" + ((String)obj).Replace("\"", "\\\"") + "\"";
             }
             return obj.ToString();
         }
