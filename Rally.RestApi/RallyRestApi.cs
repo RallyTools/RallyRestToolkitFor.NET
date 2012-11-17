@@ -71,7 +71,6 @@ namespace Rally.RestApi
 
         private readonly string wsapiVersion;
         internal HttpService Service { get; set; }
-        private readonly Dictionary<string, DynamicJsonObject> typeDefs = new Dictionary<string, DynamicJsonObject>();
 
         internal string DecodeHeaderName(HeaderType type)
         {
@@ -168,15 +167,15 @@ namespace Rally.RestApi
             return new Uri(GetFullyQualifiedRef(aRef));
         }
 
-        internal Uri FormatCreateString(string type)
+        internal Uri FormatCreateString(string typePath)
         {
-            return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + type + "/create.js");
+            return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js");
         }
 
-        internal Uri FormatUpdateString(string type, long objectId)
+        internal Uri FormatUpdateString(string typePath, long objectId)
         {
             return
-                new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + type + "/" + objectId +
+                new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/" + objectId +
                         ".js");
         }
 
@@ -348,13 +347,13 @@ namespace Rally.RestApi
         /// <summary>
         /// Get the object described by the specified type and object id.
         /// </summary>
-        /// <param name="type">the type</param>
+        /// <param name="typePath">the type</param>
         /// <param name="oid">the object id</param>
         /// <param name="fetchedFields">the list of object fields to be fetched</param>
         /// <returns>The requested object</returns>
-        public dynamic GetByReference(string type, long oid, params string[] fetchedFields)
+        public dynamic GetByReference(string typePath, long oid, params string[] fetchedFields)
         {
-            return GetByReference(string.Format("/{0}/{1}", type, oid), fetchedFields);
+            return GetByReference(string.Format("/{0}/{1}", typePath, oid), fetchedFields);
         }
 
         /// <summary>
@@ -391,12 +390,12 @@ namespace Rally.RestApi
         /// <summary>
         /// Delete the object described by the specified type and object id.
         /// </summary>
-        /// <param name="type">the type</param>
+        /// <param name="typePath">the type</param>
         /// <param name="oid">the object id</param>
         /// <returns>An OperationResult with information on the status of the request</returns>
-        public OperationResult Delete(string type, long oid)
+        public OperationResult Delete(string typePath, long oid)
         {
-            return Delete(string.Format("/{0}/{1}", type, oid));
+            return Delete(string.Format("/{0}/{1}", typePath, oid));
         }
 
         /// <summary>
@@ -420,17 +419,17 @@ namespace Rally.RestApi
         /// <summary>
         /// Create an object of the specified type from the specified object
         /// </summary>
-        /// <param name="type">the type to be created</param>
+        /// <param name="typePath">the type to be created</param>
         /// <param name="obj">the object to be created</param>
         /// <returns></returns>
-        public CreateResult Create(string type, DynamicJsonObject obj)
+        public CreateResult Create(string typePath, DynamicJsonObject obj)
         {
             var createResponse = new CreateResult();
             var data = new DynamicJsonObject();
-            data[type] = obj;
+            data[typePath] = obj;
             string postData = serializer.Serialize(data);
             dynamic response =
-                serializer.Deserialize(Service.Post(FormatCreateString(type), postData, GetProcessedHeaders()));
+                serializer.Deserialize(Service.Post(FormatCreateString(typePath), postData, GetProcessedHeaders()));
             if(response.CreateResult.HasMember("Object"))
             {
                 createResponse.Reference = response.CreateResult.Object._ref as string;
@@ -456,18 +455,18 @@ namespace Rally.RestApi
         /// Update the item described by the specified type and object id with
         /// the fields of the specified object
         /// </summary>
-        /// <param name="type">the type of the item to be updated</param>
+        /// <param name="typePath">the type of the item to be updated</param>
         /// <param name="oid">the object id of the item to be updated</param>
         /// <param name="obj">the object fields to update</param>
         /// <returns>An OperationResult describing the status of the request</returns>
-        public OperationResult Update(string type, long oid, DynamicJsonObject obj)
+        public OperationResult Update(string typePath, long oid, DynamicJsonObject obj)
         {
             var result = new OperationResult();
             var data = new DynamicJsonObject();
-            data[type] = obj;
+            data[typePath] = obj;
             string postData = serializer.Serialize(data);
             dynamic response =
-                serializer.Deserialize(Service.Post(FormatUpdateString(type, oid), postData, GetProcessedHeaders()));
+                serializer.Deserialize(Service.Post(FormatUpdateString(typePath, oid), postData, GetProcessedHeaders()));
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -476,63 +475,12 @@ namespace Rally.RestApi
         /// <summary>
         /// Get the allowed values for the specified type and attribute
         /// </summary>
-        /// <param name="type">the type</param>
+        /// <param name="typePath">the type</param>
         /// <param name="attribute">the attribute to retireve allowed values for</param>
         /// <returns>The allowed values for the specified attribute</returns>
-        public DynamicJsonObject GetAllowedAttributeValues(string type, string attribute)
+        public DynamicJsonObject GetAllowedAttributeValues(string typePath, string attribute)
         {
-            return MakeRequest(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", type, attribute)));
-        }
-
-        public List<DynamicJsonObject> GetTypeAttributes(string typeName, Boolean cache)
-        {
-            DynamicJsonObject typeDef = GetTypeDef(typeName, cache);
-            var attributes = typeDef["Attributes"] as ArrayList;
-            return attributes.Cast<DynamicJsonObject>().OrderBy(a => a["Name"]).ToList();
-        }
-
-        public DynamicJsonObject GetTypeDef(string typeName, Boolean cache)
-        {
-            if (!wsapiVersion.ToLower().Equals(DEFAULT_WSAPI_VERSION.ToLower()))
-            {
-                float apiVersion;
-
-                if (float.TryParse(wsapiVersion, out apiVersion))
-                {
-                    if (apiVersion < 1.25)
-                        throw new ArgumentOutOfRangeException(String.Format("webServiveVersion must be '1.25' or greater to use this method.  Received '{1}'", wsapiVersion));
-                }
-                else
-                {
-                    throw new ArgumentException(String.Format("webServiveVersion must be '{0}' or a floating point number.  Received '{1}'", DEFAULT_WSAPI_VERSION, wsapiVersion));
-                }
-            }
-
-            DynamicJsonObject typeDef = null;
-
-            if (typeDefs.ContainsKey(typeName))
-            {
-                typeDef = typeDefs[typeName];
-            }
-            else
-            {
-                var typeDefRequest = new Request("TypeDefinition");
-                typeDefRequest.Fetch = new List<string>() { "true" };
-                typeDefRequest.Query = new Query("Name", RestApi.Query.Operator.Equals, typeName);
-                QueryResult result = Query(typeDefRequest);
-                if (!result.Success)
-                    throw new Exception(String.Format("Error fetching TypeDef for '{0}'\n\n{1}", typeName, String.Join("\n",result.Errors)));
-                else if (result.TotalResultCount == 0)
-                    throw new Exception(String.Format("No TypeDef found for '{0}'",typeName));
-                else if (result.TotalResultCount > 1)
-                    throw new Exception(String.Format("Too many ({0}) TypeDefs found for '{1}'", result.TotalResultCount, typeName));
-                typeDef = result.Results.First();
-
-                if (cache)
-                    typeDefs[typeName] = typeDef;
-            }
-
-            return typeDef;
+            return MakeRequest(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", typePath, attribute)));
         }
 
         /// <summary>

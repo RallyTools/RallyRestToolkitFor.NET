@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Rally.RestApi
 {
@@ -38,8 +39,22 @@ namespace Rally.RestApi
         /// <returns>The type of the specified ref</returns>
         public static string GetTypeFromRef(string reference)
         {
-            var tokens = TokenizeRef(reference);
-            return tokens[tokens.Length - 2];
+            String[] tokens = TokenizeRef(reference);
+            List<String> typeTokens = new List<string>() { tokens[tokens.Length - 2] };
+
+            if (tokens.Length > 2)
+            {
+                for (int x = tokens.Length - 3; x >= 0; x--)
+                {
+                    String token = tokens[x];
+                    double d;
+                    // Stop when we get to the api version
+                    if (token.ToLower() == "x" || Double.TryParse(token, out d))
+                        break;
+                    typeTokens.Insert(0,tokens[x]);
+                }
+            }
+            return String.Join("/",typeTokens);
         }
 
         /// <summary>
@@ -50,6 +65,7 @@ namespace Rally.RestApi
         public static long GetOidFromRef(string reference)
         {
             var tokens = TokenizeRef(reference);
+            // Get the last token
             var oidToken = tokens[tokens.Length - 1];
             return long.Parse(oidToken.Replace(".js", ""));
         } 
