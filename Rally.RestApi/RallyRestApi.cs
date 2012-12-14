@@ -394,9 +394,9 @@ namespace Rally.RestApi
         /// <param name="typePath">the type</param>
         /// <param name="oid">the object id</param>
         /// <returns>An OperationResult with information on the status of the request</returns>
-        public OperationResult Delete(string typePath, long oid)
+        public OperationResult Delete(string workspaceRef, string typePath, long oid)
         {
-            return Delete(string.Format("/{0}/{1}", typePath, oid));
+            return Delete(workspaceRef, string.Format("/{0}/{1}", typePath, oid));
         }
 
         /// <summary>
@@ -404,14 +404,15 @@ namespace Rally.RestApi
         /// </summary>
         /// <param name="aRef">the reference</param>
         /// <returns>An OperationResult with information on the status of the request</returns>
-        public OperationResult Delete(string aRef)
+        public OperationResult Delete(string workspaceRef, string aRef)
         {
             var result = new OperationResult();
             if (!aRef.Contains(".js"))
             {
                 aRef = aRef + ".js";
             }
-            dynamic response = serializer.Deserialize(Service.Delete(GetFullyQualifiedUri(aRef), GetProcessedHeaders()));
+            String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
+            dynamic response = serializer.Deserialize(Service.Delete(GetFullyQualifiedUri(aRef + workspaceClause), GetProcessedHeaders()));
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -420,6 +421,7 @@ namespace Rally.RestApi
         /// <summary>
         /// Create an object of the specified type from the specified object
         /// </summary>
+        /// <param name="workspaceRef">the workspace into which the object should be created</param>
         /// <param name="typePath">the type to be created</param>
         /// <param name="obj">the object to be created</param>
         /// <returns></returns>

@@ -152,7 +152,7 @@ namespace Rally.RestApi.Test
             Assert.AreEqual(0, response.Errors.Count);
             Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
-            OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(response.Reference));
+            OperationResult deleteResponse = restApi.Delete(null,Ref.GetRelativeRef(response.Reference));
             dynamic testDefectEmpty = restApi.GetByReference(response.Reference);
             Assert.IsNull(testDefectEmpty);
         }
