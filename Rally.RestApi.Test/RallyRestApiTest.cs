@@ -120,7 +120,7 @@ namespace Rally.RestApi.Test
             RallyRestApi restApi = GetRallyRestApi();
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create("defect", dynamicJson);
+            CreateResult response = restApi.Create(null, "defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
             Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
@@ -136,7 +136,7 @@ namespace Rally.RestApi.Test
             var defect = new DynamicJsonObject();
             defect["Name"] = "Sample Defect with invalid field";
             defect["Iteration"] = "Foo";
-            CreateResult creationResult = restApi.Create("defect", defect);
+            CreateResult creationResult = restApi.Create(null, "defect", defect);
             Assert.IsNull(creationResult.Reference);
             Assert.AreEqual(1, creationResult.Errors.Count);
             Assert.IsFalse(creationResult.Success);
@@ -148,7 +148,7 @@ namespace Rally.RestApi.Test
             RallyRestApi restApi = GetRallyRestApi();
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create("defect", dynamicJson);
+            CreateResult response = restApi.Create(null, "defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
             Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
@@ -273,7 +273,7 @@ namespace Rally.RestApi.Test
         public void FormatCreateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatCreateString("defect");
+            Uri result = restApi.FormatCreateString(null,"defect");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
             Assert.AreEqual(expected, result);
         }

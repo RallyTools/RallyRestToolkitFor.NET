@@ -167,9 +167,10 @@ namespace Rally.RestApi
             return new Uri(GetFullyQualifiedRef(aRef));
         }
 
-        internal Uri FormatCreateString(string typePath)
+        internal Uri FormatCreateString(string workspaceRef, string typePath)
         {
-            return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js");
+            String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
+            return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
         }
 
         internal Uri FormatUpdateString(string typePath, long objectId)
@@ -422,14 +423,14 @@ namespace Rally.RestApi
         /// <param name="typePath">the type to be created</param>
         /// <param name="obj">the object to be created</param>
         /// <returns></returns>
-        public CreateResult Create(string typePath, DynamicJsonObject obj)
+        public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
         {
             var createResponse = new CreateResult();
             var data = new DynamicJsonObject();
             data[typePath] = obj;
             string postData = serializer.Serialize(data);
             dynamic response =
-                serializer.Deserialize(Service.Post(FormatCreateString(typePath), postData, GetProcessedHeaders()));
+                serializer.Deserialize(Service.Post(FormatCreateString(workspaceRef,typePath), postData, GetProcessedHeaders()));
             if(response.CreateResult.HasMember("Object"))
             {
                 createResponse.Reference = response.CreateResult.Object._ref as string;
