@@ -94,6 +94,7 @@ namespace Rally.RestApi
         public string Get(Uri target, IDictionary<string, string> headers = null)
         {
             String response = "<No response>";
+            DateTime startTime = DateTime.Now;
             try
             {
                 using (var webClient = GetWebClient(headers))
@@ -104,7 +105,7 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("Rally.RestApi Get: {0}\r\nResponse:\r\n{1}", target.ToString(), response);
+                Trace.TraceInformation("Rally.RestApi Get({0}): {1}\r\nResponse:\r\n{2}", DateTime.Now.Subtract(startTime).ToString(), target.ToString(), response);
             }
         }
 

@@ -286,7 +286,7 @@ namespace Rally.RestApi
             var response = MakeRequest(GetFullyQualifiedUri(request.RequestUrl));
             var result = new QueryResult(response["QueryResult"]);
             int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
-            var alreadyDownloadedItems = request.Start - 1 + request.PageSize;
+            int alreadyDownloadedItems = request.Start - 1 + request.PageSize;
             var subsequentQueries = new List<Request>();
 
             while ((maxResultsAllowed - alreadyDownloadedItems) > 0)
@@ -301,6 +301,8 @@ namespace Rally.RestApi
                 // Start has 1 for its lowest value.
                 alreadyDownloadedItems = request.Start - 1 + request.PageSize;
             }
+
+            Trace.TraceInformation("The number of threaded requests is : {0}", subsequentQueries.Count);
 
             var resultDictionary = new Dictionary<int, QueryResult>();
             Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>

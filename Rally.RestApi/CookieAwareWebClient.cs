@@ -19,11 +19,15 @@ namespace Rally.RestApi
         protected override WebRequest GetWebRequest(Uri address)
         {
             WebRequest request = base.GetWebRequest(address);
+
             HttpWebRequest webRequest = request as HttpWebRequest;
             if (webRequest != null)
             {
                 webRequest.CookieContainer = cookies;
             }
+
+            request.Timeout = 300000;
+
             return request;
         }
     }
