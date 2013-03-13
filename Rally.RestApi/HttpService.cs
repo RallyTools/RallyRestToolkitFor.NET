@@ -77,17 +77,28 @@ namespace Rally.RestApi
         public string Post(Uri target, string data, IDictionary<string, string> headers = null)
         {
             String response = "<No response>";
+            DateTime startTime = DateTime.Now;
+            String requestHeaders = "";
+            String responseHeaders = "";
             try
             {
                 using (var webClient = GetWebClient(headers))
                 {
+                    requestHeaders = webClient.Headers.ToString();
                     response = webClient.UploadString(target, data);
+                    responseHeaders = webClient.ResponseHeaders.ToString();
                     return response;
                 }
             }
             finally
             {
-                Trace.TraceInformation("Rally.RestApi Post: {0}\r\n{1}\r\nResponse:\r\n{2}", target.ToString(), data, response);
+                Trace.TraceInformation("Post Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Request Data:\r\n{3}\r\nResponse Headers:\r\n{4}Response Data\r\n{5}",
+                                       DateTime.Now.Subtract(startTime).ToString(),
+                                       target.ToString(),
+                                       requestHeaders,
+                                       data,
+                                       responseHeaders,
+                                       response);
             }
         }
 
@@ -95,23 +106,35 @@ namespace Rally.RestApi
         {
             String response = "<No response>";
             DateTime startTime = DateTime.Now;
+            String requestHeaders = "";
+            String responseHeaders = "";
             try
             {
                 using (var webClient = GetWebClient(headers))
                 {
+                    requestHeaders = webClient.Headers.ToString();
                     response = webClient.DownloadString(target);
+                    responseHeaders = webClient.ResponseHeaders.ToString();
                     return response;
                 }
             }
             finally
             {
-                Trace.TraceInformation("Rally.RestApi Get({0}): {1}\r\nResponse:\r\n{2}", DateTime.Now.Subtract(startTime).ToString(), target.ToString(), response);
+                Trace.TraceInformation("Get Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
+                                       DateTime.Now.Subtract(startTime).ToString(),  
+                                       target.ToString(), 
+                                       requestHeaders, 
+                                       responseHeaders,
+                                       response);
             }
         }
 
         public string Delete(Uri target, IDictionary<string, string> headers = null)
         {
             String response = "<No response>";
+            DateTime startTime = DateTime.Now;
+            String requestHeaders = "";
+            String responseHeaders = "";
             try
             {
                 var request = WebRequest.Create(target);
@@ -124,7 +147,9 @@ namespace Rally.RestApi
                         request.Headers.Add(pairs.Key, pairs.Value);
                     }
                 }
+                requestHeaders = request.Headers.ToString();
                 var httpResponse = (HttpWebResponse)request.GetResponse();
+                responseHeaders = httpResponse.Headers.ToString();
                 httpResponse.StatusCode.ToString();
                 var enc = Encoding.ASCII;
                 var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
@@ -134,7 +159,12 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("Rally.RestApi Delete: {0}\r\nResponse:\r\n{1}", target.ToString(), response);
+                Trace.TraceInformation("Delete Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
+                                       DateTime.Now.Subtract(startTime).ToString(),
+                                       target.ToString(),
+                                       requestHeaders,
+                                       responseHeaders,
+                                       response);
             }
         }
     }

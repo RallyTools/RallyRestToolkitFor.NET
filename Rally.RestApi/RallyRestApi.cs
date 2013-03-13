@@ -26,20 +26,34 @@ namespace Rally.RestApi
         public enum HeaderType
         {
             /// <summary>
+            /// X-RallyIntegrationOperation
+            /// </summary>
+            [StringValue("X-RallyIntegrationOperation")]
+            Operation,
+            /// <summary>
+            /// X-Trace-Id
+            /// </summary>
+            [StringValue("X-Trace-Id")]
+            Guid,
+            /// <summary>
             /// X-RallyIntegrationLibrary
             /// </summary>
+            [StringValue("X-RallyIntegrationLibrary")]
             Library,
             /// <summary>
             /// X-RallyIntegrationName
             /// </summary>
+            [StringValue("X-RallyIntegrationName")]
             Name,
             /// <summary>
             /// X-RallyIntegrationVendor
             /// </summary>
+            [StringValue("X-RallyIntegrationVendor")]
             Vendor,
             /// <summary>
             /// X-RallyIntegrationVersion
             /// </summary>
+            [StringValue("X-RallyIntegrationVersion")]
             Version
         }
 
@@ -72,19 +86,39 @@ namespace Rally.RestApi
         private readonly string wsapiVersion;
         internal HttpService Service { get; set; }
 
-        internal string DecodeHeaderName(HeaderType type)
-        {
-            return "X-RallyIntegration" + type;
-        }
-
         internal Dictionary<string, string> GetProcessedHeaders()
         {
             var result = new Dictionary<string, string>();
             foreach (var pair in Headers)
             {
-                result.Add(DecodeHeaderName(pair.Key), pair.Value);
+                result.Add(getStringValue(pair.Key), pair.Value);
             }
             return result;
+        }
+
+        internal class StringValue : System.Attribute
+        {
+            private string _value;
+
+            public StringValue(string value)
+            {
+                _value = value;
+            }
+
+            public string Value
+            {
+                get { return _value; }
+            }
+        }
+
+        internal static string getStringValue(Enum value)
+        {
+            string output = null;
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+            StringValue[] attrs = fi.GetCustomAttributes(typeof(StringValue),false) as StringValue[];
+            if (attrs.Length > 0)
+                output = attrs[0].Value;
+            return output;
         }
 
         #endregion
@@ -404,6 +438,7 @@ namespace Rally.RestApi
         /// <summary>
         /// Delete the object described by the specified reference.
         /// </summary>
+        /// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>
         /// <param name="aRef">the reference</param>
         /// <returns>An OperationResult with information on the status of the request</returns>
         public OperationResult Delete(string workspaceRef, string aRef)
@@ -423,7 +458,7 @@ namespace Rally.RestApi
         /// <summary>
         /// Create an object of the specified type from the specified object
         /// </summary>
-        /// <param name="workspaceRef">the workspace into which the object should be created</param>
+        /// <param name="workspaceRef">the workspace into which the object should be created.  Null means that the server will pick a workspace.</param>
         /// <param name="typePath">the type to be created</param>
         /// <param name="obj">the object to be created</param>
         /// <returns></returns>
