@@ -92,7 +92,7 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("Post Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Request Data:\r\n{3}\r\nResponse Headers:\r\n{4}Response Data\r\n{5}",
+                Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Request Data:\r\n{3}\r\nResponse Headers:\r\n{4}Response Data\r\n{5}",
                                        DateTime.Now.Subtract(startTime).ToString(),
                                        target.ToString(),
                                        requestHeaders,
@@ -120,7 +120,7 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("Get Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
+                Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
                                        DateTime.Now.Subtract(startTime).ToString(),  
                                        target.ToString(), 
                                        requestHeaders, 
@@ -159,7 +159,7 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("Delete Url ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
+                Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
                                        DateTime.Now.Subtract(startTime).ToString(),
                                        target.ToString(),
                                        requestHeaders,

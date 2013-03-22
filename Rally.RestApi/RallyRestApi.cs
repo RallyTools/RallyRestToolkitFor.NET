@@ -464,19 +464,25 @@ namespace Rally.RestApi
         /// <returns></returns>
         public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
         {
+            DynamicJsonObject response = CreateWithUri(FormatCreateString(workspaceRef, typePath), typePath, obj);
+            DynamicJsonObject createResult = response["CreateResult"];
             var createResponse = new CreateResult();
+            if (createResult.HasMember("Object"))
+            {
+                createResponse.Object = createResult["Object"];
+                createResponse.Reference = createResponse.Object["_ref"] as string;
+            }
+            createResponse.Errors.AddRange(DecodeArrayList(createResult["Errors"]));
+            createResponse.Warnings.AddRange(DecodeArrayList(createResult["Warnings"]));
+            return createResponse;
+        }
+
+        public DynamicJsonObject CreateWithUri(Uri uri, string typePath, DynamicJsonObject obj)
+        {
             var data = new DynamicJsonObject();
             data[typePath] = obj;
             string postData = serializer.Serialize(data);
-            dynamic response =
-                serializer.Deserialize(Service.Post(FormatCreateString(workspaceRef,typePath), postData, GetProcessedHeaders()));
-            if(response.CreateResult.HasMember("Object"))
-            {
-                createResponse.Reference = response.CreateResult.Object._ref as string;
-            }
-            createResponse.Errors.AddRange(DecodeArrayList(response.CreateResult.Errors));
-            createResponse.Warnings.AddRange(DecodeArrayList(response.CreateResult.Warnings));
-            return createResponse;
+            return serializer.Deserialize(Service.Post(uri, postData, GetProcessedHeaders()));
         }
 
         /// <summary>
@@ -489,6 +495,24 @@ namespace Rally.RestApi
         public OperationResult Update(string reference, DynamicJsonObject obj)
         {
             return Update(Ref.GetTypeFromRef(reference), Ref.GetOidFromRef(reference), obj);
+        }
+
+        public CreateResult CreateProjectTeamMembership(String projectOid, String userOid)
+        {
+            Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/project/{2}/projectuser/{3}.js", Service.Server.AbsoluteUri, wsapiVersion, projectOid, userOid));
+            DynamicJsonObject data = new DynamicJsonObject();
+            data["TeamMember"] = true;
+            DynamicJsonObject response = CreateWithUri(uri, "projectuser", data);
+            DynamicJsonObject operationResult = response["OperationResult"];
+            var createResponse = new CreateResult();
+            if (operationResult.HasMember("Object"))
+            {
+                createResponse.Object = operationResult["Object"];
+                createResponse.Reference = createResponse.Object["_ref"] as string;
+            }
+            createResponse.Errors.AddRange(DecodeArrayList(operationResult["Errors"]));
+            createResponse.Warnings.AddRange(DecodeArrayList(operationResult["Warnings"]));
+            return createResponse;
         }
 
         /// <summary>

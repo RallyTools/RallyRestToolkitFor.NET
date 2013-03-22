@@ -20,5 +20,10 @@ namespace Rally.RestApi.Response
         /// The ref of the created item
         /// </summary>
         public string Reference { get; set; }
+    
+        /// <summary>
+        /// The object created
+        /// </summary>
+        public DynamicJsonObject Object { get; set; }
     }
 }
