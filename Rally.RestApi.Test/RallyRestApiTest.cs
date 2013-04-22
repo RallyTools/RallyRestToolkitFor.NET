@@ -273,7 +273,7 @@ namespace Rally.RestApi.Test
         public void FormatCreateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatCreateString(null,"defect");
+            Uri result = restApi.FormatCreateUri(null,"defect");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
             Assert.AreEqual(expected, result);
         }
@@ -282,7 +282,7 @@ namespace Rally.RestApi.Test
         public void FormatUpdateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatUpdateString("defect", 2121901027);
+            Uri result = restApi.FormatUpdateUri("defect", 2121901027);
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js");
             Assert.AreEqual(expected, result);
         }
