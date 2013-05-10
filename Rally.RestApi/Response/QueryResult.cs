@@ -10,9 +10,11 @@ namespace Rally.RestApi.Response
     /// </summary>
     public class QueryResult : OperationResult
     {
-        internal QueryResult(DynamicJsonObject obj)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public QueryResult(DynamicJsonObject obj)
         {
-
             Errors = GetCollection<string>(obj["Errors"]);
             Warnings = GetCollection<string>(obj["Warnings"]);
             if (obj.Dictionary.ContainsKey("TotalResultCount"))

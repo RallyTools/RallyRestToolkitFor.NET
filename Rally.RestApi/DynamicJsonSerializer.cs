@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.Script.Serialization;
-using System.Collections;
-using System;
 
 namespace Rally.RestApi
 {
-    internal class DynamicJsonSerializer
+    public class DynamicJsonSerializer
     {
         readonly JavaScriptSerializer deSerializer;
         public DynamicJsonSerializer()
