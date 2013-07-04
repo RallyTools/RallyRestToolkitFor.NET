@@ -19,102 +19,6 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void Adhoc()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Contains, "\"Test\"") };
-            QueryResult response = restApi.BatchQuery(new[] { req })["d"];
-            Assert.IsTrue(0 < response.Results.Count());
-            foreach (dynamic result in response.Results)
-            {
-                Assert.IsTrue(result.Name.ToLower().Contains("test"));
-            }
-        }
-
-        [TestMethod]
-        public void AdhocGetUser()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("user", "d");
-            QueryResult response = restApi.BatchQuery(new[] { req })["d"];
-            Assert.AreEqual(1, response.Results.Count());
-            Assert.AreEqual(1, response.TotalResultCount);
-            Assert.AreEqual(IntegrationTestInfo.USER_NAME, response.Results.First().UserName);
-        }
-
-        [TestMethod]
-        public void AdhocSadPath()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "\\\"Defect Test 3") };
-            // should fail due to not quoted string
-            try
-            {
-                restApi.BatchQuery(new[] { req });
-            }
-            catch (Exception ex)
-            {
-                var errors = (ArrayList)ex.Data["Errors"];
-                Assert.AreEqual(1, errors.Count);
-                Assert.IsTrue(
-                    ((string)errors[0]).Contains(
-                        "Cannot parse input stream due to I/O error as JSON document: Parse error"));
-                Assert.AreEqual("Adhoc Query failed, Rally WSAPI Errors and Warnings included in exception data.",
-                                ex.Message);
-            }
-        }
-
-        [TestMethod]
-        public void AdhocMultiple()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            var req2 = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", Limit = 1 };
-            var reqs = new List<AdhocRequest> { req, req2 };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(2, result.Count);
-            QueryResult oneDefectResult = result["OneDefect"];
-            Assert.AreEqual(1, oneDefectResult.Results.ToList().Count, "One defect should return one defect");
-            Assert.IsTrue(1 < oneDefectResult.TotalResultCount, "More than one total result");
-            Assert.AreEqual(0, oneDefectResult.Warnings.ToList().Count, "No Warnings");
-            Assert.AreEqual(0, oneDefectResult.Errors.ToList().Count, "No Errors");
-        }
-
-        [TestMethod]
-        public void AdhocMultiplePages()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var AdhocRequest = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", Limit = 2, PageSize = 1 };
-            var reqs = new List<AdhocRequest> { AdhocRequest };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(2, result.Values.First().Results.Count());
-            Assert.IsTrue(result.Values.First().Results.Count() < result.Values.First().TotalResultCount);
-        }
-
-        [TestMethod]
-        public void AdhocMultipleLimitTest()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", PageSize = 20, Limit = 1 };
-            var reqs = new List<AdhocRequest> { req };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(1, result.Count);
-            QueryResult oneDefectResult = result["OneDefect"];
-            Assert.AreEqual(1, oneDefectResult.Results.ToList().Count, "One defect should return one defect");
-            Assert.IsTrue(1 < oneDefectResult.TotalResultCount, "More than one total result");
-            Assert.AreEqual(0, oneDefectResult.Warnings.ToList().Count, "No Warnings");
-            Assert.AreEqual(0, oneDefectResult.Errors.ToList().Count, "No Errors");
-        }
-
-        [TestMethod]
-        public void AdhocUri()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            Assert.AreEqual(new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/adhoc.js"), restApi.AdhocUri);
-        }
-
-
-        [TestMethod]
         public void CreateTest()
         {
             RallyRestApi restApi = GetRallyRestApi();
@@ -136,7 +40,7 @@ namespace Rally.RestApi.Test
             var defect = new DynamicJsonObject();
             defect["Name"] = "Sample Defect with invalid field";
             defect["Iteration"] = "Foo";
-            CreateResult creationResult = restApi.Create(null, "defect", defect);
+            CreateResult creationResult = restApi.Create("defect", defect);
             Assert.IsNull(creationResult.Reference);
             Assert.AreEqual(1, creationResult.Errors.Count);
             Assert.IsFalse(creationResult.Success);
@@ -201,45 +105,6 @@ namespace Rally.RestApi.Test
             RallyRestApi restApi = GetRallyRestApi();
             dynamic response = restApi.GetByReference("/subscription.js");
             Assert.IsNotNull(response.ObjectID);
-        }
-
-        [TestMethod]
-        public void AdhocRequestUrl()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result = req.RequestUrl;
-            // ObjectID is added to the order clause by the as a workaround for a server-side WSAPI bug
-            const string expected = "/defect?pagesize=200&order=Name desc,ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected, result);
-
-            var req2 = new AdhocRequest("defect", "d") { Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result2 = req2.RequestUrl;
-            // Order by ObjectID clause is added as a workaround for a server-side WSAPI bug
-            const string expected2 = "/defect?pagesize=200&order=ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected2, result2);
-
-            var req3 = new AdhocRequest("defect", "d") { Order = "ObjectID", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result3 = req3.RequestUrl;
-            // ObjectID is not added twice to the order clause b/c it already exists
-            const string expected3 = "/defect?pagesize=200&order=ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected3, result3);
-        }
-
-        [TestMethod]
-        public void AdhocRequestPlaceHolderUrl()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new PlaceholderRequest("key/Tasks", "d")
-                          {
-                              Order = "Name desc",
-                              Query = new Query("Name", Query.Operator.Equals, "Jim"),
-                              Fetch = new List<string> { "Name" }
-                          };
-            string result = req.RequestUrl;
-            const string expected = "${key/Tasks?fetch=Name}";
-            Assert.AreEqual(expected, result);
         }
 
         private static void VerifyAttributes(QueryResult result)
