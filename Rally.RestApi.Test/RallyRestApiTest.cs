@@ -10,7 +10,7 @@ namespace Rally.RestApi.Test
     [TestClass]
     public class RallyRestApiTest
     {
-        private static long defectOid;
+        private static string defectOid;
 
         internal RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
             string server = IntegrationTestInfo.SERVER, string wsapiVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
@@ -138,7 +138,7 @@ namespace Rally.RestApi.Test
         public void FormatCreateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatCreateUri(null,"defect");
+            Uri result = restApi.FormatCreateUri(null, "defect");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
             Assert.AreEqual(expected, result);
         }
@@ -147,7 +147,7 @@ namespace Rally.RestApi.Test
         public void FormatUpdateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatUpdateUri("defect", 2121901027);
+            Uri result = restApi.FormatUpdateUri("defect", "2121901027");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js");
             Assert.AreEqual(expected, result);
         }

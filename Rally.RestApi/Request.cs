@@ -17,6 +17,8 @@ namespace Rally.RestApi
         public const int MAX_PAGE_SIZE = 200;
 
         internal Dictionary<string, dynamic> Parameters { get; private set; }
+
+        private DynamicJsonObject collection;
         
         /// <summary>
         /// Create a new Request with the specified artifact type
@@ -26,6 +28,12 @@ namespace Rally.RestApi
             : this()
         {
             ArtifactName = artifactName;
+        }
+
+        public Request(DynamicJsonObject collection)
+            : this()
+        {
+            this.collection = collection;
         }
 
         /// <summary>
@@ -189,21 +197,28 @@ namespace Rally.RestApi
             }
 
             list.Add("fetch=" + string.Join(",", fetch));
-            return "/" + EndpointName + extension + "?" + string.Join("&", list.ToArray());
+            return Endpoint + extension + "?" + string.Join("&", list.ToArray());
         }
 
-        protected internal virtual string EndpointName
+        protected internal virtual string Endpoint
         {
             get
             {
-                switch(ArtifactName.ToLower())
+                if (!string.IsNullOrEmpty(ArtifactName))
                 {
-                    case "user":
-                    case "subscription":
-                        return ArtifactName.ToLower() + "s"; //special case for user/subscription endpoints
-                }
+                    switch (ArtifactName.ToLower())
+                    {
+                        case "user":
+                        case "subscription":
+                            return "/" + ArtifactName.ToLower() + "s"; //special case for user/subscription endpoints
+                    }
 
-                return ArtifactName.ToLower();
+                    return "/" + ArtifactName.ToLower();
+                }
+                else
+                {
+                    return Ref.GetRelativeRef(collection["_ref"]);
+                }
             }
         }
 

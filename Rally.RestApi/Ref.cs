@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Rally.RestApi
 {
@@ -9,6 +10,47 @@ namespace Rally.RestApi
     /// </summary>
     public static class Ref
     {
+        private static List<Regex> regexes = new List<Regex>() {
+
+            //dynatype collection ref (/portfolioitem/feature/1234
+            new Regex (".*/(\\w{2,}/\\w+)/(\\d+/\\w+)(?:\\.js)*(?:\\?.*)*$"),
+            
+            //dynatype ref (/portfolioitem/feature/1234
+            new Regex (".*/(\\w{2,}/\\w+)/(\\d+)(?:\\.js)*(?:\\?.*)*$"),
+
+            //collection ref (/defect/1234/tasks)
+            new Regex (".*/(\\w+/\\d+)/(\\w+)(?:\\.js)*(?:\\?.*)*$"),
+
+            //basic ref (/defect/1234)
+            new Regex (".*/(\\w+)/(\\d+)(?:\\.js)*(?:\\?.*)*$"),
+
+            //permission ref (/workspacepermission/123u456w1)
+            new Regex (".*/(\\w+)/(\\d+u\\d+[pw]\\d+)(?:\\.js)*(?:\\?.*)*$"),
+        };
+
+        private static Match GetMatch(string reference)
+        {
+            foreach (Regex r in regexes)
+            {
+                if (r.IsMatch(reference ?? ""))
+                {
+                    return r.Match(reference);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Determine whether the specified string is a reference
+        /// </summary>
+        /// <param name="reference">the ref to test</param>
+        /// <returns>true if a ref, false otherwise</returns>
+        public static bool IsRef(string reference)
+        {
+            return GetMatch(reference) != null;   
+        }
+
         /// <summary>
         /// Get a relative ref from the specified ref.
         /// All server information will be stripped before being returned.
@@ -17,19 +59,8 @@ namespace Rally.RestApi
         /// <returns>The relative version of the specified absolute ref</returns>
         public static string GetRelativeRef(string reference)
         {
-            var tokens = TokenizeRef(reference);
-            var relRef = "/" + tokens[tokens.Length - 2] + "/" + (tokens[tokens.Length - 1].Split('.')[0]);
-            return relRef;
-        }
-
-        private static string[] TokenizeRef(string reference)
-        {
-            var tokens = reference.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            if (tokens.Length < 2)
-            {
-                throw new ArgumentException("Must be a valid reference", "reference");
-            }
-            return tokens;
+            Match m = GetMatch(reference);
+            return m != null ? String.Format("/{0}/{1}", m.Groups[1].Value, m.Groups[2].Value) : null;
         }
 
         /// <summary>
@@ -39,22 +70,8 @@ namespace Rally.RestApi
         /// <returns>The type of the specified ref</returns>
         public static string GetTypeFromRef(string reference)
         {
-            String[] tokens = TokenizeRef(reference);
-            List<String> typeTokens = new List<string>() { tokens[tokens.Length - 2] };
-
-            if (tokens.Length > 2)
-            {
-                for (int x = tokens.Length - 3; x >= 0; x--)
-                {
-                    String token = tokens[x];
-                    double d;
-                    // Stop when we get to the api version
-                    if (token.ToLower() == "x" || Double.TryParse(token, out d))
-                        break;
-                    typeTokens.Insert(0,tokens[x]);
-                }
-            }
-            return String.Join("/",typeTokens);
+            Match m = GetMatch(reference);
+            return m != null ? m.Groups[1].Value : null;
         }
 
         /// <summary>
@@ -62,12 +79,10 @@ namespace Rally.RestApi
         /// </summary>
         /// <param name="reference">The ref to get the object id from</param>
         /// <returns>The object id of the specified ref</returns>
-        public static long GetOidFromRef(string reference)
+        public static string GetOidFromRef(string reference)
         {
-            var tokens = TokenizeRef(reference);
-            // Get the last token
-            var oidToken = tokens[tokens.Length - 1];
-            return long.Parse(oidToken.Replace(".js", ""));
+            Match m = GetMatch(reference);
+            return m != null ? m.Groups[2].Value : null;
         } 
     }
 }

@@ -202,7 +202,7 @@ namespace Rally.RestApi
             return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
         }
 
-        internal Uri FormatUpdateUri(string typePath, long objectId)
+        internal Uri FormatUpdateUri(string typePath, string objectId)
         {
             return
                 new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/" + objectId +
@@ -448,7 +448,7 @@ namespace Rally.RestApi
         /// <param name="oid">the object id of the item to be updated</param>
         /// <param name="obj">the object fields to update</param>
         /// <returns>An OperationResult describing the status of the request</returns>
-        public OperationResult Update(string typePath, long oid, DynamicJsonObject obj)
+        public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
         {
             var result = new OperationResult();
             var data = new DynamicJsonObject();

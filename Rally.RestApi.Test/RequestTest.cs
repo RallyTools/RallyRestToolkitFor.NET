@@ -24,30 +24,41 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void TestEndpointNameSubscription()
+        public void TestEndpointSubscription()
         {
             var request = new Request("Subscription");
             request.Fetch = new List<string>() { "Name" };
 
-            Assert.AreEqual("subscriptions", request.EndpointName);
+            Assert.AreEqual("/subscriptions", request.Endpoint);
         }
 
         [TestMethod]
-        public void TestEndpointNameUser()
+        public void TestEndpointUser()
         {
             var request = new Request("User");
             request.Fetch = new List<string>() { "FirstName" };
 
-            Assert.AreEqual("users", request.EndpointName);
+            Assert.AreEqual("/users", request.Endpoint);
         }
 
         [TestMethod]
-        public void TestEndpointNameDefect()
+        public void TestEndpointDefect()
         {
             var request = new Request("Defect");
             request.Fetch = new List<string>() { "Name" };
 
-            Assert.AreEqual("defect", request.EndpointName);
+            Assert.AreEqual("/defect", request.Endpoint);
+        }
+
+        [TestMethod]
+        public void TestEndpointCollection()
+        {
+            DynamicJsonObject collection = new DynamicJsonObject();
+            collection["_ref"] = "https://rally1.rallydev.com/slm/webservice/v2.0/defect/12345/tasks";
+
+            var request = new Request(collection);
+
+            Assert.AreEqual("/defect/12345/tasks", request.Endpoint);
         }
     }
 }
