@@ -7,6 +7,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
+using System.Text.RegularExpressions;
 
 namespace Rally.RestApi
 {
@@ -82,8 +83,8 @@ namespace Rally.RestApi
                                                                      };
 
         private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
-
         private readonly string wsapiVersion;
+        private string securityToken;
         internal HttpService Service { get; set; }
 
         internal Dictionary<string, string> GetProcessedHeaders()
@@ -209,6 +210,66 @@ namespace Rally.RestApi
                         ".js");
         }
 
+        DynamicJsonObject DoGet(Uri uri)
+        {
+            return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
+        }
+
+        DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data)
+        {
+            return serializer.Deserialize(Service.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
+        }
+
+        DynamicJsonObject DoDelete(Uri uri)
+        {
+            return serializer.Deserialize(Service.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
+        }
+
+        bool IsWsapi2
+        {
+            get
+            {
+                return !new Regex("^1[.]\\d+").IsMatch(wsapiVersion);
+            }
+        }
+
+        Uri GetSecuredUri(Uri uri)
+        {
+            if (IsWsapi2)
+            {
+                if (string.IsNullOrEmpty(securityToken))
+                {
+                    GetSecurityToken();
+                }
+
+                UriBuilder builder = new UriBuilder(uri);
+                string csrfToken = string.Format("key={0}", securityToken);
+                if (string.IsNullOrEmpty(builder.Query))
+                {
+                    builder.Query = "?" + csrfToken;
+                }
+                else
+                {
+                    builder.Query += "&" + csrfToken;
+                }
+                
+                return builder.Uri;
+            }
+            return uri;
+        }
+
+        void GetSecurityToken()
+        {
+            try
+            {
+                DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef("/security/authorize")));
+                securityToken = securityTokenResponse["OperationResult"]["SecurityToken"];
+            }
+            catch
+            {
+                securityToken = null;
+            }
+        }
 
         private IEnumerable<object> GetCollection(object arr)
         {
@@ -218,11 +279,6 @@ namespace Rally.RestApi
 
         #endregion
 
-        DynamicJsonObject MakeRequest(Uri uri)
-        {
-            return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
-        }
-
         /// <summary>
         /// Perform a read against the WSAPI operation based
         /// on the data in the specified request
@@ -231,7 +287,7 @@ namespace Rally.RestApi
         /// <returns>The results of the read operation</returns>
         public QueryResult Query(Request request)
         {
-            var response = MakeRequest(GetFullyQualifiedUri(request.RequestUrl));
+            var response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
             var result = new QueryResult(response["QueryResult"]);
             int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
             int alreadyDownloadedItems = request.Start - 1 + request.PageSize;
@@ -255,7 +311,7 @@ namespace Rally.RestApi
             var resultDictionary = new Dictionary<int, QueryResult>();
             Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>
                 {
-                    var response1 = MakeRequest(GetFullyQualifiedUri(request1.RequestUrl));
+                    var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
                     lock (resultDictionary)
                     {
                         resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
@@ -324,17 +380,11 @@ namespace Rally.RestApi
             {
                 aRef = aRef + ".js";
             }
-            string type = null;
-            try
-            {
-                type = Ref.GetTypeFromRef(aRef);
-            }
-            catch
-            {
+            string type = Ref.GetTypeFromRef(aRef) ?? 
                 //Handle case for things like user, subscription
-                type = aRef.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
-            }
-            DynamicJsonObject wrappedReponse = MakeRequest(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
+                aRef.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            
+            DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
             return type.Equals(wrappedReponse.Fields.FirstOrDefault(), StringComparison.CurrentCultureIgnoreCase) ? wrappedReponse[wrappedReponse.Fields.First()] : null;
         }
 
@@ -385,7 +435,7 @@ namespace Rally.RestApi
                 aRef = aRef + ".js";
             }
             String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
-            dynamic response = serializer.Deserialize(Service.Delete(GetFullyQualifiedUri(aRef + workspaceClause), GetProcessedHeaders()));
+            dynamic response = DoDelete(GetFullyQualifiedUri(aRef + workspaceClause));
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -400,11 +450,10 @@ namespace Rally.RestApi
         /// <returns></returns>
         public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
         {
+            GetSecurityToken();
             var data = new DynamicJsonObject();
             data[typePath] = obj;
-            string postData = serializer.Serialize(data);
-            DynamicJsonObject response =
-                serializer.Deserialize(Service.Post(FormatCreateUri(workspaceRef, typePath), postData, GetProcessedHeaders()));
+            DynamicJsonObject response = DoPost(FormatCreateUri(workspaceRef, typePath), data);
             DynamicJsonObject createResult = response["CreateResult"];
             var createResponse = new CreateResult();
             if (createResult.HasMember("Object"))
@@ -453,9 +502,7 @@ namespace Rally.RestApi
             var result = new OperationResult();
             var data = new DynamicJsonObject();
             data[typePath] = obj;
-            string postData = serializer.Serialize(data);
-            dynamic response =
-                serializer.Deserialize(Service.Post(FormatUpdateUri(typePath, oid), postData, GetProcessedHeaders()));
+            dynamic response = DoPost(FormatUpdateUri(typePath, oid), data);
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -470,7 +517,7 @@ namespace Rally.RestApi
         public DynamicJsonObject GetAllowedAttributeValues(string typePath, string attribute)
         {
             //TODO: load the typedef, query the attributes collection by name, query its allowed values collection
-            return MakeRequest(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", typePath, attribute)));
+            return DoGet(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", typePath, attribute)));
         }
 
         /// <summary>
@@ -480,18 +527,28 @@ namespace Rally.RestApi
         /// <returns>The attribute definitions for the specified type</returns>
         public QueryResult GetAttributesByType(string type)
         {
-            //TODO: this won't work in wsapi2
-            var attributesRequest = new Request("TypeDefinition");
-            attributesRequest.Fetch = new List<string>() { "Attributes" };
-            attributesRequest.Query = new Query("Name", RestApi.Query.Operator.Equals, type);
-            var result = Query(attributesRequest);
-            var attributeResult = result.Results.FirstOrDefault();
-            if (attributeResult != null)
+            var typeDefRequest = new Request("TypeDefinition");
+            typeDefRequest.Fetch = new List<string>() { "Attributes" };
+            typeDefRequest.Query = new Query("TypePath", RestApi.Query.Operator.Equals, type.Replace(" ", ""));
+            var result = Query(typeDefRequest);
+            var typeDefResult = result.Results.FirstOrDefault();
+            if (typeDefResult != null)
             {
-                var attributes = attributeResult["Attributes"] as ArrayList;
-                result.Results = attributes.Cast<object>().ToList<object>();
-                result.TotalResultCount = attributes.Count;
+                var attributes = typeDefResult["Attributes"];
+                if (IsWsapi2)
+                {
+                    Request attributeRequest = new Request(attributes);
+                    var response = Query(attributeRequest);
+                    result.Results = response.Results;
+                    result.TotalResultCount = attributes["Count"];
+                }
+                else
+                {
+                    result.Results = (attributes as ArrayList).Cast<object>().ToList<object>();
+                    result.TotalResultCount = attributes.Count;
+                }
             }
+
             return result;
         }
     }

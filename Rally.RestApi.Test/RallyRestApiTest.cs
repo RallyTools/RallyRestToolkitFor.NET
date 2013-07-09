@@ -112,7 +112,7 @@ namespace Rally.RestApi.Test
             var list = (IEnumerable<object>)result.Results;
             IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
                                         select i["Name"] as string;
-            var expectedNames = new[] { "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+            var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
             Assert.AreEqual(result.TotalResultCount, list.Count());
             Assert.AreEqual(expectedNames.Length, list.Count());
             IEnumerable<string> complement = expectedNames.Except(names);
@@ -120,18 +120,19 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void TestAttribute()
+        public void TestAttribute1x()
         {
-            //Test old
-            RallyRestApi restApi124 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.24");
-            QueryResult result124 = restApi124.GetAttributesByType("Preference");
-            VerifyAttributes(result124);
-            
-
-            //Test new
-            RallyRestApi restApi125 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.25");
+            RallyRestApi restApi125 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.43");
             QueryResult result125 = restApi125.GetAttributesByType("Preference");
             VerifyAttributes(result125);
+        }
+
+        [TestMethod]
+        public void TestAttribute2x()
+        {
+            RallyRestApi restApiv2 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "v2.0");
+            QueryResult resultv2 = restApiv2.GetAttributesByType("Preference");
+            VerifyAttributes(resultv2);
         }
 
         [TestMethod]
@@ -166,9 +167,11 @@ namespace Rally.RestApi.Test
         public void GetSubscription()
         {
             RallyRestApi restApi = GetRallyRestApi();
+            dynamic user = restApi.GetCurrentUser("Subscription", "ObjectID");
             dynamic subscription = restApi.GetSubscription();
+
             Assert.AreEqual("subscription", Ref.GetTypeFromRef(subscription._ref), "Type test");
-            Assert.AreEqual(146524649, subscription.ObjectID, "Subscription Id");
+            Assert.AreEqual(user.Subscription.ObjectID, subscription.ObjectID, "Subscription Id");
         }
 
         [TestMethod]
