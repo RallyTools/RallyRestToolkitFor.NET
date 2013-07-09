@@ -134,6 +134,7 @@ namespace Rally.RestApi.Test
             Assert.AreEqual(Ref.GetRelativeRef("/defect/1234/tasks"), "/defect/1234/tasks", "Valid relative collection ref");
             Assert.AreEqual(Ref.GetRelativeRef("https://rally1.rallydev.com/slm/webservice/1.38/portfolioitem/feature/1234/children"), "/portfolioitem/feature/1234/children", "Valid dynatype collection ref");
             Assert.AreEqual(Ref.GetRelativeRef("/portfolioitem/feature/1234/children"), "/portfolioitem/feature/1234/children", "Valid dynatype relative collection ref");
+            Assert.AreEqual(Ref.GetRelativeRef("/attributedefinition/-12345/allowedvalues"), "/attributedefinition/-12345/allowedvalues", "Valid negative oid collection ref");
         }
     }
 }

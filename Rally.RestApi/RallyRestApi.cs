@@ -512,12 +512,31 @@ namespace Rally.RestApi
         /// Get the allowed values for the specified type and attribute
         /// </summary>
         /// <param name="typePath">the type</param>
-        /// <param name="attribute">the attribute to retireve allowed values for</param>
+        /// <param name="attributeName">the attribute to retireve allowed values for</param>
         /// <returns>The allowed values for the specified attribute</returns>
-        public DynamicJsonObject GetAllowedAttributeValues(string typePath, string attribute)
+        public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
         {
-            //TODO: load the typedef, query the attributes collection by name, query its allowed values collection
-            return DoGet(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", typePath, attribute)));
+            QueryResult attributes = GetAttributesByType(typePath);
+            var attribute = attributes.Results.SingleOrDefault(a => a.ElementName.ToLower() == attributeName.ToLower().Replace(" ", ""));
+            if (attribute != null)
+            {
+                var allowedValues = attribute["AllowedValues"];
+
+                if (IsWsapi2)
+                {
+                    Request allowedValuesRequest = new Request(allowedValues);
+                    var response = Query(allowedValuesRequest);
+                    attributes.Results = response.Results;
+                    attributes.TotalResultCount = allowedValues["Count"];
+                }
+                else
+                {
+                    attributes.Results = (allowedValues as ArrayList).Cast<object>().ToList<object>();
+                    attributes.TotalResultCount = allowedValues.Count;
+                }
+            }
+
+            return attributes;
         }
 
         /// <summary>

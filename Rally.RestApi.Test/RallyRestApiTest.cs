@@ -84,11 +84,19 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void GetAllowedAttributeValuesTest()
+        public void GetAllowedAttributeValuesTest1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            DynamicJsonObject response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
-            Assert.IsTrue(response.HasMember("Accepted"));
+            RallyRestApi restApi = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.43");
+            QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
+            Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
+        }
+
+        [TestMethod]
+        public void GetAllowedAttributeValuesTest2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "v2.0");
+            QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
+            Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
         }
 
         [TestMethod]

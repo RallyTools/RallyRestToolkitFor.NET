@@ -12,14 +12,14 @@ namespace Rally.RestApi
     {
         private static List<Regex> regexes = new List<Regex>() {
 
-            //dynatype collection ref (/portfolioitem/feature/1234
+            //dynatype collection ref (/portfolioitem/feature/1234/children)
             new Regex (".*/(\\w{2,}/\\w+)/(\\d+/\\w+)(?:\\.js)*(?:\\?.*)*$"),
             
-            //dynatype ref (/portfolioitem/feature/1234
+            //dynatype ref (/portfolioitem/feature/1234)
             new Regex (".*/(\\w{2,}/\\w+)/(\\d+)(?:\\.js)*(?:\\?.*)*$"),
 
             //collection ref (/defect/1234/tasks)
-            new Regex (".*/(\\w+/\\d+)/(\\w+)(?:\\.js)*(?:\\?.*)*$"),
+            new Regex (".*/(\\w+/-?\\d+)/(\\w+)(?:\\.js)*(?:\\?.*)*$"),
 
             //basic ref (/defect/1234)
             new Regex (".*/(\\w+)/(\\d+)(?:\\.js)*(?:\\?.*)*$"),
