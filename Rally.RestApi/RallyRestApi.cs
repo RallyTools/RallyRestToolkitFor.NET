@@ -217,12 +217,34 @@ namespace Rally.RestApi
 
         DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data)
         {
-            return serializer.Deserialize(Service.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
+            return DoPost(uri, data, true);
+        }
+
+        DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry)
+        {
+            var response = serializer.Deserialize(Service.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
+            if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
+            {
+                securityToken = null;
+                return DoPost(uri, data, false);
+            }
+            return response;
         }
 
         DynamicJsonObject DoDelete(Uri uri)
         {
-            return serializer.Deserialize(Service.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
+            return DoDelete(uri, true);
+        }
+
+        DynamicJsonObject DoDelete(Uri uri, bool retry)
+        {
+            var response = serializer.Deserialize(Service.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
+            if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
+            {
+                securityToken = null;
+                return DoDelete(uri, false);
+            }
+            return response;
         }
 
         bool IsWsapi2
@@ -239,14 +261,14 @@ namespace Rally.RestApi
             {
                 if (string.IsNullOrEmpty(securityToken))
                 {
-                    GetSecurityToken();
+                    securityToken = GetSecurityToken();
                 }
 
                 UriBuilder builder = new UriBuilder(uri);
                 string csrfToken = string.Format("key={0}", securityToken);
                 if (string.IsNullOrEmpty(builder.Query))
                 {
-                    builder.Query = "?" + csrfToken;
+                    builder.Query = csrfToken;
                 }
                 else
                 {
@@ -258,16 +280,16 @@ namespace Rally.RestApi
             return uri;
         }
 
-        void GetSecurityToken()
+        string GetSecurityToken()
         {
             try
             {
                 DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef("/security/authorize")));
-                securityToken = securityTokenResponse["OperationResult"]["SecurityToken"];
+                return securityTokenResponse["OperationResult"]["SecurityToken"];
             }
             catch
             {
-                securityToken = null;
+                return null;
             }
         }
 
@@ -450,7 +472,6 @@ namespace Rally.RestApi
         /// <returns></returns>
         public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
         {
-            GetSecurityToken();
             var data = new DynamicJsonObject();
             data[typePath] = obj;
             DynamicJsonObject response = DoPost(FormatCreateUri(workspaceRef, typePath), data);

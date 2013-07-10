@@ -24,9 +24,8 @@ namespace Rally.RestApi.Test
             RallyRestApi restApi = GetRallyRestApi();
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create(null, "defect", dynamicJson);
+            CreateResult response = restApi.Create("defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
             dynamic testDefect = restApi.GetByReference(response.Reference);
             Assert.AreEqual(dynamicJson["Name"], testDefect.Name);
@@ -52,11 +51,10 @@ namespace Rally.RestApi.Test
             RallyRestApi restApi = GetRallyRestApi();
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create(null, "defect", dynamicJson);
+            CreateResult response = restApi.Create("defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
-            OperationResult deleteResponse = restApi.Delete(null,Ref.GetRelativeRef(response.Reference));
+            OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(response.Reference));
             dynamic testDefectEmpty = restApi.GetByReference(response.Reference);
             Assert.IsNull(testDefectEmpty);
         }
@@ -69,7 +67,6 @@ namespace Rally.RestApi.Test
             dynamicJson["Name"] = "Dont delete me please " + DateTime.Now.Second;
             OperationResult response = restApi.Update("Defect", defectOid, dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             dynamic updateDefect = restApi.GetByReference("/Defect/" + defectOid + ".js");
             Assert.AreEqual(dynamicJson["Name"], updateDefect.Name);
         }
@@ -80,7 +77,7 @@ namespace Rally.RestApi.Test
         {
             RallyRestApi restApi = GetRallyRestApi();
             dynamic response = restApi.GetByReference("/Defect/" + defectOid + ".js");
-            Assert.AreEqual(defectOid, response.ObjectID);
+            Assert.AreEqual(defectOid, response.ObjectID.ToString());
         }
 
         [TestMethod]
