@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HelpTOC>
+
+  <HelpTOCNode Id="27669b24-dd21-47f5-9e9a-dbd4541be6e2" Title="Rally.RestApi Namespace" Url="html/N_Rally_RestApi.htm">
+    <HelpTOCNode Id="e9398c81-28be-48a8-bb24-2e31693d63c0" Title="DynamicJsonObject Class" Url="html/T_Rally_RestApi_DynamicJsonObject.htm">
+      <HelpTOCNode Title="DynamicJsonObject Members" Url="html/AllMembers_T_Rally_RestApi_DynamicJsonObject.htm" />
+      <HelpTOCNode Id="ba7883be-12eb-4e35-addd-cfa7dc57b1a4" Title="DynamicJsonObject Constructor " Url="html/Overload_Rally_RestApi_DynamicJsonObject__ctor.htm">
+        <HelpTOCNode Title="DynamicJsonObject Constructor " Url="html/M_Rally_RestApi_DynamicJsonObject__ctor.htm" />
+        <HelpTOCNode Title="DynamicJsonObject Constructor (IDictionary(String, Object))" Url="html/M_Rally_RestApi_DynamicJsonObject__ctor_1.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="38aa5ce0-5b01-4437-b5b2-26f491dba988" Title="DynamicJsonObject Methods" Url="html/Methods_T_Rally_RestApi_DynamicJsonObject.htm">
+        <HelpTOCNode Title="Equals Method " Url="html/M_Rally_RestApi_DynamicJsonObject_Equals.htm" />
+        <HelpTOCNode Title="FormatSetValue Method " Url="html/M_Rally_RestApi_DynamicJsonObject_FormatSetValue.htm" />
+        <HelpTOCNode Title="GetHashCode Method " Url="html/M_Rally_RestApi_DynamicJsonObject_GetHashCode.htm" />
+        <HelpTOCNode Title="GetMember Method " Url="html/M_Rally_RestApi_DynamicJsonObject_GetMember.htm" />
+        <HelpTOCNode Title="HasMember Method " Url="html/M_Rally_RestApi_DynamicJsonObject_HasMember.htm" />
+        <HelpTOCNode Title="IsNumeric Method " Url="html/M_Rally_RestApi_DynamicJsonObject_IsNumeric.htm" />
+        <HelpTOCNode Title="SetMember Method " Url="html/M_Rally_RestApi_DynamicJsonObject_SetMember.htm" />
+        <HelpTOCNode Title="TryGetMember Method " Url="html/M_Rally_RestApi_DynamicJsonObject_TryGetMember.htm" />
+        <HelpTOCNode Title="TrySetMember Method " Url="html/M_Rally_RestApi_DynamicJsonObject_TrySetMember.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="b264b35f-112e-422c-ac0e-985b6aacbecd" Title="DynamicJsonObject Properties" Url="html/Properties_T_Rally_RestApi_DynamicJsonObject.htm">
+        <HelpTOCNode Title="Fields Property " Url="html/P_Rally_RestApi_DynamicJsonObject_Fields.htm" />
+        <HelpTOCNode Title="Item Property " Url="html/P_Rally_RestApi_DynamicJsonObject_Item.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="36f4ae2e-040c-4965-90eb-e2894670b299" Title="Query Class" Url="html/T_Rally_RestApi_Query.htm">
+      <HelpTOCNode Title="Query Members" Url="html/AllMembers_T_Rally_RestApi_Query.htm" />
+      <HelpTOCNode Id="5585acd8-c929-4c9b-aecf-f0379816ddf4" Title="Query Constructor " Url="html/Overload_Rally_RestApi_Query__ctor.htm">
+        <HelpTOCNode Title="Query Constructor " Url="html/M_Rally_RestApi_Query__ctor.htm" />
+        <HelpTOCNode Title="Query Constructor (String)" Url="html/M_Rally_RestApi_Query__ctor_1.htm" />
+        <HelpTOCNode Title="Query Constructor (String, Query.Operator, String)" Url="html/M_Rally_RestApi_Query__ctor_2.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="2729aa58-0312-4d07-886d-cc5c07580856" Title="Query Methods" Url="html/Methods_T_Rally_RestApi_Query.htm">
+        <HelpTOCNode Id="f045c947-880b-4606-b8c8-5bc792949d25" Title="And Method " Url="html/Overload_Rally_RestApi_Query_And.htm">
+          <HelpTOCNode Title="And Method (Query)" Url="html/M_Rally_RestApi_Query_And.htm" />
+          <HelpTOCNode Title="And Method (Query[])" Url="html/M_Rally_RestApi_Query_And_1.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="84cba6b6-ee4b-4aac-8e33-7d5785dd0447" Title="GetOperator Method " Url="html/Overload_Rally_RestApi_Query_GetOperator.htm">
+          <HelpTOCNode Title="GetOperator Method (String)" Url="html/M_Rally_RestApi_Query_GetOperator_1.htm" />
+          <HelpTOCNode Title="GetOperator Method (Query.Operator)" Url="html/M_Rally_RestApi_Query_GetOperator.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="Join Method " Url="html/M_Rally_RestApi_Query_Join.htm" />
+        <HelpTOCNode Id="2a8b42ce-48f7-4eac-af2f-93afc7b6c134" Title="Or Method " Url="html/Overload_Rally_RestApi_Query_Or.htm">
+          <HelpTOCNode Title="Or Method (Query)" Url="html/M_Rally_RestApi_Query_Or.htm" />
+          <HelpTOCNode Title="Or Method (Query[])" Url="html/M_Rally_RestApi_Query_Or_1.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="Parse Method " Url="html/M_Rally_RestApi_Query_Parse.htm" />
+        <HelpTOCNode Title="ToString Method " Url="html/M_Rally_RestApi_Query_ToString.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="09e95fe2-949d-454c-8c2d-ff82f4913fff" Title="Query Properties" Url="html/Properties_T_Rally_RestApi_Query.htm">
+        <HelpTOCNode Title="Attribute Property " Url="html/P_Rally_RestApi_Query_Attribute.htm" />
+        <HelpTOCNode Title="QueryClause Property " Url="html/P_Rally_RestApi_Query_QueryClause.htm" />
+        <HelpTOCNode Title="QueryOperator Property " Url="html/P_Rally_RestApi_Query_QueryOperator.htm" />
+        <HelpTOCNode Title="Value Property " Url="html/P_Rally_RestApi_Query_Value.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="Query.ClauseOperator Enumeration" Url="html/T_Rally_RestApi_Query_ClauseOperator.htm" />
+    <HelpTOCNode Title="Query.Operator Enumeration" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+    <HelpTOCNode Id="443fc0c7-e74d-4928-ad3d-554a9b248e83" Title="RallyRestApi Class" Url="html/T_Rally_RestApi_RallyRestApi.htm">
+      <HelpTOCNode Title="RallyRestApi Members" Url="html/AllMembers_T_Rally_RestApi_RallyRestApi.htm" />
+      <HelpTOCNode Id="8f26ded6-df35-49b1-b1ec-f6de915dc532" Title="RallyRestApi Constructor " Url="html/Overload_Rally_RestApi_RallyRestApi__ctor.htm">
+        <HelpTOCNode Title="RallyRestApi Constructor (String, String, String, String, WebProxy)" Url="html/M_Rally_RestApi_RallyRestApi__ctor.htm" />
+        <HelpTOCNode Title="RallyRestApi Constructor (String, String, Uri, String, WebProxy)" Url="html/M_Rally_RestApi_RallyRestApi__ctor_1.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="ed3a2d19-c0c1-49d5-b21b-338b47ef05cb" Title="RallyRestApi Fields" Url="html/Fields_T_Rally_RestApi_RallyRestApi.htm">
+        <HelpTOCNode Title="DEFAULT_SERVER Field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_SERVER.htm" />
+        <HelpTOCNode Title="DEFAULT_WSAPI_VERSION Field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_WSAPI_VERSION.htm" />
+        <HelpTOCNode Title="Headers Field" Url="html/F_Rally_RestApi_RallyRestApi_Headers.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="27cb636a-4d71-40ac-a6d1-739937a0af95" Title="RallyRestApi Methods" Url="html/Methods_T_Rally_RestApi_RallyRestApi.htm">
+        <HelpTOCNode Id="61f2b5c4-9b62-4bf6-8571-1bd3f624e0a5" Title="Create Method " Url="html/Overload_Rally_RestApi_RallyRestApi_Create.htm">
+          <HelpTOCNode Title="Create Method (String, DynamicJsonObject)" Url="html/M_Rally_RestApi_RallyRestApi_Create.htm" />
+          <HelpTOCNode Title="Create Method (String, String, DynamicJsonObject)" Url="html/M_Rally_RestApi_RallyRestApi_Create_1.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="bce8610c-2f7e-4ec2-94ed-5af20bad279a" Title="Delete Method " Url="html/Overload_Rally_RestApi_RallyRestApi_Delete.htm">
+          <HelpTOCNode Title="Delete Method (String)" Url="html/M_Rally_RestApi_RallyRestApi_Delete.htm" />
+          <HelpTOCNode Title="Delete Method (String, Int64)" Url="html/M_Rally_RestApi_RallyRestApi_Delete_1.htm" />
+          <HelpTOCNode Title="Delete Method (String, String)" Url="html/M_Rally_RestApi_RallyRestApi_Delete_2.htm" />
+          <HelpTOCNode Title="Delete Method (String, String, Int64)" Url="html/M_Rally_RestApi_RallyRestApi_Delete_3.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="GetAllowedAttributeValues Method " Url="html/M_Rally_RestApi_RallyRestApi_GetAllowedAttributeValues.htm" />
+        <HelpTOCNode Title="GetAttributesByType Method " Url="html/M_Rally_RestApi_RallyRestApi_GetAttributesByType.htm" />
+        <HelpTOCNode Id="75112c86-ec8b-4983-ba87-229d3d1764ad" Title="GetByReference Method " Url="html/Overload_Rally_RestApi_RallyRestApi_GetByReference.htm">
+          <HelpTOCNode Title="GetByReference Method (String, String[])" Url="html/M_Rally_RestApi_RallyRestApi_GetByReference_1.htm" />
+          <HelpTOCNode Title="GetByReference Method (String, Int64, String[])" Url="html/M_Rally_RestApi_RallyRestApi_GetByReference.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="GetCurrentUser Method " Url="html/M_Rally_RestApi_RallyRestApi_GetCurrentUser.htm" />
+        <HelpTOCNode Title="GetFullyQualifiedRef Method " Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedRef.htm" />
+        <HelpTOCNode Title="GetFullyQualifiedUri Method " Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedUri.htm" />
+        <HelpTOCNode Title="GetSubscription Method " Url="html/M_Rally_RestApi_RallyRestApi_GetSubscription.htm" />
+        <HelpTOCNode Title="Query Method " Url="html/M_Rally_RestApi_RallyRestApi_Query.htm" />
+        <HelpTOCNode Id="42016c66-9d1c-4e1e-b763-062f15a60b95" Title="Update Method " Url="html/Overload_Rally_RestApi_RallyRestApi_Update.htm">
+          <HelpTOCNode Title="Update Method (String, DynamicJsonObject)" Url="html/M_Rally_RestApi_RallyRestApi_Update.htm" />
+          <HelpTOCNode Title="Update Method (String, String, DynamicJsonObject)" Url="html/M_Rally_RestApi_RallyRestApi_Update_1.htm" />
+        </HelpTOCNode>
+      </HelpTOCNode>
+      <HelpTOCNode Id="2aae4aa4-a70c-4e50-a2e1-4597452607fd" Title="RallyRestApi Properties" Url="html/Properties_T_Rally_RestApi_RallyRestApi.htm">
+        <HelpTOCNode Title="WebServiceUrl Property " Url="html/P_Rally_RestApi_RallyRestApi_WebServiceUrl.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="RallyRestApi.HeaderType Enumeration" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+    <HelpTOCNode Id="5440954c-4ecd-46d2-9d2b-0b91846920fa" Title="Ref Class" Url="html/T_Rally_RestApi_Ref.htm">
+      <HelpTOCNode Title="Ref Members" Url="html/AllMembers_T_Rally_RestApi_Ref.htm" />
+      <HelpTOCNode Id="e279e904-3c47-4b5d-ae42-14ef8e034e90" Title="Ref Methods" Url="html/Methods_T_Rally_RestApi_Ref.htm">
+        <HelpTOCNode Title="GetOidFromRef Method " Url="html/M_Rally_RestApi_Ref_GetOidFromRef.htm" />
+        <HelpTOCNode Title="GetRelativeRef Method " Url="html/M_Rally_RestApi_Ref_GetRelativeRef.htm" />
+        <HelpTOCNode Title="GetTypeFromRef Method " Url="html/M_Rally_RestApi_Ref_GetTypeFromRef.htm" />
+        <HelpTOCNode Title="IsRef Method " Url="html/M_Rally_RestApi_Ref_IsRef.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="682759c8-f85b-40d1-9cf2-4ad58f38a939" Title="Request Class" Url="html/T_Rally_RestApi_Request.htm">
+      <HelpTOCNode Title="Request Members" Url="html/AllMembers_T_Rally_RestApi_Request.htm" />
+      <HelpTOCNode Id="61f5b41d-ab78-464e-9e92-b64e14fb9915" Title="Request Constructor " Url="html/Overload_Rally_RestApi_Request__ctor.htm">
+        <HelpTOCNode Title="Request Constructor " Url="html/M_Rally_RestApi_Request__ctor.htm" />
+        <HelpTOCNode Title="Request Constructor (String)" Url="html/M_Rally_RestApi_Request__ctor_2.htm" />
+        <HelpTOCNode Title="Request Constructor (DynamicJsonObject)" Url="html/M_Rally_RestApi_Request__ctor_1.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="4b891daf-11f5-4eaa-82f9-c4b2243fd518" Title="Request Fields" Url="html/Fields_T_Rally_RestApi_Request.htm">
+        <HelpTOCNode Title="MAX_PAGE_SIZE Field" Url="html/F_Rally_RestApi_Request_MAX_PAGE_SIZE.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="808325b6-04c5-4a80-aa92-462037fbdd3d" Title="Request Methods" Url="html/Methods_T_Rally_RestApi_Request.htm">
+        <HelpTOCNode Title="BuildQueryString Method " Url="html/M_Rally_RestApi_Request_BuildQueryString.htm" />
+        <HelpTOCNode Title="Clone Method " Url="html/M_Rally_RestApi_Request_Clone.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="d6fdf865-0b03-42df-a193-bc27c788b3a7" Title="Request Properties" Url="html/Properties_T_Rally_RestApi_Request.htm">
+        <HelpTOCNode Title="ArtifactName Property " Url="html/P_Rally_RestApi_Request_ArtifactName.htm" />
+        <HelpTOCNode Title="Fetch Property " Url="html/P_Rally_RestApi_Request_Fetch.htm" />
+        <HelpTOCNode Title="Limit Property " Url="html/P_Rally_RestApi_Request_Limit.htm" />
+        <HelpTOCNode Title="Order Property " Url="html/P_Rally_RestApi_Request_Order.htm" />
+        <HelpTOCNode Title="PageSize Property " Url="html/P_Rally_RestApi_Request_PageSize.htm" />
+        <HelpTOCNode Title="Project Property " Url="html/P_Rally_RestApi_Request_Project.htm" />
+        <HelpTOCNode Title="ProjectScopeDown Property " Url="html/P_Rally_RestApi_Request_ProjectScopeDown.htm" />
+        <HelpTOCNode Title="ProjectScopeUp Property " Url="html/P_Rally_RestApi_Request_ProjectScopeUp.htm" />
+        <HelpTOCNode Title="Query Property " Url="html/P_Rally_RestApi_Request_Query.htm" />
+        <HelpTOCNode Title="Start Property " Url="html/P_Rally_RestApi_Request_Start.htm" />
+        <HelpTOCNode Title="Workspace Property " Url="html/P_Rally_RestApi_Request_Workspace.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="4b384779-9a5c-4175-9114-f87d59aef3ae" Title="Rally.RestApi.Response Namespace" Url="html/N_Rally_RestApi_Response.htm">
+    <HelpTOCNode Id="b6a93722-20ee-4c67-ae5f-f9107ecf1dc0" Title="CreateResult Class" Url="html/T_Rally_RestApi_Response_CreateResult.htm">
+      <HelpTOCNode Title="CreateResult Members" Url="html/AllMembers_T_Rally_RestApi_Response_CreateResult.htm" />
+      <HelpTOCNode Title="CreateResult Constructor " Url="html/M_Rally_RestApi_Response_CreateResult__ctor.htm" />
+      <HelpTOCNode Title="CreateResult Methods" Url="html/Methods_T_Rally_RestApi_Response_CreateResult.htm" />
+      <HelpTOCNode Id="f121737d-ed48-4556-a6f7-fdd2db302867" Title="CreateResult Properties" Url="html/Properties_T_Rally_RestApi_Response_CreateResult.htm">
+        <HelpTOCNode Title="Object Property " Url="html/P_Rally_RestApi_Response_CreateResult_Object.htm" />
+        <HelpTOCNode Title="Reference Property " Url="html/P_Rally_RestApi_Response_CreateResult_Reference.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="e57a65d8-2593-4d9b-a549-55e48f2cb35c" Title="OperationResult Class" Url="html/T_Rally_RestApi_Response_OperationResult.htm">
+      <HelpTOCNode Title="OperationResult Members" Url="html/AllMembers_T_Rally_RestApi_Response_OperationResult.htm" />
+      <HelpTOCNode Title="OperationResult Constructor " Url="html/M_Rally_RestApi_Response_OperationResult__ctor.htm" />
+      <HelpTOCNode Title="OperationResult Methods" Url="html/Methods_T_Rally_RestApi_Response_OperationResult.htm" />
+      <HelpTOCNode Id="605cafea-285c-42a5-8e2c-ce30ca1c8832" Title="OperationResult Properties" Url="html/Properties_T_Rally_RestApi_Response_OperationResult.htm">
+        <HelpTOCNode Title="Errors Property " Url="html/P_Rally_RestApi_Response_OperationResult_Errors.htm" />
+        <HelpTOCNode Title="Success Property " Url="html/P_Rally_RestApi_Response_OperationResult_Success.htm" />
+        <HelpTOCNode Title="Warnings Property " Url="html/P_Rally_RestApi_Response_OperationResult_Warnings.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="9396221b-55be-46d4-81e0-d2b96c2cf7af" Title="QueryResult Class" Url="html/T_Rally_RestApi_Response_QueryResult.htm">
+      <HelpTOCNode Title="QueryResult Members" Url="html/AllMembers_T_Rally_RestApi_Response_QueryResult.htm" />
+      <HelpTOCNode Title="QueryResult Constructor " Url="html/M_Rally_RestApi_Response_QueryResult__ctor.htm" />
+      <HelpTOCNode Title="QueryResult Methods" Url="html/Methods_T_Rally_RestApi_Response_QueryResult.htm" />
+      <HelpTOCNode Id="879de6a6-2b1b-48c2-87ee-62d9565d677c" Title="QueryResult Properties" Url="html/Properties_T_Rally_RestApi_Response_QueryResult.htm">
+        <HelpTOCNode Title="Results Property " Url="html/P_Rally_RestApi_Response_QueryResult_Results.htm" />
+        <HelpTOCNode Title="StartIndex Property " Url="html/P_Rally_RestApi_Response_QueryResult_StartIndex.htm" />
+        <HelpTOCNode Title="TotalResultCount Property " Url="html/P_Rally_RestApi_Response_QueryResult_TotalResultCount.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+</HelpTOC>

@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HelpKI>
+
+  <HelpKINode Title="And enumeration member" Url="html/T_Rally_RestApi_Query_ClauseOperator.htm" />
+  <HelpKINode Title="And method" Url="html/Overload_Rally_RestApi_Query_And.htm" />
+  <HelpKINode Title="ArtifactName property" Url="html/P_Rally_RestApi_Request_ArtifactName.htm" />
+  <HelpKINode Title="Attribute property" Url="html/P_Rally_RestApi_Query_Attribute.htm" />
+  <HelpKINode Title="BuildQueryString method" Url="html/M_Rally_RestApi_Request_BuildQueryString.htm" />
+  <HelpKINode Title="Clone method" Url="html/M_Rally_RestApi_Request_Clone.htm" />
+  <HelpKINode Title="Contains enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Create method" Url="html/Overload_Rally_RestApi_RallyRestApi_Create.htm" />
+  <HelpKINode Title="CreateResult class" Url="html/AllMembers_T_Rally_RestApi_Response_CreateResult.htm" />
+  <HelpKINode Title="CreateResult class" Url="html/T_Rally_RestApi_Response_CreateResult.htm" />
+  <HelpKINode Title="CreateResult class">
+    <HelpKINode Title="about CreateResult class" Url="html/T_Rally_RestApi_Response_CreateResult.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Response_CreateResult.htm" />
+    <HelpKINode Title="constructor" Url="html/M_Rally_RestApi_Response_CreateResult__ctor.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Response_CreateResult.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_Response_CreateResult.htm" />
+  </HelpKINode>
+  <HelpKINode Title="CreateResult.CreateResult constructor" Url="html/M_Rally_RestApi_Response_CreateResult__ctor.htm" />
+  <HelpKINode Title="CreateResult.Object property" Url="html/P_Rally_RestApi_Response_CreateResult_Object.htm" />
+  <HelpKINode Title="CreateResult.Reference property" Url="html/P_Rally_RestApi_Response_CreateResult_Reference.htm" />
+  <HelpKINode Title="DEFAULT_SERVER field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_SERVER.htm" />
+  <HelpKINode Title="DEFAULT_WSAPI_VERSION field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_WSAPI_VERSION.htm" />
+  <HelpKINode Title="Delete method" Url="html/Overload_Rally_RestApi_RallyRestApi_Delete.htm" />
+  <HelpKINode Title="DoesNotContain enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="DoesNotEqual enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="DynamicJsonObject class" Url="html/AllMembers_T_Rally_RestApi_DynamicJsonObject.htm" />
+  <HelpKINode Title="DynamicJsonObject class" Url="html/T_Rally_RestApi_DynamicJsonObject.htm" />
+  <HelpKINode Title="DynamicJsonObject class">
+    <HelpKINode Title="about DynamicJsonObject class" Url="html/T_Rally_RestApi_DynamicJsonObject.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_DynamicJsonObject.htm" />
+    <HelpKINode Title="constructor" Url="html/Overload_Rally_RestApi_DynamicJsonObject__ctor.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_DynamicJsonObject.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_DynamicJsonObject.htm" />
+  </HelpKINode>
+  <HelpKINode Title="DynamicJsonObject.DynamicJsonObject constructor" Url="html/Overload_Rally_RestApi_DynamicJsonObject__ctor.htm" />
+  <HelpKINode Title="DynamicJsonObject.Equals method" Url="html/M_Rally_RestApi_DynamicJsonObject_Equals.htm" />
+  <HelpKINode Title="DynamicJsonObject.Fields property" Url="html/P_Rally_RestApi_DynamicJsonObject_Fields.htm" />
+  <HelpKINode Title="DynamicJsonObject.FormatSetValue method" Url="html/M_Rally_RestApi_DynamicJsonObject_FormatSetValue.htm" />
+  <HelpKINode Title="DynamicJsonObject.GetHashCode method" Url="html/M_Rally_RestApi_DynamicJsonObject_GetHashCode.htm" />
+  <HelpKINode Title="DynamicJsonObject.GetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_GetMember.htm" />
+  <HelpKINode Title="DynamicJsonObject.HasMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_HasMember.htm" />
+  <HelpKINode Title="DynamicJsonObject.IsNumeric method" Url="html/M_Rally_RestApi_DynamicJsonObject_IsNumeric.htm" />
+  <HelpKINode Title="DynamicJsonObject.Item property" Url="html/P_Rally_RestApi_DynamicJsonObject_Item.htm" />
+  <HelpKINode Title="DynamicJsonObject.SetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_SetMember.htm" />
+  <HelpKINode Title="DynamicJsonObject.TryGetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_TryGetMember.htm" />
+  <HelpKINode Title="DynamicJsonObject.TrySetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_TrySetMember.htm" />
+  <HelpKINode Title="Equals enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Equals method" Url="html/M_Rally_RestApi_DynamicJsonObject_Equals.htm" />
+  <HelpKINode Title="Errors property" Url="html/P_Rally_RestApi_Response_OperationResult_Errors.htm" />
+  <HelpKINode Title="Fetch property" Url="html/P_Rally_RestApi_Request_Fetch.htm" />
+  <HelpKINode Title="Fields property" Url="html/P_Rally_RestApi_DynamicJsonObject_Fields.htm" />
+  <HelpKINode Title="FormatSetValue method" Url="html/M_Rally_RestApi_DynamicJsonObject_FormatSetValue.htm" />
+  <HelpKINode Title="GetAllowedAttributeValues method" Url="html/M_Rally_RestApi_RallyRestApi_GetAllowedAttributeValues.htm" />
+  <HelpKINode Title="GetAttributesByType method" Url="html/M_Rally_RestApi_RallyRestApi_GetAttributesByType.htm" />
+  <HelpKINode Title="GetByReference method" Url="html/Overload_Rally_RestApi_RallyRestApi_GetByReference.htm" />
+  <HelpKINode Title="GetCurrentUser method" Url="html/M_Rally_RestApi_RallyRestApi_GetCurrentUser.htm" />
+  <HelpKINode Title="GetFullyQualifiedRef method" Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedRef.htm" />
+  <HelpKINode Title="GetFullyQualifiedUri method" Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedUri.htm" />
+  <HelpKINode Title="GetHashCode method" Url="html/M_Rally_RestApi_DynamicJsonObject_GetHashCode.htm" />
+  <HelpKINode Title="GetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_GetMember.htm" />
+  <HelpKINode Title="GetOidFromRef method" Url="html/M_Rally_RestApi_Ref_GetOidFromRef.htm" />
+  <HelpKINode Title="GetOperator method" Url="html/Overload_Rally_RestApi_Query_GetOperator.htm" />
+  <HelpKINode Title="GetRelativeRef method" Url="html/M_Rally_RestApi_Ref_GetRelativeRef.htm" />
+  <HelpKINode Title="GetSubscription method" Url="html/M_Rally_RestApi_RallyRestApi_GetSubscription.htm" />
+  <HelpKINode Title="GetTypeFromRef method" Url="html/M_Rally_RestApi_Ref_GetTypeFromRef.htm" />
+  <HelpKINode Title="GreaterThan enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="GreaterThanOrEqualTo enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Guid enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="HasMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_HasMember.htm" />
+  <HelpKINode Title="Headers field" Url="html/F_Rally_RestApi_RallyRestApi_Headers.htm" />
+  <HelpKINode Title="IsNumeric method" Url="html/M_Rally_RestApi_DynamicJsonObject_IsNumeric.htm" />
+  <HelpKINode Title="IsRef method" Url="html/M_Rally_RestApi_Ref_IsRef.htm" />
+  <HelpKINode Title="Item property" Url="html/P_Rally_RestApi_DynamicJsonObject_Item.htm" />
+  <HelpKINode Title="Join method" Url="html/M_Rally_RestApi_Query_Join.htm" />
+  <HelpKINode Title="LessThan enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="LessThanOrEqualTo enumeration member" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Library enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="Limit property" Url="html/P_Rally_RestApi_Request_Limit.htm" />
+  <HelpKINode Title="MAX_PAGE_SIZE field" Url="html/F_Rally_RestApi_Request_MAX_PAGE_SIZE.htm" />
+  <HelpKINode Title="Name enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="Object property" Url="html/P_Rally_RestApi_Response_CreateResult_Object.htm" />
+  <HelpKINode Title="Operation enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="OperationResult class" Url="html/AllMembers_T_Rally_RestApi_Response_OperationResult.htm" />
+  <HelpKINode Title="OperationResult class" Url="html/T_Rally_RestApi_Response_OperationResult.htm" />
+  <HelpKINode Title="OperationResult class">
+    <HelpKINode Title="about OperationResult class" Url="html/T_Rally_RestApi_Response_OperationResult.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Response_OperationResult.htm" />
+    <HelpKINode Title="constructor" Url="html/M_Rally_RestApi_Response_OperationResult__ctor.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Response_OperationResult.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_Response_OperationResult.htm" />
+  </HelpKINode>
+  <HelpKINode Title="OperationResult.Errors property" Url="html/P_Rally_RestApi_Response_OperationResult_Errors.htm" />
+  <HelpKINode Title="OperationResult.OperationResult constructor" Url="html/M_Rally_RestApi_Response_OperationResult__ctor.htm" />
+  <HelpKINode Title="OperationResult.Success property" Url="html/P_Rally_RestApi_Response_OperationResult_Success.htm" />
+  <HelpKINode Title="OperationResult.Warnings property" Url="html/P_Rally_RestApi_Response_OperationResult_Warnings.htm" />
+  <HelpKINode Title="Or enumeration member" Url="html/T_Rally_RestApi_Query_ClauseOperator.htm" />
+  <HelpKINode Title="Or method" Url="html/Overload_Rally_RestApi_Query_Or.htm" />
+  <HelpKINode Title="Order property" Url="html/P_Rally_RestApi_Request_Order.htm" />
+  <HelpKINode Title="PageSize property" Url="html/P_Rally_RestApi_Request_PageSize.htm" />
+  <HelpKINode Title="Parse method" Url="html/M_Rally_RestApi_Query_Parse.htm" />
+  <HelpKINode Title="Project property" Url="html/P_Rally_RestApi_Request_Project.htm" />
+  <HelpKINode Title="ProjectScopeDown property" Url="html/P_Rally_RestApi_Request_ProjectScopeDown.htm" />
+  <HelpKINode Title="ProjectScopeUp property" Url="html/P_Rally_RestApi_Request_ProjectScopeUp.htm" />
+  <HelpKINode Title="Query class" Url="html/AllMembers_T_Rally_RestApi_Query.htm" />
+  <HelpKINode Title="Query class" Url="html/T_Rally_RestApi_Query.htm" />
+  <HelpKINode Title="Query class">
+    <HelpKINode Title="about Query class" Url="html/T_Rally_RestApi_Query.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Query.htm" />
+    <HelpKINode Title="constructor" Url="html/Overload_Rally_RestApi_Query__ctor.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Query.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_Query.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Query method" Url="html/M_Rally_RestApi_RallyRestApi_Query.htm" />
+  <HelpKINode Title="Query property" Url="html/P_Rally_RestApi_Request_Query.htm" />
+  <HelpKINode Title="Query.And method" Url="html/Overload_Rally_RestApi_Query_And.htm" />
+  <HelpKINode Title="Query.Attribute property" Url="html/P_Rally_RestApi_Query_Attribute.htm" />
+  <HelpKINode Title="Query.ClauseOperator enumeration" Url="html/T_Rally_RestApi_Query_ClauseOperator.htm" />
+  <HelpKINode Title="Query.GetOperator method" Url="html/Overload_Rally_RestApi_Query_GetOperator.htm" />
+  <HelpKINode Title="Query.Join method" Url="html/M_Rally_RestApi_Query_Join.htm" />
+  <HelpKINode Title="Query.Operator enumeration" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Query.Or method" Url="html/Overload_Rally_RestApi_Query_Or.htm" />
+  <HelpKINode Title="Query.Parse method" Url="html/M_Rally_RestApi_Query_Parse.htm" />
+  <HelpKINode Title="Query.Query constructor" Url="html/Overload_Rally_RestApi_Query__ctor.htm" />
+  <HelpKINode Title="Query.QueryClause property" Url="html/P_Rally_RestApi_Query_QueryClause.htm" />
+  <HelpKINode Title="Query.QueryOperator property" Url="html/P_Rally_RestApi_Query_QueryOperator.htm" />
+  <HelpKINode Title="Query.ToString method" Url="html/M_Rally_RestApi_Query_ToString.htm" />
+  <HelpKINode Title="Query.Value property" Url="html/P_Rally_RestApi_Query_Value.htm" />
+  <HelpKINode Title="QueryClause property" Url="html/P_Rally_RestApi_Query_QueryClause.htm" />
+  <HelpKINode Title="QueryOperator property" Url="html/P_Rally_RestApi_Query_QueryOperator.htm" />
+  <HelpKINode Title="QueryResult class" Url="html/AllMembers_T_Rally_RestApi_Response_QueryResult.htm" />
+  <HelpKINode Title="QueryResult class" Url="html/T_Rally_RestApi_Response_QueryResult.htm" />
+  <HelpKINode Title="QueryResult class">
+    <HelpKINode Title="about QueryResult class" Url="html/T_Rally_RestApi_Response_QueryResult.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Response_QueryResult.htm" />
+    <HelpKINode Title="constructor" Url="html/M_Rally_RestApi_Response_QueryResult__ctor.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Response_QueryResult.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_Response_QueryResult.htm" />
+  </HelpKINode>
+  <HelpKINode Title="QueryResult.QueryResult constructor" Url="html/M_Rally_RestApi_Response_QueryResult__ctor.htm" />
+  <HelpKINode Title="QueryResult.Results property" Url="html/P_Rally_RestApi_Response_QueryResult_Results.htm" />
+  <HelpKINode Title="QueryResult.StartIndex property" Url="html/P_Rally_RestApi_Response_QueryResult_StartIndex.htm" />
+  <HelpKINode Title="QueryResult.TotalResultCount property" Url="html/P_Rally_RestApi_Response_QueryResult_TotalResultCount.htm" />
+  <HelpKINode Title="Rally.RestApi namespace" Url="html/N_Rally_RestApi.htm" />
+  <HelpKINode Title="Rally.RestApi.DynamicJsonObject class" Url="html/AllMembers_T_Rally_RestApi_DynamicJsonObject.htm" />
+  <HelpKINode Title="Rally.RestApi.DynamicJsonObject class" Url="html/T_Rally_RestApi_DynamicJsonObject.htm" />
+  <HelpKINode Title="Rally.RestApi.Query class" Url="html/AllMembers_T_Rally_RestApi_Query.htm" />
+  <HelpKINode Title="Rally.RestApi.Query class" Url="html/T_Rally_RestApi_Query.htm" />
+  <HelpKINode Title="Rally.RestApi.Query.ClauseOperator enumeration" Url="html/T_Rally_RestApi_Query_ClauseOperator.htm" />
+  <HelpKINode Title="Rally.RestApi.Query.Operator enumeration" Url="html/T_Rally_RestApi_Query_Operator.htm" />
+  <HelpKINode Title="Rally.RestApi.RallyRestApi class" Url="html/AllMembers_T_Rally_RestApi_RallyRestApi.htm" />
+  <HelpKINode Title="Rally.RestApi.RallyRestApi class" Url="html/T_Rally_RestApi_RallyRestApi.htm" />
+  <HelpKINode Title="Rally.RestApi.RallyRestApi.HeaderType enumeration" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="Rally.RestApi.Ref class" Url="html/AllMembers_T_Rally_RestApi_Ref.htm" />
+  <HelpKINode Title="Rally.RestApi.Ref class" Url="html/T_Rally_RestApi_Ref.htm" />
+  <HelpKINode Title="Rally.RestApi.Request class" Url="html/AllMembers_T_Rally_RestApi_Request.htm" />
+  <HelpKINode Title="Rally.RestApi.Request class" Url="html/T_Rally_RestApi_Request.htm" />
+  <HelpKINode Title="Rally.RestApi.Response namespace" Url="html/N_Rally_RestApi_Response.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.CreateResult class" Url="html/AllMembers_T_Rally_RestApi_Response_CreateResult.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.CreateResult class" Url="html/T_Rally_RestApi_Response_CreateResult.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.OperationResult class" Url="html/AllMembers_T_Rally_RestApi_Response_OperationResult.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.OperationResult class" Url="html/T_Rally_RestApi_Response_OperationResult.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.QueryResult class" Url="html/AllMembers_T_Rally_RestApi_Response_QueryResult.htm" />
+  <HelpKINode Title="Rally.RestApi.Response.QueryResult class" Url="html/T_Rally_RestApi_Response_QueryResult.htm" />
+  <HelpKINode Title="RallyRestApi class" Url="html/AllMembers_T_Rally_RestApi_RallyRestApi.htm" />
+  <HelpKINode Title="RallyRestApi class" Url="html/T_Rally_RestApi_RallyRestApi.htm" />
+  <HelpKINode Title="RallyRestApi class">
+    <HelpKINode Title="about RallyRestApi class" Url="html/T_Rally_RestApi_RallyRestApi.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_RallyRestApi.htm" />
+    <HelpKINode Title="constructor" Url="html/Overload_Rally_RestApi_RallyRestApi__ctor.htm" />
+    <HelpKINode Title="fields" Url="html/Fields_T_Rally_RestApi_RallyRestApi.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_RallyRestApi.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_RallyRestApi.htm" />
+  </HelpKINode>
+  <HelpKINode Title="RallyRestApi.Create method" Url="html/Overload_Rally_RestApi_RallyRestApi_Create.htm" />
+  <HelpKINode Title="RallyRestApi.DEFAULT_SERVER field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_SERVER.htm" />
+  <HelpKINode Title="RallyRestApi.DEFAULT_WSAPI_VERSION field" Url="html/F_Rally_RestApi_RallyRestApi_DEFAULT_WSAPI_VERSION.htm" />
+  <HelpKINode Title="RallyRestApi.Delete method" Url="html/Overload_Rally_RestApi_RallyRestApi_Delete.htm" />
+  <HelpKINode Title="RallyRestApi.GetAllowedAttributeValues method" Url="html/M_Rally_RestApi_RallyRestApi_GetAllowedAttributeValues.htm" />
+  <HelpKINode Title="RallyRestApi.GetAttributesByType method" Url="html/M_Rally_RestApi_RallyRestApi_GetAttributesByType.htm" />
+  <HelpKINode Title="RallyRestApi.GetByReference method" Url="html/Overload_Rally_RestApi_RallyRestApi_GetByReference.htm" />
+  <HelpKINode Title="RallyRestApi.GetCurrentUser method" Url="html/M_Rally_RestApi_RallyRestApi_GetCurrentUser.htm" />
+  <HelpKINode Title="RallyRestApi.GetFullyQualifiedRef method" Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedRef.htm" />
+  <HelpKINode Title="RallyRestApi.GetFullyQualifiedUri method" Url="html/M_Rally_RestApi_RallyRestApi_GetFullyQualifiedUri.htm" />
+  <HelpKINode Title="RallyRestApi.GetSubscription method" Url="html/M_Rally_RestApi_RallyRestApi_GetSubscription.htm" />
+  <HelpKINode Title="RallyRestApi.Headers field" Url="html/F_Rally_RestApi_RallyRestApi_Headers.htm" />
+  <HelpKINode Title="RallyRestApi.HeaderType enumeration" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="RallyRestApi.Query method" Url="html/M_Rally_RestApi_RallyRestApi_Query.htm" />
+  <HelpKINode Title="RallyRestApi.RallyRestApi constructor" Url="html/Overload_Rally_RestApi_RallyRestApi__ctor.htm" />
+  <HelpKINode Title="RallyRestApi.Update method" Url="html/Overload_Rally_RestApi_RallyRestApi_Update.htm" />
+  <HelpKINode Title="RallyRestApi.WebServiceUrl property" Url="html/P_Rally_RestApi_RallyRestApi_WebServiceUrl.htm" />
+  <HelpKINode Title="Ref class" Url="html/AllMembers_T_Rally_RestApi_Ref.htm" />
+  <HelpKINode Title="Ref class" Url="html/T_Rally_RestApi_Ref.htm" />
+  <HelpKINode Title="Ref class">
+    <HelpKINode Title="about Ref class" Url="html/T_Rally_RestApi_Ref.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Ref.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Ref.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Ref.GetOidFromRef method" Url="html/M_Rally_RestApi_Ref_GetOidFromRef.htm" />
+  <HelpKINode Title="Ref.GetRelativeRef method" Url="html/M_Rally_RestApi_Ref_GetRelativeRef.htm" />
+  <HelpKINode Title="Ref.GetTypeFromRef method" Url="html/M_Rally_RestApi_Ref_GetTypeFromRef.htm" />
+  <HelpKINode Title="Ref.IsRef method" Url="html/M_Rally_RestApi_Ref_IsRef.htm" />
+  <HelpKINode Title="Reference property" Url="html/P_Rally_RestApi_Response_CreateResult_Reference.htm" />
+  <HelpKINode Title="Request class" Url="html/AllMembers_T_Rally_RestApi_Request.htm" />
+  <HelpKINode Title="Request class" Url="html/T_Rally_RestApi_Request.htm" />
+  <HelpKINode Title="Request class">
+    <HelpKINode Title="about Request class" Url="html/T_Rally_RestApi_Request.htm" />
+    <HelpKINode Title="all members" Url="html/AllMembers_T_Rally_RestApi_Request.htm" />
+    <HelpKINode Title="constructor" Url="html/Overload_Rally_RestApi_Request__ctor.htm" />
+    <HelpKINode Title="fields" Url="html/Fields_T_Rally_RestApi_Request.htm" />
+    <HelpKINode Title="methods" Url="html/Methods_T_Rally_RestApi_Request.htm" />
+    <HelpKINode Title="properties" Url="html/Properties_T_Rally_RestApi_Request.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Request.ArtifactName property" Url="html/P_Rally_RestApi_Request_ArtifactName.htm" />
+  <HelpKINode Title="Request.BuildQueryString method" Url="html/M_Rally_RestApi_Request_BuildQueryString.htm" />
+  <HelpKINode Title="Request.Clone method" Url="html/M_Rally_RestApi_Request_Clone.htm" />
+  <HelpKINode Title="Request.Fetch property" Url="html/P_Rally_RestApi_Request_Fetch.htm" />
+  <HelpKINode Title="Request.Limit property" Url="html/P_Rally_RestApi_Request_Limit.htm" />
+  <HelpKINode Title="Request.MAX_PAGE_SIZE field" Url="html/F_Rally_RestApi_Request_MAX_PAGE_SIZE.htm" />
+  <HelpKINode Title="Request.Order property" Url="html/P_Rally_RestApi_Request_Order.htm" />
+  <HelpKINode Title="Request.PageSize property" Url="html/P_Rally_RestApi_Request_PageSize.htm" />
+  <HelpKINode Title="Request.Project property" Url="html/P_Rally_RestApi_Request_Project.htm" />
+  <HelpKINode Title="Request.ProjectScopeDown property" Url="html/P_Rally_RestApi_Request_ProjectScopeDown.htm" />
+  <HelpKINode Title="Request.ProjectScopeUp property" Url="html/P_Rally_RestApi_Request_ProjectScopeUp.htm" />
+  <HelpKINode Title="Request.Query property" Url="html/P_Rally_RestApi_Request_Query.htm" />
+  <HelpKINode Title="Request.Request constructor" Url="html/Overload_Rally_RestApi_Request__ctor.htm" />
+  <HelpKINode Title="Request.Start property" Url="html/P_Rally_RestApi_Request_Start.htm" />
+  <HelpKINode Title="Request.Workspace property" Url="html/P_Rally_RestApi_Request_Workspace.htm" />
+  <HelpKINode Title="Results property" Url="html/P_Rally_RestApi_Response_QueryResult_Results.htm" />
+  <HelpKINode Title="SetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_SetMember.htm" />
+  <HelpKINode Title="Start property" Url="html/P_Rally_RestApi_Request_Start.htm" />
+  <HelpKINode Title="StartIndex property" Url="html/P_Rally_RestApi_Response_QueryResult_StartIndex.htm" />
+  <HelpKINode Title="Success property" Url="html/P_Rally_RestApi_Response_OperationResult_Success.htm" />
+  <HelpKINode Title="ToString method" Url="html/M_Rally_RestApi_Query_ToString.htm" />
+  <HelpKINode Title="TotalResultCount property" Url="html/P_Rally_RestApi_Response_QueryResult_TotalResultCount.htm" />
+  <HelpKINode Title="TryGetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_TryGetMember.htm" />
+  <HelpKINode Title="TrySetMember method" Url="html/M_Rally_RestApi_DynamicJsonObject_TrySetMember.htm" />
+  <HelpKINode Title="Update method" Url="html/Overload_Rally_RestApi_RallyRestApi_Update.htm" />
+  <HelpKINode Title="Value property" Url="html/P_Rally_RestApi_Query_Value.htm" />
+  <HelpKINode Title="Vendor enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="Version enumeration member" Url="html/T_Rally_RestApi_RallyRestApi_HeaderType.htm" />
+  <HelpKINode Title="Warnings property" Url="html/P_Rally_RestApi_Response_OperationResult_Warnings.htm" />
+  <HelpKINode Title="WebServiceUrl property" Url="html/P_Rally_RestApi_RallyRestApi_WebServiceUrl.htm" />
+  <HelpKINode Title="Workspace property" Url="html/P_Rally_RestApi_Request_Workspace.htm" />
+</HelpKI>
