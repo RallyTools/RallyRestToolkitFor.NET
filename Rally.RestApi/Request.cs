@@ -30,6 +30,11 @@ namespace Rally.RestApi
             ArtifactName = artifactName;
         }
 
+        /// <summary>
+        /// Create a new Request for the specified collection. (ie Defect.Tasks)
+        /// The collection should have a _ref property.
+        /// </summary>
+        /// <param name="collection">The object containing the collection ref</param>
         public Request(DynamicJsonObject collection)
             : this()
         {
@@ -200,7 +205,7 @@ namespace Rally.RestApi
             return Endpoint + extension + "?" + string.Join("&", list.ToArray());
         }
 
-        protected internal virtual string Endpoint
+        internal string Endpoint
         {
             get
             {
