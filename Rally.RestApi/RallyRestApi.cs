@@ -7,6 +7,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
+using System.Text.RegularExpressions;
 
 namespace Rally.RestApi
 {
@@ -58,9 +59,9 @@ namespace Rally.RestApi
         }
 
         /// <summary>
-        /// The default WSAPI version to use: 'x' means 'latest'
+        /// The default WSAPI version to use
         /// </summary>
-        public const string DEFAULT_WSAPI_VERSION = "x";
+        public const string DEFAULT_WSAPI_VERSION = "v2.0";
 
         /// <summary>
         /// The default server to use: (https://rally1.rallydev.com)
@@ -82,8 +83,8 @@ namespace Rally.RestApi
                                                                      };
 
         private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
-
         private readonly string wsapiVersion;
+        private string securityToken;
         internal HttpService Service { get; set; }
 
         internal Dictionary<string, string> GetProcessedHeaders()
@@ -115,7 +116,7 @@ namespace Rally.RestApi
         {
             string output = null;
             FieldInfo fi = value.GetType().GetField(value.ToString());
-            StringValue[] attrs = fi.GetCustomAttributes(typeof(StringValue),false) as StringValue[];
+            StringValue[] attrs = fi.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
             if (attrs.Length > 0)
                 output = attrs[0].Value;
             return output;
@@ -133,7 +134,7 @@ namespace Rally.RestApi
         /// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
         /// <param name="proxy">Optional proxy configuration</param>
         public RallyRestApi(string username, string password, string rallyServer = DEFAULT_SERVER,
-                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy=null)
+                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
             : this(username, password, new Uri(rallyServer), webServiceVersion, proxy)
         {
         }
@@ -148,15 +149,10 @@ namespace Rally.RestApi
         /// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
         /// <param name="proxy">Optional proxy configuration</param>
         public RallyRestApi(string username, string password, Uri serverUrl,
-                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy=null)
+                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
         {
             Service = new HttpService(username, password, serverUrl, proxy);
             wsapiVersion = webServiceVersion ?? DEFAULT_WSAPI_VERSION;
-        }
-
-        internal Uri AdhocUri
-        {
-            get { return new Uri(WebServiceUrl + "/adhoc.js"); }
         }
 
         /// <summary>
@@ -169,7 +165,7 @@ namespace Rally.RestApi
 
         #region Non Public
 
-        static IEnumerable<string> DecodeArrayList(IEnumerable list)
+        private static IEnumerable<string> DecodeArrayList(IEnumerable list)
         {
             return list.Cast<string>();
         }
@@ -207,13 +203,95 @@ namespace Rally.RestApi
             return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
         }
 
-        internal Uri FormatUpdateUri(string typePath, long objectId)
+        internal Uri FormatUpdateUri(string typePath, string objectId)
         {
             return
                 new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/" + objectId +
                         ".js");
         }
 
+        DynamicJsonObject DoGet(Uri uri)
+        {
+            return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
+        }
+
+        DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data)
+        {
+            return DoPost(uri, data, true);
+        }
+
+        DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry)
+        {
+            var response = serializer.Deserialize(Service.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
+            if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
+            {
+                securityToken = null;
+                return DoPost(uri, data, false);
+            }
+            return response;
+        }
+
+        DynamicJsonObject DoDelete(Uri uri)
+        {
+            return DoDelete(uri, true);
+        }
+
+        DynamicJsonObject DoDelete(Uri uri, bool retry)
+        {
+            var response = serializer.Deserialize(Service.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
+            if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
+            {
+                securityToken = null;
+                return DoDelete(uri, false);
+            }
+            return response;
+        }
+
+        internal bool IsWsapi2
+        {
+            get
+            {
+                return !new Regex("^1[.]\\d+").IsMatch(wsapiVersion);
+            }
+        }
+
+        Uri GetSecuredUri(Uri uri)
+        {
+            if (IsWsapi2)
+            {
+                if (string.IsNullOrEmpty(securityToken))
+                {
+                    securityToken = GetSecurityToken();
+                }
+
+                UriBuilder builder = new UriBuilder(uri);
+                string csrfToken = string.Format("key={0}", securityToken);
+                if (string.IsNullOrEmpty(builder.Query))
+                {
+                    builder.Query = csrfToken;
+                }
+                else
+                {
+                    builder.Query += "&" + csrfToken;
+                }
+                
+                return builder.Uri;
+            }
+            return uri;
+        }
+
+        string GetSecurityToken()
+        {
+            try
+            {
+                DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef("/security/authorize")));
+                return securityTokenResponse["OperationResult"]["SecurityToken"];
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         private IEnumerable<object> GetCollection(object arr)
         {
@@ -223,92 +301,6 @@ namespace Rally.RestApi
 
         #endregion
 
-
-        #region Adhoc
-        private DynamicJsonObject ProcessRequests(IEnumerable<AdhocRequest> requests)
-        {
-            Dictionary<string, object> dictionary = requests.ToDictionary<AdhocRequest, string, object>(r => r.Key,
-                                                                                                   r => r.RequestUrl.Replace("\"", "\\\""));
-            var obj = new DynamicJsonObject(dictionary);
-            return serializer.Deserialize(Service.Post(AdhocUri, serializer.Serialize(obj), GetProcessedHeaders()));
-        }
-
-        private Dictionary<string, QueryResult> GatherSingleQuerySet(IEnumerable<AdhocRequest> requests)
-        {
-            DynamicJsonObject response = ProcessRequests(requests);
-            if (response.Fields.Contains("OperationResult"))
-            {
-                var exception =
-                    new Exception("Adhoc Query failed, Rally WSAPI Errors and Warnings included in exception data.");
-                exception.Data.Add("Errors", response["OperationResult"].Errors);
-                exception.Data.Add("Warnings", response["OperationResult"].Warnings);
-                //TODO:// Fix this to just return errors
-                throw exception;
-            }
-            return response.Fields.ToDictionary(i => i, i => new QueryResult((DynamicJsonObject)response[i]));
-        }
-
-        internal Dictionary<string, QueryResult> BatchQuery(IEnumerable<AdhocRequest> input)
-        {
-            List<AdhocRequest> requests = (from request in input select request.Clone()).ToList();
-            Dictionary<string, QueryResult> results = GatherSingleQuerySet(requests);
-            var subsequentQueries = new List<List<AdhocRequest>>();
-            var list = new List<AdhocRequest>(requests);
-            while (list.Count > 0)
-            {
-                list.Clear();
-                foreach (AdhocRequest request in requests)
-                {
-                    int maxResultsAllowed = Math.Min(request.Limit, results[request.Key].TotalResultCount);
-                    // Start has 1 for its lowest value.
-                    var alreadyDownloadedItems = request.Start - 1 + request.PageSize;
-                    var remainItemsToBeGathered = maxResultsAllowed - alreadyDownloadedItems;
-                    if (remainItemsToBeGathered > 0)
-                    {
-                        var newRequest = request.Clone(request.Key, request.Start + request.PageSize);
-                        request.Start += request.PageSize;
-
-                        newRequest.PageSize = Math.Min(remainItemsToBeGathered, request.PageSize);
-                        list.Add(newRequest);
-                    }
-                }
-
-                if (list.Count > 0)
-                {
-                    subsequentQueries.Add(new List<AdhocRequest>(list));
-                }
-            }
-
-
-            Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, l =>
-                    {
-                        Dictionary<string, QueryResult> subsequentResults = GatherSingleQuerySet(l);
-
-                        foreach (var r in l)
-                        {
-                            lock (results)
-                            {
-                                //TODO://KRM: Defect: Things may not come back in order!
-                                List<object> currentResults =
-                                    results[r.Key].Results.ToList();
-                                currentResults.AddRange(
-                                    subsequentResults[r.Key].Results);
-                                results[r.Key].Results = currentResults;
-                            }
-                        }
-                    });
-
-            return results;
-        }
-
-        #endregion
-
-
-        DynamicJsonObject MakeRequest(Uri uri)
-        {
-            return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
-        }
-
         /// <summary>
         /// Perform a read against the WSAPI operation based
         /// on the data in the specified request
@@ -317,7 +309,7 @@ namespace Rally.RestApi
         /// <returns>The results of the read operation</returns>
         public QueryResult Query(Request request)
         {
-            var response = MakeRequest(GetFullyQualifiedUri(request.RequestUrl));
+            var response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
             var result = new QueryResult(response["QueryResult"]);
             int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
             int alreadyDownloadedItems = request.Start - 1 + request.PageSize;
@@ -341,16 +333,16 @@ namespace Rally.RestApi
             var resultDictionary = new Dictionary<int, QueryResult>();
             Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>
                 {
-                    var response1 = MakeRequest(GetFullyQualifiedUri(request1.RequestUrl));
-                    lock(resultDictionary)
+                    var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
+                    lock (resultDictionary)
                     {
                         resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
                     }
                 });
 
             var allResults = new List<object>(result.Results);
-            foreach( var sortedResult in resultDictionary.ToList()
-                .OrderBy(p=>p.Key))
+            foreach (var sortedResult in resultDictionary.ToList()
+                .OrderBy(p => p.Key))
             {
                 result.Errors.AddRange(sortedResult.Value.Errors);
                 result.Warnings.AddRange(sortedResult.Value.Warnings);
@@ -410,18 +402,24 @@ namespace Rally.RestApi
             {
                 aRef = aRef + ".js";
             }
-            string type = null;
-            try
-            {
-                type = Ref.GetTypeFromRef(aRef);
-            }
-            catch
-            {
+            string type = Ref.GetTypeFromRef(aRef) ?? 
                 //Handle case for things like user, subscription
-                type = aRef.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
-            }
-            DynamicJsonObject wrappedReponse = MakeRequest(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
+                aRef.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            
+            DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
             return type.Equals(wrappedReponse.Fields.FirstOrDefault(), StringComparison.CurrentCultureIgnoreCase) ? wrappedReponse[wrappedReponse.Fields.First()] : null;
+        }
+
+        /// <summary>
+        /// Delete the object described by the specified type and object id.
+        /// </summary>
+        /// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>
+        /// <param name="typePath">the type</param>
+        /// <param name="oid">the object id</param>
+        /// <returns>An OperationResult with information on the status of the request</returns>
+        public OperationResult Delete(string workspaceRef, string typePath, long oid)
+        {
+            return Delete(workspaceRef, string.Format("/{0}/{1}", typePath, oid));
         }
 
         /// <summary>
@@ -430,9 +428,19 @@ namespace Rally.RestApi
         /// <param name="typePath">the type</param>
         /// <param name="oid">the object id</param>
         /// <returns>An OperationResult with information on the status of the request</returns>
-        public OperationResult Delete(string workspaceRef, string typePath, long oid)
+        public OperationResult Delete(string typePath, long oid)
         {
-            return Delete(workspaceRef, string.Format("/{0}/{1}", typePath, oid));
+            return Delete(null, string.Format("/{0}/{1}", typePath, oid));
+        }
+
+        /// <summary>
+        /// Delete the object described by the specified reference.
+        /// </summary>
+        /// <param name="aRef">the reference</param>
+        /// <returns>An OperationResult with information on the status of the request</returns>
+        public OperationResult Delete(string aRef)
+        {
+            return Delete(null, aRef);
         }
 
         /// <summary>
@@ -449,7 +457,7 @@ namespace Rally.RestApi
                 aRef = aRef + ".js";
             }
             String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
-            dynamic response = serializer.Deserialize(Service.Delete(GetFullyQualifiedUri(aRef + workspaceClause), GetProcessedHeaders()));
+            dynamic response = DoDelete(GetFullyQualifiedUri(aRef + workspaceClause));
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -466,9 +474,7 @@ namespace Rally.RestApi
         {
             var data = new DynamicJsonObject();
             data[typePath] = obj;
-            string postData = serializer.Serialize(data);
-            DynamicJsonObject response = 
-                serializer.Deserialize(Service.Post(FormatCreateUri(workspaceRef, typePath), postData, GetProcessedHeaders()));
+            DynamicJsonObject response = DoPost(FormatCreateUri(workspaceRef, typePath), data);
             DynamicJsonObject createResult = response["CreateResult"];
             var createResponse = new CreateResult();
             if (createResult.HasMember("Object"))
@@ -479,6 +485,17 @@ namespace Rally.RestApi
             createResponse.Errors.AddRange(DecodeArrayList(createResult["Errors"]));
             createResponse.Warnings.AddRange(DecodeArrayList(createResult["Warnings"]));
             return createResponse;
+        }
+
+        /// <summary>
+        /// Create an object of the specified type from the specified object
+        /// </summary>
+        /// <param name="typePath">the type to be created</param>
+        /// <param name="obj">the object to be created</param>
+        /// <returns></returns>
+        public CreateResult Create(string typePath, DynamicJsonObject obj)
+        {
+            return Create(null, typePath, obj);
         }
 
         /// <summary>
@@ -493,13 +510,6 @@ namespace Rally.RestApi
             return Update(Ref.GetTypeFromRef(reference), Ref.GetOidFromRef(reference), obj);
         }
 
-        public DynamicJsonObject post(String relativeUri, DynamicJsonObject data)
-        {
-            Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", Service.Server.AbsoluteUri, wsapiVersion, relativeUri));
-            string postData = serializer.Serialize(data);
-            return serializer.Deserialize(Service.Post(uri, postData, GetProcessedHeaders()));
-        }
-
         /// <summary>
         /// Update the item described by the specified type and object id with
         /// the fields of the specified object
@@ -508,14 +518,12 @@ namespace Rally.RestApi
         /// <param name="oid">the object id of the item to be updated</param>
         /// <param name="obj">the object fields to update</param>
         /// <returns>An OperationResult describing the status of the request</returns>
-        public OperationResult Update(string typePath, long oid, DynamicJsonObject obj)
+        public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
         {
             var result = new OperationResult();
             var data = new DynamicJsonObject();
             data[typePath] = obj;
-            string postData = serializer.Serialize(data);
-            dynamic response =
-                serializer.Deserialize(Service.Post(FormatUpdateUri(typePath, oid), postData, GetProcessedHeaders()));
+            dynamic response = DoPost(FormatUpdateUri(typePath, oid), data);
             result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
             result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
             return result;
@@ -525,11 +533,31 @@ namespace Rally.RestApi
         /// Get the allowed values for the specified type and attribute
         /// </summary>
         /// <param name="typePath">the type</param>
-        /// <param name="attribute">the attribute to retireve allowed values for</param>
+        /// <param name="attributeName">the attribute to retireve allowed values for</param>
         /// <returns>The allowed values for the specified attribute</returns>
-        public DynamicJsonObject GetAllowedAttributeValues(string typePath, string attribute)
+        public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
         {
-            return MakeRequest(GetFullyQualifiedUri(string.Format("/{0}/{1}/allowedValues.js", typePath, attribute)));
+            QueryResult attributes = GetAttributesByType(typePath);
+            var attribute = attributes.Results.SingleOrDefault(a => a.ElementName.ToLower() == attributeName.ToLower().Replace(" ", ""));
+            if (attribute != null)
+            {
+                var allowedValues = attribute["AllowedValues"];
+
+                if (IsWsapi2)
+                {
+                    Request allowedValuesRequest = new Request(allowedValues);
+                    var response = Query(allowedValuesRequest);
+                    attributes.Results = response.Results;
+                    attributes.TotalResultCount = allowedValues["Count"];
+                }
+                else
+                {
+                    attributes.Results = (allowedValues as ArrayList).Cast<object>().ToList<object>();
+                    attributes.TotalResultCount = allowedValues.Count;
+                }
+            }
+
+            return attributes;
         }
 
         /// <summary>
@@ -539,88 +567,29 @@ namespace Rally.RestApi
         /// <returns>The attribute definitions for the specified type</returns>
         public QueryResult GetAttributesByType(string type)
         {
-            float apiVersion;
-            float.TryParse(wsapiVersion, out apiVersion);
-
-            if (wsapiVersion == DEFAULT_WSAPI_VERSION || apiVersion >= 1.25)
+            var typeDefRequest = new Request("TypeDefinition");
+            typeDefRequest.Fetch = new List<string>() { "Attributes" };
+            typeDefRequest.Query = new Query("TypePath", RestApi.Query.Operator.Equals, type.Replace(" ", ""));
+            var result = Query(typeDefRequest);
+            var typeDefResult = result.Results.FirstOrDefault();
+            if (typeDefResult != null)
             {
-                //In 1.25 forward we can just use the typedefs endpoint
-                var attributesRequest = new Request("TypeDefinition");
-                attributesRequest.Fetch = new List<string>() { "Attributes" };
-                attributesRequest.Query = new Query("Name", RestApi.Query.Operator.Equals, type);
-                var result = Query(attributesRequest);
-                var attributeResult = result.Results.FirstOrDefault();
-                if(attributeResult != null)
+                var attributes = typeDefResult["Attributes"];
+                if (IsWsapi2)
                 {
-                    var attributes = attributeResult["Attributes"] as ArrayList;
-                    result.Results = attributes.Cast<object>().ToList<object>();
+                    Request attributeRequest = new Request(attributes);
+                    var response = Query(attributeRequest);
+                    result.Results = response.Results;
+                    result.TotalResultCount = attributes["Count"];
+                }
+                else
+                {
+                    result.Results = (attributes as ArrayList).Cast<object>().ToList<object>();
                     result.TotalResultCount = attributes.Count;
                 }
-                return result;
             }
-            else
-            {
-                //Need to use adhoc to trace up the tree
-                //pre 1.25 since type defs endpoint
-                //didn't return inherited fields
-                var requests = new List<AdhocRequest>
-                                   {
-                                       new AdhocRequest("TypeDefinition", "Type")
-                                           {
-                                               Fetch = new List<string>() {"Attributes"},
-                                               Query = new Query("Name", RestApi.Query.Operator.Equals, type)
-                                           },
-                                       new PlaceholderRequest("Type/Parent", "Parent")
-                                           {
-                                               Fetch = new List<string>() {"Attributes"},
-                                           },
-                                       new PlaceholderRequest("Parent/Parent", "GrandParent")
-                                           {
-                                               Fetch = new List<string>() {"Attributes"},
-                                           },
-                                       new PlaceholderRequest("GrandParent/Parent", "GreatGrandParent")
-                                           {
-                                               Fetch = new List<string>() {"Attributes"},
-                                           },
-                                       new PlaceholderRequest("GreatGrandParent/Parent", "GreatGreatGrandParent")
-                                           {
-                                               Fetch = new List<string>() {"Attributes"},
-                                           },
-                                   };
 
-                DynamicJsonObject response = ProcessRequests(requests);
-                //This supports placeholder queries they return with a different signature.
-                foreach (
-                    string key in response.Dictionary.Keys.ToList().Where(key => response.Dictionary[key] is ArrayList)
-                    )
-                {
-                    var list = ((ArrayList) response.Dictionary[key]);
-                    if (list.Count > 0)
-                    {
-                        response.Dictionary[key] = ((ArrayList) response.Dictionary[key])[0];
-                    }
-                    else
-                    {
-                        response.Dictionary.Remove(key);
-                    }
-                }
-                var result = new QueryResult(response["Type"]);
-                ArrayList attributeCollection = response["Type"].Results.Count > 0
-                                                    ? response["Type"].Results[0].Attributes
-                                                    : new ArrayList();
-                response.Dictionary.Remove("Type");
-                foreach (dynamic val in response.Dictionary.Values)
-                {
-                    if (val.Equals("null")) continue;
-                    List<DynamicJsonObject> jsonList =
-                        (from IDictionary<string, object> attribute in val["Attributes"] as ArrayList
-                         select new DynamicJsonObject(attribute)).ToList();
-                    attributeCollection.AddRange(jsonList);
-                }
-                result.Results = attributeCollection.Cast<object>().ToList<object>();
-                result.TotalResultCount = attributeCollection.Count;
-                return result;
-            }
+            return result;
         }
     }
 }

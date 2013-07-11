@@ -10,119 +10,74 @@ namespace Rally.RestApi.Test
     [TestClass]
     public class RallyRestApiTest
     {
-        private static long defectOid;
+        private static string defectOid;
 
-        internal RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
+        RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
             string server = IntegrationTestInfo.SERVER, string wsapiVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
         {
             return new RallyRestApi(userName, password, server, wsapiVersion);
         }
 
-        [TestMethod]
-        public void Adhoc()
+        RallyRestApi GetRallyRestApi1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Contains, "\"Test\"") };
-            QueryResult response = restApi.BatchQuery(new[] { req })["d"];
-            Assert.IsTrue(0 < response.Results.Count());
-            foreach (dynamic result in response.Results)
-            {
-                Assert.IsTrue(result.Name.ToLower().Contains("test"));
-            }
+            return GetRallyRestApi(wsapiVersion: "1.43");
+        }
+
+        RallyRestApi GetRallyRestApi2x()
+        {
+            return GetRallyRestApi(wsapiVersion: "v2.0");
         }
 
         [TestMethod]
-        public void AdhocGetUser()
+        public void BadAuth1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("user", "d");
-            QueryResult response = restApi.BatchQuery(new[] { req })["d"];
-            Assert.AreEqual(1, response.Results.Count());
-            Assert.AreEqual(1, response.TotalResultCount);
-            Assert.AreEqual(IntegrationTestInfo.USER_NAME, response.Results.First().UserName);
-        }
-
-        [TestMethod]
-        public void AdhocSadPath()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "\\\"Defect Test 3") };
-            // should fail due to not quoted string
             try
             {
-                restApi.BatchQuery(new[] { req });
+                RallyRestApi restApi = GetRallyRestApi(userName: "foo", wsapiVersion: "1.43");
+                restApi.GetSubscription();
+                Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                var errors = (ArrayList)ex.Data["Errors"];
-                Assert.AreEqual(1, errors.Count);
-                Assert.IsTrue(
-                    ((string)errors[0]).Contains(
-                        "Cannot parse input stream due to I/O error as JSON document: Parse error"));
-                Assert.AreEqual("Adhoc Query failed, Rally WSAPI Errors and Warnings included in exception data.",
-                                ex.Message);
+                Assert.AreEqual(e.Message, "The remote server returned an error: (401) Unauthorized.");
             }
         }
 
         [TestMethod]
-        public void AdhocMultiple()
+        public void BadAuth2x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            var req2 = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", Limit = 1 };
-            var reqs = new List<AdhocRequest> { req, req2 };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(2, result.Count);
-            QueryResult oneDefectResult = result["OneDefect"];
-            Assert.AreEqual(1, oneDefectResult.Results.ToList().Count, "One defect should return one defect");
-            Assert.IsTrue(1 < oneDefectResult.TotalResultCount, "More than one total result");
-            Assert.AreEqual(0, oneDefectResult.Warnings.ToList().Count, "No Warnings");
-            Assert.AreEqual(0, oneDefectResult.Errors.ToList().Count, "No Errors");
+            try
+            {
+                RallyRestApi restApi = GetRallyRestApi(userName: "foo", wsapiVersion: "v2.0");
+                restApi.GetSubscription();
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "The remote server returned an error: (401) Unauthorized.");
+            }
         }
 
         [TestMethod]
-        public void AdhocMultiplePages()
+        public void CreateTest1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var AdhocRequest = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", Limit = 2, PageSize = 1 };
-            var reqs = new List<AdhocRequest> { AdhocRequest };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(2, result.Values.First().Results.Count());
-            Assert.IsTrue(result.Values.First().Results.Count() < result.Values.First().TotalResultCount);
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanCreate(restApi);
         }
 
         [TestMethod]
-        public void AdhocMultipleLimitTest()
+        public void CreateTest2x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new AdhocRequest("defect", "OneDefect") { Order = "Name desc", PageSize = 20, Limit = 1 };
-            var reqs = new List<AdhocRequest> { req };
-            Dictionary<string, QueryResult> result = restApi.BatchQuery(reqs);
-            Assert.AreEqual(1, result.Count);
-            QueryResult oneDefectResult = result["OneDefect"];
-            Assert.AreEqual(1, oneDefectResult.Results.ToList().Count, "One defect should return one defect");
-            Assert.IsTrue(1 < oneDefectResult.TotalResultCount, "More than one total result");
-            Assert.AreEqual(0, oneDefectResult.Warnings.ToList().Count, "No Warnings");
-            Assert.AreEqual(0, oneDefectResult.Errors.ToList().Count, "No Errors");
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanCreate(restApi);
         }
 
-        [TestMethod]
-        public void AdhocUri()
+        private void AssertCanCreate(RallyRestApi restApi)
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            Assert.AreEqual(new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/adhoc.js"), restApi.AdhocUri);
-        }
-
-
-        [TestMethod]
-        public void CreateTest()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create(null, "defect", dynamicJson);
+            CreateResult response = restApi.Create("defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
             dynamic testDefect = restApi.GetByReference(response.Reference);
             Assert.AreEqual(dynamicJson["Name"], testDefect.Name);
@@ -130,61 +85,102 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void CreateSadPathTest()
+        public void CreateSadPath1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCreateFailure(restApi);
+        }
+
+        [TestMethod]
+        public void CreateSadPath2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCreateFailure(restApi);
+        }
+
+        private void AssertCreateFailure(RallyRestApi restApi)
+        {
             var defect = new DynamicJsonObject();
             defect["Name"] = "Sample Defect with invalid field";
             defect["Iteration"] = "Foo";
-            CreateResult creationResult = restApi.Create(null, "defect", defect);
+            CreateResult creationResult = restApi.Create("defect", defect);
             Assert.IsNull(creationResult.Reference);
             Assert.AreEqual(1, creationResult.Errors.Count);
             Assert.IsFalse(creationResult.Success);
         }
 
         [TestMethod]
-        public void DeleteTest()
+        public void Delete1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanDelete(restApi);
+        }
+
+        [TestMethod]
+        public void Delete2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanDelete(restApi);
+        }
+
+        private void AssertCanDelete(RallyRestApi restApi)
+        {
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            CreateResult response = restApi.Create(null, "defect", dynamicJson);
+            CreateResult response = restApi.Create("defect", dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
-            OperationResult deleteResponse = restApi.Delete(null,Ref.GetRelativeRef(response.Reference));
+            OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(response.Reference));
             dynamic testDefectEmpty = restApi.GetByReference(response.Reference);
             Assert.IsNull(testDefectEmpty);
         }
 
         [TestMethod]
-        public void UpdateTest()
+        public void Update1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanUpdate(restApi);
+        }
+
+        [TestMethod]
+        public void Update2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanUpdate(restApi);
+        }
+
+        private void AssertCanUpdate(RallyRestApi restApi)
+        {
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "Dont delete me please " + DateTime.Now.Second;
             OperationResult response = restApi.Update("Defect", defectOid, dynamicJson);
             Assert.AreEqual(0, response.Errors.Count);
-            Assert.AreEqual(0, response.Warnings.Count);
             dynamic updateDefect = restApi.GetByReference("/Defect/" + defectOid + ".js");
             Assert.AreEqual(dynamicJson["Name"], updateDefect.Name);
         }
 
-        //        //
         [TestMethod]
         public void GetByReferenceTest()
         {
             RallyRestApi restApi = GetRallyRestApi();
             dynamic response = restApi.GetByReference("/Defect/" + defectOid + ".js");
-            Assert.AreEqual(defectOid, response.ObjectID);
+            Assert.AreEqual(defectOid, response.ObjectID.ToString());
         }
 
         [TestMethod]
-        public void GetAllowedAttributeValuesTest()
+        public void GetAllowedAttributeValuesTest1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            DynamicJsonObject response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
-            Assert.IsTrue(response.HasMember("Accepted"));
+            RallyRestApi restApi = GetRallyRestApi1x();
+            QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
+            Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
+        }
+
+        [TestMethod]
+        public void GetAllowedAttributeValuesTest2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
+            Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
         }
 
         [TestMethod]
@@ -203,77 +199,29 @@ namespace Rally.RestApi.Test
             Assert.IsNotNull(response.ObjectID);
         }
 
-        [TestMethod]
-        public void AdhocRequestUrl()
-        {
-            RallyRestApi restApi = GetRallyRestApi();
-
-            var req = new AdhocRequest("defect", "d") { Order = "Name desc", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result = req.RequestUrl;
-            // ObjectID is added to the order clause by the as a workaround for a server-side WSAPI bug
-            const string expected = "/defect?pagesize=200&order=Name desc,ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected, result);
-
-            var req2 = new AdhocRequest("defect", "d") { Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result2 = req2.RequestUrl;
-            // Order by ObjectID clause is added as a workaround for a server-side WSAPI bug
-            const string expected2 = "/defect?pagesize=200&order=ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected2, result2);
-
-            var req3 = new AdhocRequest("defect", "d") { Order = "ObjectID", Query = new Query("Name", Query.Operator.Equals, "Jim") };
-            string result3 = req3.RequestUrl;
-            // ObjectID is not added twice to the order clause b/c it already exists
-            const string expected3 = "/defect?pagesize=200&order=ObjectID&query=(Name = Jim)&start=1&fetch=true";
-            Assert.AreEqual(expected3, result3);
-        }
+       
 
         [TestMethod]
-        public void AdhocRequestPlaceHolderUrl()
+        public void TestAttribute1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
-            var req = new PlaceholderRequest("key/Tasks", "d")
-                          {
-                              Order = "Name desc",
-                              Query = new Query("Name", Query.Operator.Equals, "Jim"),
-                              Fetch = new List<string> { "Name" }
-                          };
-            string result = req.RequestUrl;
-            const string expected = "${key/Tasks?fetch=Name}";
-            Assert.AreEqual(expected, result);
-        }
-
-        private static void VerifyAttributes(QueryResult result)
-        {
-            var list = (IEnumerable<object>)result.Results;
-            IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
-                                        select i["Name"] as string;
-            var expectedNames = new[] { "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
-            Assert.AreEqual(result.TotalResultCount, list.Count());
-            Assert.AreEqual(expectedNames.Length, list.Count());
-            IEnumerable<string> complement = expectedNames.Except(names);
-            Assert.AreEqual(0, complement.Count());  
-        }
-
-        [TestMethod]
-        public void TestAttribute()
-        {
-            //Test old
-            RallyRestApi restApi124 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.24");
-            QueryResult result124 = restApi124.GetAttributesByType("Preference");
-            VerifyAttributes(result124);
-            
-
-            //Test new
-            RallyRestApi restApi125 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.25");
+            RallyRestApi restApi125 = GetRallyRestApi1x();
             QueryResult result125 = restApi125.GetAttributesByType("Preference");
             VerifyAttributes(result125);
+        }
+
+        [TestMethod]
+        public void TestAttribute2x()
+        {
+            RallyRestApi restApiv2 = GetRallyRestApi2x();
+            QueryResult resultv2 = restApiv2.GetAttributesByType("Preference");
+            VerifyAttributes(resultv2);
         }
 
         [TestMethod]
         public void FormatCreateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatCreateUri(null,"defect");
+            Uri result = restApi.FormatCreateUri(null, "defect");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
             Assert.AreEqual(expected, result);
         }
@@ -282,7 +230,7 @@ namespace Rally.RestApi.Test
         public void FormatUpdateString()
         {
             RallyRestApi restApi = GetRallyRestApi();
-            Uri result = restApi.FormatUpdateUri("defect", 2121901027);
+            Uri result = restApi.FormatUpdateUri("defect", "2121901027");
             var expected = new Uri(IntegrationTestInfo.SERVER + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js");
             Assert.AreEqual(expected, result);
         }
@@ -301,9 +249,11 @@ namespace Rally.RestApi.Test
         public void GetSubscription()
         {
             RallyRestApi restApi = GetRallyRestApi();
+            dynamic user = restApi.GetCurrentUser("Subscription", "ObjectID");
             dynamic subscription = restApi.GetSubscription();
+
             Assert.AreEqual("subscription", Ref.GetTypeFromRef(subscription._ref), "Type test");
-            Assert.AreEqual(146524649, subscription.ObjectID, "Subscription Id");
+            Assert.AreEqual(user.Subscription.ObjectID, subscription.ObjectID, "Subscription Id");
         }
 
         [TestMethod]
@@ -357,6 +307,32 @@ namespace Rally.RestApi.Test
                 Assert.IsTrue(previousId <= id, string.Format("{1} expected to be before {0}.", id, previousId));
                 previousId = id;
             }
+        }
+
+        [TestMethod]
+        public void TestIsWsapi2()
+        {
+            var restApi = GetRallyRestApi2x();
+            Assert.IsTrue(restApi.IsWsapi2);
+        }
+
+        [TestMethod]
+        public void TestIsNotWsapi2()
+        {
+            var restApi = GetRallyRestApi1x();
+            Assert.IsFalse(restApi.IsWsapi2);
+        }
+
+        private static void VerifyAttributes(QueryResult result)
+        {
+            var list = (IEnumerable<object>)result.Results;
+            IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
+                                        select i["Name"] as string;
+            var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+            Assert.AreEqual(result.TotalResultCount, list.Count());
+            Assert.AreEqual(expectedNames.Length, list.Count());
+            IEnumerable<string> complement = expectedNames.Except(names);
+            Assert.AreEqual(0, complement.Count());
         }
     }
 }

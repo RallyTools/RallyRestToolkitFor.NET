@@ -137,8 +137,9 @@ namespace Rally.RestApi
             String responseHeaders = "";
             try
             {
-                var request = WebRequest.Create(target);
+                var request = WebRequest.Create(target) as HttpWebRequest;
                 request.Method = "DELETE";
+                request.CookieContainer = cookies;
                 request.Credentials = credentials;
                 if (headers != null)
                 {
