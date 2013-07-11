@@ -32,6 +32,10 @@ namespace Rally.RestApi
             /// </summary>
             Contains,
             /// <summary>
+            /// !contains
+            /// </summary>
+            DoesNotContain,
+            /// <summary>
             /// <![CDATA[<]]>
             /// </summary>
             LessThan,
@@ -70,6 +74,7 @@ namespace Rally.RestApi
         {
             {Operator.Equals, "="},
             {Operator.Contains, "contains"},
+            {Operator.DoesNotContain, "!contains"},
             {Operator.LessThan, "<"},
             {Operator.LessThanOrEqualTo, "<="},
             {Operator.GreaterThan, ">"},
