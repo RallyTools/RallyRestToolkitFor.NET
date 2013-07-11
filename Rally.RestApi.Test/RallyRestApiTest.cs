@@ -12,16 +12,68 @@ namespace Rally.RestApi.Test
     {
         private static string defectOid;
 
-        internal RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
+        RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
             string server = IntegrationTestInfo.SERVER, string wsapiVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
         {
             return new RallyRestApi(userName, password, server, wsapiVersion);
         }
 
-        [TestMethod]
-        public void CreateTest()
+        RallyRestApi GetRallyRestApi1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            return GetRallyRestApi(wsapiVersion: "1.43");
+        }
+
+        RallyRestApi GetRallyRestApi2x()
+        {
+            return GetRallyRestApi(wsapiVersion: "v2.0");
+        }
+
+        [TestMethod]
+        public void BadAuth1x()
+        {
+            try
+            {
+                RallyRestApi restApi = GetRallyRestApi(userName: "foo", wsapiVersion: "1.43");
+                restApi.GetSubscription();
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "The remote server returned an error: (401) Unauthorized.");
+            }
+        }
+
+        [TestMethod]
+        public void BadAuth2x()
+        {
+            try
+            {
+                RallyRestApi restApi = GetRallyRestApi(userName: "foo", wsapiVersion: "v2.0");
+                restApi.GetSubscription();
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "The remote server returned an error: (401) Unauthorized.");
+            }
+        }
+
+        [TestMethod]
+        public void CreateTest1x()
+        {
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanCreate(restApi);
+        }
+
+        [TestMethod]
+        public void CreateTest2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanCreate(restApi);
+        }
+
+        private void AssertCanCreate(RallyRestApi restApi)
+        {
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
             CreateResult response = restApi.Create("defect", dynamicJson);
@@ -33,9 +85,21 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void CreateSadPathTest()
+        public void CreateSadPath1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCreateFailure(restApi);
+        }
+
+        [TestMethod]
+        public void CreateSadPath2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCreateFailure(restApi);
+        }
+
+        private void AssertCreateFailure(RallyRestApi restApi)
+        {
             var defect = new DynamicJsonObject();
             defect["Name"] = "Sample Defect with invalid field";
             defect["Iteration"] = "Foo";
@@ -46,9 +110,21 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void DeleteTest()
+        public void Delete1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanDelete(restApi);
+        }
+
+        [TestMethod]
+        public void Delete2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanDelete(restApi);
+        }
+
+        private void AssertCanDelete(RallyRestApi restApi)
+        {
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
             CreateResult response = restApi.Create("defect", dynamicJson);
@@ -60,9 +136,21 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
-        public void UpdateTest()
+        public void Update1x()
         {
-            RallyRestApi restApi = GetRallyRestApi();
+            RallyRestApi restApi = GetRallyRestApi1x();
+            AssertCanUpdate(restApi);
+        }
+
+        [TestMethod]
+        public void Update2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            AssertCanUpdate(restApi);
+        }
+
+        private void AssertCanUpdate(RallyRestApi restApi)
+        {
             var dynamicJson = new DynamicJsonObject();
             dynamicJson["Name"] = "Dont delete me please " + DateTime.Now.Second;
             OperationResult response = restApi.Update("Defect", defectOid, dynamicJson);
@@ -71,7 +159,6 @@ namespace Rally.RestApi.Test
             Assert.AreEqual(dynamicJson["Name"], updateDefect.Name);
         }
 
-        //        //
         [TestMethod]
         public void GetByReferenceTest()
         {
@@ -83,7 +170,7 @@ namespace Rally.RestApi.Test
         [TestMethod]
         public void GetAllowedAttributeValuesTest1x()
         {
-            RallyRestApi restApi = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.43");
+            RallyRestApi restApi = GetRallyRestApi1x();
             QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
             Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
         }
@@ -91,7 +178,7 @@ namespace Rally.RestApi.Test
         [TestMethod]
         public void GetAllowedAttributeValuesTest2x()
         {
-            RallyRestApi restApi = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "v2.0");
+            RallyRestApi restApi = GetRallyRestApi2x();
             QueryResult response = restApi.GetAllowedAttributeValues("hierarchicalrequirement", "schedulestate");
             Assert.IsNotNull(response.Results.SingleOrDefault(a => a.StringValue == "Accepted"));
         }
@@ -112,22 +199,12 @@ namespace Rally.RestApi.Test
             Assert.IsNotNull(response.ObjectID);
         }
 
-        private static void VerifyAttributes(QueryResult result)
-        {
-            var list = (IEnumerable<object>)result.Results;
-            IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
-                                        select i["Name"] as string;
-            var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
-            Assert.AreEqual(result.TotalResultCount, list.Count());
-            Assert.AreEqual(expectedNames.Length, list.Count());
-            IEnumerable<string> complement = expectedNames.Except(names);
-            Assert.AreEqual(0, complement.Count());  
-        }
+       
 
         [TestMethod]
         public void TestAttribute1x()
         {
-            RallyRestApi restApi125 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "1.43");
+            RallyRestApi restApi125 = GetRallyRestApi1x();
             QueryResult result125 = restApi125.GetAttributesByType("Preference");
             VerifyAttributes(result125);
         }
@@ -135,7 +212,7 @@ namespace Rally.RestApi.Test
         [TestMethod]
         public void TestAttribute2x()
         {
-            RallyRestApi restApiv2 = GetRallyRestApi(IntegrationTestInfo.USER_NAME, IntegrationTestInfo.PASSWORD, IntegrationTestInfo.SERVER, "v2.0");
+            RallyRestApi restApiv2 = GetRallyRestApi2x();
             QueryResult resultv2 = restApiv2.GetAttributesByType("Preference");
             VerifyAttributes(resultv2);
         }
@@ -230,6 +307,32 @@ namespace Rally.RestApi.Test
                 Assert.IsTrue(previousId <= id, string.Format("{1} expected to be before {0}.", id, previousId));
                 previousId = id;
             }
+        }
+
+        [TestMethod]
+        public void TestIsWsapi2()
+        {
+            var restApi = GetRallyRestApi2x();
+            Assert.IsTrue(restApi.IsWsapi2);
+        }
+
+        [TestMethod]
+        public void TestIsNotWsapi2()
+        {
+            var restApi = GetRallyRestApi1x();
+            Assert.IsFalse(restApi.IsWsapi2);
+        }
+
+        private static void VerifyAttributes(QueryResult result)
+        {
+            var list = (IEnumerable<object>)result.Results;
+            IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
+                                        select i["Name"] as string;
+            var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+            Assert.AreEqual(result.TotalResultCount, list.Count());
+            Assert.AreEqual(expectedNames.Length, list.Count());
+            IEnumerable<string> complement = expectedNames.Except(names);
+            Assert.AreEqual(0, complement.Count());
         }
     }
 }

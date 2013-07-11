@@ -247,7 +247,7 @@ namespace Rally.RestApi
             return response;
         }
 
-        bool IsWsapi2
+        internal bool IsWsapi2
         {
             get
             {
