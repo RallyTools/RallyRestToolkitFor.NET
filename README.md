@@ -16,7 +16,7 @@ The Rally REST API for .NET provides an intuitive interface to your Rally Data. 
 
 [Download](https://github.com/RallyTools/RallyRestToolkitFor.NET/releases/download/v2.0/rally-rest-api.net-2.0.zip)
 
-[Full API documentation](http://rallytools.github.io/RallyRestToolkitFor.NET/Index.html/)
+[Full API documentation](http://rallytools.github.io/RallyRestToolkitFor.NET/Index.html)
 
 [Web Services API documentation](https://rally1.rallydev.com/slm/doc/webservice)
 
