@@ -1,3 +1,7 @@
+## License
+
+Copyright (c) Rally Software Development Corp. 2013 Distributed under the MIT License.
+
 ## Warranty
 
 The Rally REST API for .NET is available on an as-is basis. 
