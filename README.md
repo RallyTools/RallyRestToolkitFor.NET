@@ -14,6 +14,12 @@ Rally Software does not actively maintain this toolkit.  If you have a question 
 
 The Rally REST API for .NET provides an intuitive interface to your Rally Data.  It supports querying items in addition to individual item creates, reads, updates and deletes.  It is compatible with any .NET 4.0 language (C#, VB.NET, F#, etc.)
 
+[Download](https://github.com/RallyTools/RallyRestToolkitFor.NET/releases/download/v2.0/rally-rest-api.net-2.0.zip)
+
+[Full API documentation](http://rallytools.github.io/RallyRestToolkitFor.NET/Index.html/)
+
+[Web Services API documentation](https://rally1.rallydev.com/slm/doc/webservice)
+
 ## Usage
 
 Create a new project in Visual Studio and add a reference to the [Rally.RestApi.dll](https://people.rallydev.com/connector/RallyRestApi/Rally.RestApi-1.0.15.zip) library:
