@@ -6,7 +6,7 @@ using System.Web.Script.Serialization;
 
 namespace Rally.RestApi
 {
-    internal class DynamicJsonSerializer
+    public class DynamicJsonSerializer
     {
         readonly JavaScriptSerializer deSerializer;
         public DynamicJsonSerializer()

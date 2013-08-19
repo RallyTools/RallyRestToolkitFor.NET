@@ -215,6 +215,13 @@ namespace Rally.RestApi
             return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
         }
 
+        public DynamicJsonObject post(String relativeUri, DynamicJsonObject data)
+        {
+            Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", Service.Server.AbsoluteUri, wsapiVersion, relativeUri));
+            string postData = serializer.Serialize(data);
+            return serializer.Deserialize(Service.Post(uri, postData, GetProcessedHeaders()));
+        }
+
         DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data)
         {
             return DoPost(uri, data, true);
