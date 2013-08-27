@@ -16,7 +16,7 @@ Rally Software does not actively maintain or support this toolkit.  If you have 
 
 ## User Guide 
 
-Please view our [Rally REST API for .NET User Guide](https://github.com/RallyTools/RallyRestToolkitFor.NET/wiki/User-Guide) in the attached wiki
+Please view the [Rally REST API for .NET User Guide](https://github.com/RallyTools/RallyRestToolkitFor.NET/wiki/User-Guide) in the attached wiki
 
 [Full REST API for .NET API docs](http://rallytools.github.io/RallyRestToolkitFor.NET/Index.html)
 
