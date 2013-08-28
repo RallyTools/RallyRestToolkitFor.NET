@@ -15,7 +15,14 @@ namespace Rally.RestApi.Test
         RallyRestApi GetRallyRestApi(string userName = IntegrationTestInfo.USER_NAME, string password = IntegrationTestInfo.PASSWORD,
             string server = IntegrationTestInfo.SERVER, string wsapiVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
         {
-            return new RallyRestApi(userName, password, server, wsapiVersion);
+            var connInfo = new ConnectionInfo();
+            connInfo.authType = AuthorizationType.Basic;
+            connInfo.username = userName;
+            connInfo.password = password;
+            connInfo.server = new Uri(server);
+            connInfo.wsapiVersion = wsapiVersion;
+
+            return new RallyRestApi(connInfo);
         }
 
         RallyRestApi GetRallyRestApi1x()

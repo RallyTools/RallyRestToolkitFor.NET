@@ -35,8 +35,10 @@
     <DocumentationFile>bin\Release\Rally.RestApi.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorizationType.cs" />
+    <Compile Include="ConnectionInfo.cs" />
     <Compile Include="CookieAwareWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -60,8 +64,12 @@
     <Compile Include="Response\QueryResult.cs" />
     <Compile Include="RallyRestApi.cs" />
     <Compile Include="Request.cs" />
+    <Compile Include="SSOHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="lib\HtmlAgilityPack.dll" />
+    <Content Include="lib\HtmlAgilityPack.pdb" />
+    <Content Include="lib\HtmlAgilityPack.xml" />
     <Content Include="RallyRestAPI.NET.shfbproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

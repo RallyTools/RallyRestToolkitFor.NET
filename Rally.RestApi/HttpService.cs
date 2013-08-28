@@ -4,73 +4,75 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
+using System.Reflection;
 
 namespace Rally.RestApi
 {
     internal class HttpService
     {
-
-        /// <summary>
-        /// The character encoding that will be used for the requests.
-        /// </summary>
-        public Encoding Encoding { get; set; }
-
         readonly CredentialCache credentials;
-
-        readonly CookieContainer cookies;
-
-        /// <summary>
-        /// The optional proxy configuration
-        /// </summary>
-        public WebProxy Proxy { get; set; }
+        readonly CookieContainer cookies = new CookieContainer();
+        readonly ConnectionInfo connectionInfo;
 
         internal Uri Server { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="username">Rally Username</param>
-        /// <param name="password">Rally Password</param>
-        /// <param name="serverUrl" > Server url defaults to <value>http://rally1.rallydev.com</value></param>
-        /// <param name="proxy">Optional proxy config</param>
-        public HttpService(string username, string password, string serverUrl = "http://rally1.rallydev.com",
-            WebProxy proxy = null)
-            : this(username, password, new Uri(serverUrl), proxy)
-        {
-        }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="username">Rally Username</param>
-        /// <param name="password">Rally Password</param>
-        /// <param name="serverUrl" > Server url defaults to <value>http://rally1.rallydev.com</value></param>
-        /// <param name="proxy">Optional proxy configuration</param> 
-        public HttpService(string username, string password, Uri serverUrl, WebProxy proxy = null)
+        /// <param name="connectionInfo">Connection Information</param>
+        public HttpService(ConnectionInfo connectionInfo)
         {
-            Server = serverUrl;
-            Encoding = Encoding.UTF8;
-            Proxy = proxy;
-            credentials = new CredentialCache { { serverUrl, "Basic", new NetworkCredential(username, password) } };
-            cookies = new CookieContainer();
+            this.connectionInfo = connectionInfo;
+
+            if (connectionInfo.authCookie != null)
+            {
+                setCookieAuth(connectionInfo.authCookie);
+            }
+            else if (connectionInfo.authType == AuthorizationType.Basic)
+            {
+                Server = connectionInfo.server;
+                credentials = new CredentialCache { { connectionInfo.server, "Basic", new NetworkCredential(connectionInfo.username, connectionInfo.password) } };
+            }
+            else
+            {
+                doSSOAuth();
+            }
+        }
+
+        private void doSSOAuth()
+        {
+            var ssoHelper = new SSOHelper();
+            var success = false;
+            
+            if (connectionInfo.authType == AuthorizationType.SSOWithCred)
+                success = ssoHelper.doHandshake(connectionInfo.server, connectionInfo.username, connectionInfo.password);
+            else
+                success = ssoHelper.doHandshake(connectionInfo.server);
+
+            if (!success)
+                throw new Exception("SSO handshake not scessful!");
+
+            setCookieAuth(connectionInfo.authCookie = ssoHelper.jsessionidCookie);
+        }
+
+        void setCookieAuth(Cookie cookie)
+        {
+            Server = new UriBuilder("https",cookie.Domain).Uri;
+            cookies.Add(cookie);
         }
 
         WebClient GetWebClient(IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             var webClient = new CookieAwareWebClient(cookies);
+            webClient.Encoding = Encoding.UTF8;
             if (headers != null)
-            {
                 foreach (var pairs in headers)
-                {
                     webClient.Headers.Add(pairs.Key, pairs.Value);
-                }
-            }
-            webClient.Encoding = Encoding;
-            webClient.Credentials = credentials;
-
-            if (Proxy != null)
-            {
-                webClient.Proxy = Proxy;
-            }
+            if (credentials != null)
+                webClient.Credentials = credentials;
+            if (connectionInfo.proxy != null)
+                webClient.Proxy = connectionInfo.proxy;
             return webClient;
         }
 
@@ -80,26 +82,46 @@ namespace Rally.RestApi
             DateTime startTime = DateTime.Now;
             String requestHeaders = "";
             String responseHeaders = "";
-            try
+            String cookiesBefore = "";
+            String cookiesAfter = "";
+
+            do
             {
-                using (var webClient = GetWebClient(headers))
+                try
                 {
-                    requestHeaders = webClient.Headers.ToString();
-                    response = webClient.UploadString(target, data);
-                    responseHeaders = webClient.ResponseHeaders.ToString();
-                    return response;
+                    using (var webClient = GetWebClient(headers))
+                    {
+                        cookiesBefore = makeDisplayableCookieString(cookies);
+                        requestHeaders = webClient.Headers.ToString();
+                        response = webClient.UploadString(target, data);
+                        cookiesAfter = makeDisplayableCookieString(cookies);
+                        responseHeaders = webClient.ResponseHeaders.ToString();
+                        return response;
+                    }
                 }
-            }
-            finally
-            {
-                Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Request Data:\r\n{3}\r\nResponse Headers:\r\n{4}Response Data\r\n{5}",
-                                       DateTime.Now.Subtract(startTime).ToString(),
-                                       target.ToString(),
-                                       requestHeaders,
-                                       data,
-                                       responseHeaders,
-                                       response);
-            }
+                catch (WebException e)
+                {
+                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
+                        connectionInfo.authType != AuthorizationType.Basic)
+                    {
+                        doSSOAuth();
+                        continue;
+                    }
+                    throw;
+                }
+                finally
+                {
+                    Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
+                                           DateTime.Now.Subtract(startTime).ToString(),
+                                           target.ToString(),
+                                           requestHeaders,
+                                           cookiesBefore,
+                                           data,
+                                           responseHeaders,
+                                           cookiesAfter,
+                                           response);
+                }
+            } while (true);
         }
 
         public string Get(Uri target, IDictionary<string, string> headers = null)
@@ -108,25 +130,45 @@ namespace Rally.RestApi
             DateTime startTime = DateTime.Now;
             String requestHeaders = "";
             String responseHeaders = "";
-            try
+            String cookiesBefore = "";
+            String cookiesAfter = "";
+
+            do
             {
-                using (var webClient = GetWebClient(headers))
+                try
                 {
-                    requestHeaders = webClient.Headers.ToString();
-                    response = webClient.DownloadString(target);
-                    responseHeaders = webClient.ResponseHeaders.ToString();
-                    return response;
+                    using (var webClient = GetWebClient(headers))
+                    {
+                        cookiesBefore = makeDisplayableCookieString(cookies);
+                        requestHeaders = webClient.Headers.ToString();
+                        response = webClient.DownloadString(target);
+                        cookiesAfter = makeDisplayableCookieString(cookies);
+                        responseHeaders = webClient.ResponseHeaders.ToString();
+                        return response;
+                    }
                 }
-            }
-            finally
-            {
-                Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
-                                       DateTime.Now.Subtract(startTime).ToString(),  
-                                       target.ToString(), 
-                                       requestHeaders, 
-                                       responseHeaders,
-                                       response);
-            }
+                catch (WebException e)
+                {
+                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
+                        connectionInfo.authType != AuthorizationType.Basic)
+                    {
+                        doSSOAuth();
+                        continue;
+                    }
+                    throw;
+                }
+                finally
+                {
+                    Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+                                           DateTime.Now.Subtract(startTime).ToString(),
+                                           target.ToString(),
+                                           requestHeaders,
+                                           cookiesBefore,
+                                           responseHeaders,
+                                           cookiesAfter,
+                                           response);
+                }
+            } while (true);
         }
 
         public string Delete(Uri target, IDictionary<string, string> headers = null)
@@ -135,38 +177,104 @@ namespace Rally.RestApi
             DateTime startTime = DateTime.Now;
             String requestHeaders = "";
             String responseHeaders = "";
-            try
+            String cookiesBefore = "";
+            String cookiesAfter = "";
+
+            do
             {
-                var request = WebRequest.Create(target) as HttpWebRequest;
-                request.Method = "DELETE";
-                request.CookieContainer = cookies;
-                request.Credentials = credentials;
-                if (headers != null)
+                try
                 {
-                    foreach (var pairs in headers)
+                    var request = WebRequest.Create(target) as HttpWebRequest;
+                    request.Method = "DELETE";
+                    request.CookieContainer = cookies;
+                    request.Credentials = credentials;
+                    if (headers != null)
                     {
-                        request.Headers.Add(pairs.Key, pairs.Value);
+                        foreach (var pairs in headers)
+                        {
+                            request.Headers.Add(pairs.Key, pairs.Value);
+                        }
                     }
+                    cookiesBefore = makeDisplayableCookieString(cookies);
+                    requestHeaders = request.Headers.ToString();
+                    var httpResponse = (HttpWebResponse)request.GetResponse();
+                    cookiesAfter = makeDisplayableCookieString(cookies);
+                    responseHeaders = httpResponse.Headers.ToString();
+                    if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        doSSOAuth();
+                        continue;
+                    }
+                    var enc = Encoding.ASCII;
+                    var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
+                    response = responseStream.ReadToEnd();
+                    responseStream.Close();
+                    return response;
                 }
-                requestHeaders = request.Headers.ToString();
-                var httpResponse = (HttpWebResponse)request.GetResponse();
-                responseHeaders = httpResponse.Headers.ToString();
-                httpResponse.StatusCode.ToString();
-                var enc = Encoding.ASCII;
-                var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
-                response = responseStream.ReadToEnd();
-                responseStream.Close();
-                return response;
-            }
-            finally
+                finally
+                {
+                    Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+                                           DateTime.Now.Subtract(startTime).ToString(),
+                                           target.ToString(),
+                                           requestHeaders,
+                                           cookiesBefore,
+                                           responseHeaders,
+                                           cookiesAfter,
+                                           response);
+                }            
+            } while (true);
+        }
+
+        private String makeDisplayableCookieString(CookieContainer cookieContainer)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Cookie cookie in getAllCookies(cookieContainer))
             {
-                Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
-                                       DateTime.Now.Subtract(startTime).ToString(),
-                                       target.ToString(),
-                                       requestHeaders,
-                                       responseHeaders,
-                                       response);
+                sb.AppendFormat("Name = {0}\nValue = {1}\nDomain = {2}\n\n",
+                    cookie.Name,
+                    cookie.Value,
+                    cookie.Domain);
             }
+            return sb.ToString();
+        }
+
+        private CookieCollection getAllCookies(CookieContainer cookieJar)
+        {
+            CookieCollection cookieCollection = new CookieCollection();
+
+            Hashtable table = (Hashtable)cookieJar.GetType().InvokeMember("m_domainTable",
+                                                                            BindingFlags.NonPublic |
+                                                                            BindingFlags.GetField |
+                                                                            BindingFlags.Instance,
+                                                                            null,
+                                                                            cookieJar,
+                                                                            new object[] { });
+
+            foreach (var tableKey in table.Keys)
+            {
+                String str_tableKey = (string)tableKey;
+
+                if (str_tableKey[0] == '.')
+                {
+                    str_tableKey = str_tableKey.Substring(1);
+                }
+
+                SortedList list = (SortedList)table[tableKey].GetType().InvokeMember("m_list",
+                                                                            BindingFlags.NonPublic |
+                                                                            BindingFlags.GetField |
+                                                                            BindingFlags.Instance,
+                                                                            null,
+                                                                            table[tableKey],
+                                                                            new object[] { });
+
+                foreach (var listKey in list.Keys)
+                {
+                    String url = "https://" + str_tableKey + (string)listKey;
+                    cookieCollection.Add(cookieJar.GetCookies(new Uri(url)));
+                }
+            }
+
+            return cookieCollection;
         }
     }
 }

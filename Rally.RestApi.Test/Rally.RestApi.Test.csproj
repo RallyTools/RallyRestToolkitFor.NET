@@ -60,12 +60,17 @@
     <Compile Include="RallyRestApiTest.cs" />
     <Compile Include="RefTest.cs" />
     <Compile Include="RequestTest.cs" />
+    <Compile Include="SSOHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rally.RestApi\Rally.RestApi.csproj">
       <Project>{D8B8D5EC-7482-4742-9516-876CEE07C8AF}</Project>
       <Name>Rally.RestApi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\HtmlWithOnePasswordForm.txt" />
+    <Content Include="data\HtmlWithOneSamlForm.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

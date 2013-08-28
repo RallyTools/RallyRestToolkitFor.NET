@@ -124,19 +124,15 @@ namespace Rally.RestApi
 
         #endregion
 
-        /// <summary>
-        /// Construct a new RallyRestApi with the specified
-        /// username, password, server and WSAPI version
-        /// </summary>
-        /// <param name="username">The username to be used for access</param>
-        /// <param name="password">The password to be used for access</param>
-        /// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
-        /// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-        /// <param name="proxy">Optional proxy configuration</param>
-        public RallyRestApi(string username, string password, string rallyServer = DEFAULT_SERVER,
-                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
+        public RallyRestApi(
+            string username, 
+            string password, 
+            string rallyServer = DEFAULT_SERVER,
+            string webServiceVersion = DEFAULT_WSAPI_VERSION, 
+            WebProxy proxy = null
+        )
             : this(username, password, new Uri(rallyServer), webServiceVersion, proxy)
-        {
+        {        
         }
 
         /// <summary>
@@ -148,11 +144,30 @@ namespace Rally.RestApi
         /// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
         /// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
         /// <param name="proxy">Optional proxy configuration</param>
-        public RallyRestApi(string username, string password, Uri serverUrl,
-                            string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
+        public RallyRestApi(
+            string username,
+            string password,
+            Uri serverUrl,
+            string webServiceVersion = DEFAULT_WSAPI_VERSION,
+            WebProxy proxy = null
+        )
+            : this(new ConnectionInfo() {authType = AuthorizationType.Basic,
+                                         username = username,
+                                         password = password,
+                                         server = serverUrl,
+                                         wsapiVersion = webServiceVersion,
+                                         proxy = proxy})
         {
-            Service = new HttpService(username, password, serverUrl, proxy);
-            wsapiVersion = webServiceVersion ?? DEFAULT_WSAPI_VERSION;
+        }
+
+        /// <summary>
+        /// Construct a new RallyRestApi from the specified ConnectionInfo
+        /// </summary>
+        /// <param name="connectionInfo">ConnectionInfo</param>
+        public RallyRestApi(ConnectionInfo connectionInfo)
+        {
+            Service = new HttpService(connectionInfo);
+            wsapiVersion = connectionInfo.wsapiVersion ?? DEFAULT_WSAPI_VERSION;
         }
 
         /// <summary>
@@ -160,7 +175,7 @@ namespace Rally.RestApi
         /// </summary>
         public string WebServiceUrl
         {
-            get { return Service.Server + "slm/webservice/" + wsapiVersion; }
+            get { return Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion; }
         }
 
         #region Non Public

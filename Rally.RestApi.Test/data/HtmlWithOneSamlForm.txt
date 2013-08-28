@@ -1,0 +1,18 @@
+﻿<html>
+    <head>
+    <title>Submit Form</title>
+    </head>
+    <body onload="javascript:document.forms[0].submit()">
+       <noscript>
+            <p>
+                <strong>Note:</strong> Since your browser does not support JavaScript,
+                        you must press the Resume button once to proceed.
+            </p>
+        </noscript>
+        <form method="post" action="https://some.host.com/actionUrl/endpoint1.html">
+                        <input type="hidden" name="SAMLRequest" value="SamlRequestValue1"/>
+                        <input type="hidden" name="RelayState" value="RelayStateValue1"/>
+                        <noscript><input type="submit" value="Resume"/></noscript>
+        </form>
+    </body>
+</html>
