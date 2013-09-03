@@ -149,7 +149,8 @@ namespace Rally.RestApi
                 }
                 catch (WebException e)
                 {
-                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
+                    if (e.Response != null && 
+                        ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
                         connectionInfo.authType != AuthorizationType.Basic)
                     {
                         doSSOAuth();
