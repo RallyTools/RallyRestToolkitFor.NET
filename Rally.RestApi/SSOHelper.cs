@@ -155,7 +155,7 @@ namespace Rally.RestApi
             public String value;
             public bool showInLog;
 
-            public PostParam(String name, String value, bool showInog)
+            public PostParam(String name, String value, bool showInLog)
             {
                 this.name = name;
                 this.value = value;

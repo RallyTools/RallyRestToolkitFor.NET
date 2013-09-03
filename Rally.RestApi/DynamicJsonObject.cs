@@ -85,6 +85,10 @@ namespace Rally.RestApi
         /// <returns>The formatted item</returns>
         protected object FormatSetValue(object value)
         {
+            if (value == null)
+            {
+                return null;
+            }
             if (value is DynamicJsonObject)
             {
                 var valueDictionary = (value as DynamicJsonObject).Dictionary;

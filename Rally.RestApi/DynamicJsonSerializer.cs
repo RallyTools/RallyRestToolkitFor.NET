@@ -74,6 +74,10 @@ namespace Rally.RestApi
         }
         private static string SerializeObject(object obj)
         {
+            if (obj == null)
+            {
+                return "null";
+            }
             if (obj is string)
             {
                 return "\"" + ((String)obj).Replace("\"", "\\\"") + "\"";
