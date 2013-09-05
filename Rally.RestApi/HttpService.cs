@@ -51,7 +51,7 @@ namespace Rally.RestApi
                 success = ssoHelper.doHandshake(connectionInfo.server);
 
             if (!success)
-                throw new Exception("SSO handshake not scessful!");
+                throw new Exception("SSO handshake not successful!");
 
             setCookieAuth(connectionInfo.authCookie = ssoHelper.jsessionidCookie);
         }
