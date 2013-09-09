@@ -52,6 +52,23 @@ namespace Rally.RestApi.Test
             Assert.IsNotNull(postParams.SingleOrDefault(x => x.name == "pf.pass" && x.value == "SomePassword"));
         }
 
+        [TestMethod]
+        [DeploymentItem("Rally.RestApi.Test\\data\\")]
+        public void ParseYahooPasswordForm()
+        {
+            var ssoHelper = new SSOHelper();
+            SSOHelper.FormInfo formInfo = ssoHelper.getFirstFormInfo(getDataFromFile("YahooSSOPasswordForm.txt"));
+
+            Assert.IsFalse(formInfo.isSamlForm());
+            Assert.IsTrue(formInfo.isPasswordForm());
+            Assert.AreEqual(formInfo.actionUrl, "/login/");
+
+            List<SSOHelper.PostParam> postParams = formInfo.getPasswordPostParams("user","pass");
+            Assert.IsTrue(postParams.Count == 2, String.Format("Params found not equal to 2.  Actually found {0}.", postParams.Count));
+            Assert.IsNotNull(postParams.SingleOrDefault(x => x.name == "id" && x.value == "user"));
+            Assert.IsNotNull(postParams.SingleOrDefault(x => x.name == "pass_word" && x.value == "pass"));
+        }
+
         private String getDataFromFile(String filename)
         {
             using (StreamReader sr = new StreamReader(filename))

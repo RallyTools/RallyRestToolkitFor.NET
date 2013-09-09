@@ -290,7 +290,8 @@ namespace Rally.RestApi
                 {
                     if (inputInfo.type.Equals("password",StringComparison.CurrentCultureIgnoreCase))
                         postParams.Add(new PostParam(inputInfo.name,password,false));
-                    else if (inputInfo.type.Equals("text",StringComparison.CurrentCultureIgnoreCase))
+                    else if (inputInfo.type.Equals("text",StringComparison.CurrentCultureIgnoreCase) ||
+                             inputInfo.type.Equals("", StringComparison.CurrentCultureIgnoreCase))
                         postParams.Add(new PostParam(inputInfo.name,username,true));
                 }
                 return postParams;
