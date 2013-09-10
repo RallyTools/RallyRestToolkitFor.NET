@@ -10,6 +10,7 @@ namespace Rally.RestApi.Test
         {
             Assert.IsTrue(Ref.IsRef("/defect/1234"), "Valid relative ref");
             Assert.IsTrue(Ref.IsRef("/defect/1234.js"), "Valid relative ref w/ extension");
+            Assert.IsTrue(Ref.IsRef("/typedefinition/-1234.js"), "Valid built-in typedef relative ref w/ extension");
             Assert.IsTrue(Ref.IsRef("https://rally1.rallydev.com/slm/webservice/1.32/defect/1234"), "Valid absolute ref");
             Assert.IsTrue(Ref.IsRef("http://rally1.rallydev.com/slm/webservice/1.32/defect/1234.js"), "Valid absolute ref w/ extension");
         }
@@ -85,6 +86,7 @@ namespace Rally.RestApi.Test
         {
             Assert.AreEqual(Ref.GetOidFromRef("/defect/1234"), "1234", "Relative ref");
             Assert.AreEqual(Ref.GetOidFromRef("/defect/1234.js"), "1234", "Relative ref with extension");
+            Assert.AreEqual(Ref.GetOidFromRef("/typedefinition/-1234.js"), "-1234", "Relative built-in typedef ref with extension");
             Assert.AreEqual(Ref.GetOidFromRef("https://rally1.rallydev.com/slm/webservice/1.32/defect/1234"), "1234", "Valid absolute ref");
         }
 
