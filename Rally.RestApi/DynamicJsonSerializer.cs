@@ -80,7 +80,7 @@ namespace Rally.RestApi
             }
             if (obj is string)
             {
-                return "\"" + ((String)obj).Replace("\"", "\\\"") + "\"";
+                return "\"" + ((String)obj).Replace(@"\",@"\\").Replace("\"", "\\\"") + "\"";
             }
             return obj.ToString();
         }
