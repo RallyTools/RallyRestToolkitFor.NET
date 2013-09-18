@@ -22,7 +22,7 @@ namespace Rally.RestApi
             new Regex (".*/(\\w+/-?\\d+)/(\\w+)(?:\\.js)*(?:\\?.*)*$"),
 
             //basic ref (/defect/1234)
-            new Regex (".*/(\\w+)/(\\d+)(?:\\.js)*(?:\\?.*)*$"),
+            new Regex (".*/(\\w+)/(-?\\d+)(?:\\.js)*(?:\\?.*)*$"),
 
             //permission ref (/workspacepermission/123u456w1)
             new Regex (".*/(\\w+)/(\\d+u\\d+[pw]\\d+)(?:\\.js)*(?:\\?.*)*$"),
