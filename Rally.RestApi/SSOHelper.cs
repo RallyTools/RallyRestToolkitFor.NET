@@ -108,6 +108,7 @@ namespace Rally.RestApi
                 {
                     //System.Windows.Forms.MessageBox.Show("Good GET request");
                     results.statusCode = response.StatusCode;
+                    results.responseUri = response.ResponseUri;
                     responseHeaders = response.Headers.ToString();
                     cookiesAfter = makeDisplayableCookieString();
 
@@ -122,9 +123,10 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("SSO Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}\r\nResponse Headers:\r\n{4}Cookies After:\r\n{5}\r\nResponse Data:\r\n{6}",
-                    results.statusCode == null ? "None" : results.statusCode.ToString(),
+                Trace.TraceInformation("SSO Get ({0}):\r\n{1}\r\n({2})\r\nRequest Headers:\r\n{3}Cookies Before:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}\r\nResponse Data:\r\n{7}",
+                    results.statusCode.ToString(),
                     uri, 
+                    request.Address,
                     requestHeaders,
                     cookiesBefore,
                     responseHeaders,
@@ -139,6 +141,7 @@ namespace Rally.RestApi
         {
             public String body;
             public HttpStatusCode statusCode;
+            public Uri responseUri;
         }
     
         private class PostResults : HttpResults
@@ -203,6 +206,7 @@ namespace Rally.RestApi
                 {
                     //System.Windows.Forms.MessageBox.Show("Good POST request");
                     results.statusCode = response.StatusCode;
+                    results.responseUri = response.ResponseUri;
                     //results.redirectLocation = response.GetResponseHeader("Location");
                     responseHeaders = response.Headers.ToString();
                     cookiesAfter = makeDisplayableCookieString();
@@ -218,9 +222,10 @@ namespace Rally.RestApi
             }
             finally
             {
-                Trace.TraceInformation("SSO Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}\r\nPost Params(Unencoded):\r\n{4}Response Headers:\r\n{5}Cookies After:\r\n{6}\r\nResponse Data\r\n{7}",
-                    results.statusCode==null?"None":results.statusCode.ToString(),  
-                    uri, 
+                Trace.TraceInformation("SSO Post ({0}):\r\n{1}\r\n({2})\r\nRequest Headers:\r\n{3}Cookies Before:\r\n{4}\r\nPost Params(Unencoded):\r\n{5}Response Headers:\r\n{6}Cookies After:\r\n{7}\r\nResponse Data\r\n{8}",
+                    results.statusCode.ToString(),  
+                    uri,
+                    request.Address,
                     requestHeaders,
                     cookiesBefore,
                     postParamString,
@@ -333,12 +338,12 @@ namespace Rally.RestApi
             Uri activeUri = uri;
             if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(username))
                 performGet(activeUri, true);  // Try to get an authentication cookie using network credentials
-            String response = performGet(activeUri, false).body;
+            HttpResults httpResults = performGet(activeUri, false);
             //Fix = what if null or no data?
         
             do 
             {
-                if (response == null)
+                if (httpResults.body == null)
                 {
                     Trace.TraceError("No response returned during SSO handshake.  There should have been one.");
                     break;
@@ -347,11 +352,11 @@ namespace Rally.RestApi
                 // look for a form that will provide the next URL in the handshake sequence, which will also provide fields (such
                 // as the SAML request from the SP and the SAML response from the IdP) that need to be forwarded on to the next URL
 
-                FormInfo formInfo = getFirstFormInfo(response);
+                FormInfo formInfo = getFirstFormInfo(httpResults.body);
                 
                 if (formInfo == null) 
                 {
-                    Trace.TraceError("No form detected during SSO handshake.  There should have been one.\r\n\r\n{0}",response);
+                    Trace.TraceError("No form detected during SSO handshake.  There should have been one.\r\n\r\n{0}", httpResults.body);
                     break; // no form detected, so this is the end of the handshake
                 }
 
@@ -374,7 +379,7 @@ namespace Rally.RestApi
                 }
 
                 // invoke the next step in the handshake
-                activeUri = formInfo.getAbsoluteUri(activeUri);
+                activeUri = formInfo.getAbsoluteUri(httpResults.responseUri);
                 PostResults postResults = performPost(activeUri, postParams);
 
                 if (postResults.statusCode != HttpStatusCode.OK)
@@ -383,7 +388,7 @@ namespace Rally.RestApi
                     break;
                 }
 
-                response = postResults.body;
+                httpResults = postResults;
 
             } while ((jsessionidCookie = getJsessionidCookie()) == null);
         
