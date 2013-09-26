@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Rally.RestApi.Test
 {
@@ -59,6 +60,16 @@ namespace Rally.RestApi.Test
             var request = new Request(collection);
 
             Assert.AreEqual("/defect/12345/tasks", request.Endpoint);
+        }
+
+        [TestMethod]
+        public void TestQueryStringUrlEncoded()
+        {
+            string query = "(Iteration.StartDate > Today+3)";
+            var request = new Request("Defect");
+            request.Fetch = new List<string>() { "Name" };
+            request.Query = new Query("(Iteration.StartDate > Today+3)");
+            request.RequestUrl.Contains(HttpUtility.UrlEncode(query));
         }
     }
 }
