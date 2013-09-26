@@ -175,6 +175,17 @@ namespace Rally.RestApi.Test
         }
 
         [TestMethod]
+        public void GetByReferencePortfolioItemTest()
+        {
+            RallyRestApi restApi = GetRallyRestApi();
+            Request fRequest = new Request("PortfolioItem/Feature");
+            QueryResult queryResults = restApi.Query(fRequest);
+            String featureRef = queryResults.Results.First()._ref;
+            DynamicJsonObject feature = restApi.GetByReference(featureRef, "Name");
+            Assert.IsNotNull(feature);
+        }
+
+        [TestMethod]
         public void GetAllowedAttributeValuesTest1x()
         {
             RallyRestApi restApi = GetRallyRestApi1x();

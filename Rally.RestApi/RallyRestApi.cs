@@ -424,12 +424,9 @@ namespace Rally.RestApi
             {
                 aRef = aRef + ".js";
             }
-            string type = Ref.GetTypeFromRef(aRef) ?? 
-                //Handle case for things like user, subscription
-                aRef.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
             
             DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
-            return type.Equals(wrappedReponse.Fields.FirstOrDefault(), StringComparison.CurrentCultureIgnoreCase) ? wrappedReponse[wrappedReponse.Fields.First()] : null;
+            return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
         }
 
         /// <summary>
