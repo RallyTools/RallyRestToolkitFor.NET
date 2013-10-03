@@ -434,9 +434,13 @@ namespace Rally.RestApi
                     authCookie.Path != null)
                 {
                     this.authCookie = authCookie;
+                    Trace.TraceInformation("Sucessfully parsed SSO token page.\n{0}",htmlPage);
                 }
             }
-            return this.authCookie != null;
+            bool success = this.authCookie != null;
+            if (!success)
+                Trace.TraceWarning("Unable to parse SSO token page.\n{0}",htmlPage);
+            return success;
         }
     }
 }
