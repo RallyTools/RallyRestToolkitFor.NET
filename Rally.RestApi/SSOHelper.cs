@@ -16,7 +16,7 @@ namespace Rally.RestApi
     class SSOHelper
     {
         private CookieContainer cookieContainer = new CookieContainer();
-        public Cookie jsessionidCookie = null;
+        public Cookie authCookie = null;
         
         public SSOHelper()
         {
@@ -390,14 +390,53 @@ namespace Rally.RestApi
 
                 httpResults = postResults;
 
-            } while ((jsessionidCookie = getJsessionidCookie()) == null);
+            } while ((authCookie = getJsessionidCookie()) == null);
         
-            return jsessionidCookie != null;
+            return authCookie != null;
         }
 
         public bool doHandshake(Uri uri)
         {
             return doHandshake(uri, null, null);
+        }
+
+        public Boolean parseAuthCookie(String htmlPage)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(htmlPage);
+            HtmlNodeCollection inputs = doc.DocumentNode.SelectNodes("//input");
+            if (inputs != null && inputs.Count > 0)
+            {
+                Cookie authCookie = new Cookie();
+
+                foreach (HtmlNode inputNode in inputs)
+                {
+                    switch (inputNode.GetAttributeValue("name", ""))
+                    {
+                        case "authCookieName":
+                            authCookie.Name = inputNode.GetAttributeValue("value", "");
+                            continue;
+                        case "authCookieValue":
+                            authCookie.Value = inputNode.GetAttributeValue("value", "");
+                            continue;
+                        case "authCookieDomain":
+                            authCookie.Domain = inputNode.GetAttributeValue("value", "");
+                            continue;
+                        case "authCookiePath":
+                            authCookie.Path = inputNode.GetAttributeValue("value", "");
+                            continue;
+                    }
+                }
+
+                if (authCookie.Name != null &&
+                    authCookie.Value != null &&
+                    authCookie.Domain != null &&
+                    authCookie.Path != null)
+                {
+                    this.authCookie = authCookie;
+                }
+            }
+            return this.authCookie != null;
         }
     }
 }

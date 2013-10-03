@@ -7,14 +7,18 @@ using Rally.RestApi;
 
 namespace Rally.RestApi
 {
-    public class ConnectionInfo
+    public class ConnectionInfo : IConnectionInfo
     {
-        public AuthorizationType authType;
-        public Uri server;
-        public String username;
-        public String password;
-        public WebProxy proxy;
-        public String wsapiVersion;
-        public Cookie authCookie;
+        public AuthorizationType authType {get;set;}
+        public Uri server { get; set; }
+        public String username { get; set; }
+        public String password { get; set; }
+        public WebProxy proxy { get; set; }
+        public String wsapiVersion { get; set; }
+        public Cookie authCookie { get; set; }
+        public virtual String getFinalSSOHandshakeHtml()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

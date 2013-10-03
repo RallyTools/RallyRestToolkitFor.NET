@@ -69,6 +69,19 @@ namespace Rally.RestApi.Test
             Assert.IsNotNull(postParams.SingleOrDefault(x => x.name == "pass_word" && x.value == "pass"));
         }
 
+        [TestMethod]
+        [DeploymentItem("Rally.RestApi.Test\\data\\")]
+        public void ParseSSOTokenPage()
+        {
+            var ssoHelper = new SSOHelper();
+            Assert.IsTrue(ssoHelper.parseAuthCookie(getDataFromFile("SSOTokenPage.html")));
+            Assert.IsNotNull(ssoHelper.authCookie);
+            Assert.AreEqual(ssoHelper.authCookie.Name, "ZSESSIONID");
+            Assert.AreEqual(ssoHelper.authCookie.Value, "khkjhkhkhkhkjhh");
+            Assert.AreEqual(ssoHelper.authCookie.Domain, "us1.rallydev.com");
+            Assert.AreEqual(ssoHelper.authCookie.Path, "/");
+        }
+
         private String getDataFromFile(String filename)
         {
             using (StreamReader sr = new StreamReader(filename))

@@ -13,7 +13,7 @@ namespace Rally.RestApi
     {
         readonly CredentialCache credentials;
         readonly CookieContainer cookies = new CookieContainer();
-        readonly ConnectionInfo connectionInfo;
+        readonly IConnectionInfo connectionInfo;
 
         internal Uri Server { get; set; }
 
@@ -21,7 +21,7 @@ namespace Rally.RestApi
         /// 
         /// </summary>
         /// <param name="connectionInfo">Connection Information</param>
-        public HttpService(ConnectionInfo connectionInfo)
+        public HttpService(IConnectionInfo connectionInfo)
         {
             this.connectionInfo = connectionInfo;
 
@@ -46,14 +46,16 @@ namespace Rally.RestApi
             var success = false;
             
             if (connectionInfo.authType == AuthorizationType.SSOWithCred)
-                success = ssoHelper.doHandshake(connectionInfo.server, connectionInfo.username, connectionInfo.password);
+            {
+                success = ssoHelper.parseAuthCookie(connectionInfo.getFinalSSOHandshakeHtml());
+            }
             else
                 success = ssoHelper.doHandshake(connectionInfo.server);
 
             if (!success)
                 throw new Exception("SSO handshake not successful!");
 
-            setCookieAuth(connectionInfo.authCookie = ssoHelper.jsessionidCookie);
+            setCookieAuth(connectionInfo.authCookie = ssoHelper.authCookie);
         }
 
         void setCookieAuth(Cookie cookie)

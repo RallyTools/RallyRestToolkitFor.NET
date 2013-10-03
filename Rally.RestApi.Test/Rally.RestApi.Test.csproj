@@ -71,6 +71,7 @@
   <ItemGroup>
     <Content Include="data\HtmlWithOnePasswordForm.txt" />
     <Content Include="data\HtmlWithOneSamlForm.txt" />
+    <Content Include="data\SSOTokenPage.html" />
     <Content Include="data\YahooSSOPasswordForm.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -164,7 +164,7 @@ namespace Rally.RestApi
         /// Construct a new RallyRestApi from the specified ConnectionInfo
         /// </summary>
         /// <param name="connectionInfo">ConnectionInfo</param>
-        public RallyRestApi(ConnectionInfo connectionInfo)
+        public RallyRestApi(IConnectionInfo connectionInfo)
         {
             Service = new HttpService(connectionInfo);
             wsapiVersion = connectionInfo.wsapiVersion ?? DEFAULT_WSAPI_VERSION;
