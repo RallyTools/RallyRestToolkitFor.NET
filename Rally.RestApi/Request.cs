@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 
 namespace Rally.RestApi
 {
@@ -202,7 +203,7 @@ namespace Rally.RestApi
             }
 
             list.Add("fetch=" + string.Join(",", fetch));
-            return Endpoint + extension + "?" + string.Join("&", list.ToArray());
+            return Endpoint + extension + "?" + HttpUtility.UrlEncode(string.Join("&", list.ToArray()));
         }
 
         internal string Endpoint
