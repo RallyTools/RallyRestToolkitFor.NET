@@ -9,16 +9,28 @@ namespace Rally.RestApi
 {
     public class ConnectionInfo : IConnectionInfo
     {
-        public AuthorizationType authType {get;set;}
-        public Uri server { get; set; }
-        public String username { get; set; }
-        public String password { get; set; }
-        public WebProxy proxy { get; set; }
-        public String wsapiVersion { get; set; }
-        public Cookie authCookie { get; set; }
-        public virtual String getFinalSSOHandshakeHtml()
+        public ConnectionInfo()
+        {
+            port = 0;
+        }
+
+        public virtual AuthorizationType authType {get;set;}
+        public virtual Uri server { get; set; }
+        public virtual String username { get; set; }
+        public virtual String password { get; set; }
+        public virtual WebProxy proxy { get; set; }
+        public virtual String wsapiVersion { get; set; }
+        public virtual Cookie authCookie { get; set; }
+        public virtual int port { get; set; }
+
+        public virtual Boolean doSSOAuth()
         {
             throw new NotImplementedException();
+        }
+
+        protected Cookie parseSSOLandingPage(String ssoLandingPage)
+        {
+            return SSOHelper.parseAuthCookie(ssoLandingPage);
         }
     }
 }

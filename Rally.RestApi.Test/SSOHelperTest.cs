@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.Net;
 
 namespace Rally.RestApi.Test
 {
@@ -73,13 +74,13 @@ namespace Rally.RestApi.Test
         [DeploymentItem("Rally.RestApi.Test\\data\\")]
         public void ParseSSOTokenPage()
         {
-            var ssoHelper = new SSOHelper();
-            Assert.IsTrue(ssoHelper.parseAuthCookie(getDataFromFile("SSOTokenPage.html")));
-            Assert.IsNotNull(ssoHelper.authCookie);
-            Assert.AreEqual(ssoHelper.authCookie.Name, "ZSESSIONID");
-            Assert.AreEqual(ssoHelper.authCookie.Value, "khkjhkhkhkhkjhh");
-            Assert.AreEqual(ssoHelper.authCookie.Domain, "us1.rallydev.com");
-            Assert.AreEqual(ssoHelper.authCookie.Path, "/");
+            Cookie cookie = SSOHelper.parseAuthCookie(getDataFromFile("SSOTokenPage.html"));
+            Assert.IsNotNull(cookie);
+            Assert.AreEqual(cookie.Name, "ZSESSIONID");
+            Assert.AreEqual(cookie.Value, "khkjhkhkhkhkjhh");
+            Assert.AreEqual(cookie.Domain, "us1.rallydev.com");
+            Assert.AreEqual(cookie.Path, "/");
+            Assert.IsTrue(cookie.Secure);
         }
 
         private String getDataFromFile(String filename)

@@ -27,7 +27,7 @@ namespace Rally.RestApi
 
             if (connectionInfo.authCookie != null)
             {
-                setCookieAuth(connectionInfo.authCookie);
+                setAuthCookie();
             }
             else if (connectionInfo.authType == AuthorizationType.Basic)
             {
@@ -47,21 +47,28 @@ namespace Rally.RestApi
             
             if (connectionInfo.authType == AuthorizationType.SSOWithCred)
             {
-                success = ssoHelper.parseAuthCookie(connectionInfo.getFinalSSOHandshakeHtml());
+                success = connectionInfo.doSSOAuth();
             }
             else
-                success = ssoHelper.doHandshake(connectionInfo.server);
+            {
+                if (success = ssoHelper.doHandshake(connectionInfo.server))
+                    connectionInfo.authCookie = ssoHelper.authCookie;
+            }
 
             if (!success)
                 throw new Exception("SSO handshake not successful!");
 
-            setCookieAuth(connectionInfo.authCookie = ssoHelper.authCookie);
+            setAuthCookie();
         }
 
-        void setCookieAuth(Cookie cookie)
+        void setAuthCookie()
         {
-            Server = new UriBuilder("https",cookie.Domain).Uri;
-            cookies.Add(cookie);
+            var uriBuilder = new UriBuilder(connectionInfo.authCookie.Secure ? "https" : "http", connectionInfo.authCookie.Domain);
+            if (connectionInfo.port > 0)
+                uriBuilder.Port = connectionInfo.port;
+
+            Server = uriBuilder.Uri;
+            cookies.Add(connectionInfo.authCookie);
         }
 
         WebClient GetWebClient(IEnumerable<KeyValuePair<string, string>> headers = null)

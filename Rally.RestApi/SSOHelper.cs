@@ -400,14 +400,15 @@ namespace Rally.RestApi
             return doHandshake(uri, null, null);
         }
 
-        public Boolean parseAuthCookie(String htmlPage)
+        public static Cookie parseAuthCookie(String htmlPage)
         {
+            Cookie authCookie = null;
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(htmlPage);
             HtmlNodeCollection inputs = doc.DocumentNode.SelectNodes("//input");
             if (inputs != null && inputs.Count > 0)
             {
-                Cookie authCookie = new Cookie();
+                authCookie = new Cookie();
 
                 foreach (HtmlNode inputNode in inputs)
                 {
@@ -428,19 +429,18 @@ namespace Rally.RestApi
                     }
                 }
 
-                if (authCookie.Name != null &&
-                    authCookie.Value != null &&
-                    authCookie.Domain != null &&
-                    authCookie.Path != null)
+                if (String.IsNullOrWhiteSpace(authCookie.Name) ||
+                    String.IsNullOrWhiteSpace(authCookie.Value))
                 {
-                    this.authCookie = authCookie;
-                    Trace.TraceInformation("Sucessfully parsed SSO token page.\n{0}",htmlPage);
+                    authCookie = null;
                 }
             }
-            bool success = this.authCookie != null;
-            if (!success)
+
+            if (authCookie == null)
                 Trace.TraceWarning("Unable to parse SSO token page.\n{0}",htmlPage);
-            return success;
+            else
+                Trace.TraceInformation("Sucessfully parsed SSO token page.\n{0}",htmlPage);
+            return authCookie;
         }
     }
 }
