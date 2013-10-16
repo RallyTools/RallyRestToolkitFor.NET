@@ -193,17 +193,17 @@ namespace Rally.RestApi
                     continue;
                 if (tmpParameters[key] is bool)
                 {
-                    list.Add(key + "=" + tmpParameters[key].ToString().ToLower());
+                    list.Add(key + "=" + HttpUtility.UrlEncode(tmpParameters[key].ToString().ToLower()));
                 }
                 else
                 {
                     string value = tmpParameters[key].ToString();
-                    list.Add(key + "=" + value);
+                    list.Add(key + "=" + HttpUtility.UrlEncode(value));
                 }
             }
 
-            list.Add("fetch=" + string.Join(",", fetch));
-            return Endpoint + extension + "?" + HttpUtility.UrlEncode(string.Join("&", list.ToArray()));
+            list.Add("fetch=" + HttpUtility.UrlEncode(string.Join(",", fetch)));
+            return Endpoint + extension + "?" + string.Join("&", list.ToArray());
         }
 
         internal string Endpoint
