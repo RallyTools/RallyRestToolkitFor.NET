@@ -22,6 +22,27 @@ namespace Rally.RestApi.Test
                 Assert.AreEqual(request.Parameters[parameterKey],
                     request2.Parameters[parameterKey]);
             }
+            Assert.AreEqual(request.Endpoint, request2.Endpoint);
+        }
+
+        [TestMethod]
+        public void CloneCollection()
+        {
+            DynamicJsonObject collection = new DynamicJsonObject();
+            collection["_ref"] = "/hierarchicalrequirement/12345/defect.js";
+            var request = new Request(collection);
+            request.Fetch = new List<string>() { "Name", "FormattedID" };
+
+            var request2 = request.Clone();
+            Assert.AreEqual(string.Join(",", request.Fetch),
+                string.Join(",", request2.Fetch));
+
+            foreach (var parameterKey in request.Parameters.Keys)
+            {
+                Assert.AreEqual(request.Parameters[parameterKey],
+                    request2.Parameters[parameterKey]);
+            }
+            Assert.AreEqual(request.Endpoint, request2.Endpoint);
         }
 
         [TestMethod]

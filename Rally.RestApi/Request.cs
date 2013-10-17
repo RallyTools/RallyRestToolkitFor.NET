@@ -239,7 +239,8 @@ namespace Rally.RestApi
         /// <returns>The clone request</returns>
         public Request Clone()
         {
-            var request = new Request(ArtifactName) { Limit = Limit };
+            var request = collection != null ? new Request(collection) : new Request(ArtifactName);
+            request.Limit = Limit;
             foreach (var dictionaryKey in Parameters.Keys)
             {
                 request.Parameters[dictionaryKey] = Parameters[dictionaryKey];
