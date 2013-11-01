@@ -17,6 +17,6 @@ namespace Rally.RestApi
         Cookie authCookie { get; set; }
         int port { get; set; }
 
-        Boolean doSSOAuth();
+        void doSSOAuth();
     }
 }

@@ -23,14 +23,31 @@ namespace Rally.RestApi
         public virtual Cookie authCookie { get; set; }
         public virtual int port { get; set; }
 
-        public virtual Boolean doSSOAuth()
+        public virtual void doSSOAuth()
+        {
+            if (authType == AuthorizationType.SSO)
+            {
+                doBrowserSSOAuth();
+            }
+            else if (authType == AuthorizationType.SSOWithoutCred)
+            {
+                doNetworkSSOAuth();
+            }
+        }
+
+        protected virtual void doBrowserSSOAuth()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void doNetworkSSOAuth()
         {
             throw new NotImplementedException();
         }
 
         protected Cookie parseSSOLandingPage(String ssoLandingPage)
         {
-            return SSOHelper.parseAuthCookie(ssoLandingPage);
+            return SSOHelper.parsSSOLandingPage(ssoLandingPage);
         }
     }
 }

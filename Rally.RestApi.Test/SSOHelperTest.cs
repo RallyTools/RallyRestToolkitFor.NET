@@ -74,7 +74,7 @@ namespace Rally.RestApi.Test
         [DeploymentItem("Rally.RestApi.Test\\data\\")]
         public void ParseSSOTokenPage()
         {
-            Cookie cookie = SSOHelper.parseAuthCookie(getDataFromFile("SSOTokenPage.html"));
+            Cookie cookie = SSOHelper.parsSSOLandingPage(getDataFromFile("SSOTokenPage.html"));
             Assert.IsNotNull(cookie);
             Assert.AreEqual(cookie.Name, "ZSESSIONID");
             Assert.AreEqual(cookie.Value, "khkjhkhkhkhkjhh");

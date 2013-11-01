@@ -42,22 +42,7 @@ namespace Rally.RestApi
 
         private void doSSOAuth()
         {
-            var ssoHelper = new SSOHelper();
-            var success = false;
-            
-            if (connectionInfo.authType == AuthorizationType.SSOWithCred)
-            {
-                success = connectionInfo.doSSOAuth();
-            }
-            else
-            {
-                if (success = ssoHelper.doHandshake(connectionInfo.server))
-                    connectionInfo.authCookie = ssoHelper.authCookie;
-            }
-
-            if (!success)
-                throw new Exception("SSO handshake not successful!");
-
+            connectionInfo.doSSOAuth();
             setAuthCookie();
         }
 
@@ -162,6 +147,7 @@ namespace Rally.RestApi
                         ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
                         connectionInfo.authType != AuthorizationType.Basic)
                     {
+                        Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
                         doSSOAuth();
                         continue;
                     }
