@@ -11,6 +11,7 @@ namespace Rally.RestApi
 {
     internal class HttpService
     {
+        const int MAX_RETRIES = 4;
         readonly CredentialCache credentials;
         readonly CookieContainer cookies = new CookieContainer();
         readonly IConnectionInfo connectionInfo;
@@ -78,6 +79,7 @@ namespace Rally.RestApi
             String responseHeaders = "";
             String cookiesBefore = "";
             String cookiesAfter = "";
+            int retries = 0;
 
             do
             {
@@ -98,6 +100,13 @@ namespace Rally.RestApi
                     if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
                         connectionInfo.authType != AuthorizationType.Basic)
                     {
+                        if (retries > MAX_RETRIES)
+                        {
+                            Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+                            throw;
+                        }
+
+                        Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
                         doSSOAuth();
                         continue;
                     }
@@ -126,6 +135,7 @@ namespace Rally.RestApi
             String responseHeaders = "";
             String cookiesBefore = "";
             String cookiesAfter = "";
+            int retries = 0;
 
             do
             {
@@ -147,6 +157,12 @@ namespace Rally.RestApi
                         ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
                         connectionInfo.authType != AuthorizationType.Basic)
                     {
+                        if (retries > MAX_RETRIES)
+                        {
+                            Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+                            throw;
+                        }
+
                         Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
                         doSSOAuth();
                         continue;
@@ -175,6 +191,7 @@ namespace Rally.RestApi
             String responseHeaders = "";
             String cookiesBefore = "";
             String cookiesAfter = "";
+            int retries = 0;
 
             do
             {
@@ -198,6 +215,13 @@ namespace Rally.RestApi
                     responseHeaders = httpResponse.Headers.ToString();
                     if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
                     {
+                        if (retries > MAX_RETRIES)
+                        {
+                            Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+                            throw new WebException("Unauthorized",null,WebExceptionStatus.TrustFailure,httpResponse);
+                        }
+
+                        Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
                         doSSOAuth();
                         continue;
                     }
