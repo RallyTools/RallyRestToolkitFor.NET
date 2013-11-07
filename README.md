@@ -12,7 +12,7 @@ Rally Software does not actively maintain or support this toolkit.  If you have 
 
 ## Download
 
-[Rally REST API for .NET DLL](https://github.com/RallyTools/RallyRestToolkitFor.NET/releases/download/v2.0/rally-rest-api.net-2.0.zip)
+[Rally REST API for .NET DLL](https://github.com/RallyTools/RallyRestToolkitFor.NET/releases/download/v2.0.1/rally-rest-api.net-2.0.1.zip)
 
 ## User Guide 
 
