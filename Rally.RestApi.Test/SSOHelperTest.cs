@@ -80,7 +80,6 @@ namespace Rally.RestApi.Test
             Assert.AreEqual(cookie.Value, "khkjhkhkhkhkjhh");
             Assert.AreEqual(cookie.Domain, "us1.rallydev.com");
             Assert.AreEqual(cookie.Path, "/");
-            Assert.IsTrue(cookie.Secure);
         }
 
         private String getDataFromFile(String filename)

@@ -421,12 +421,12 @@ namespace Rally.RestApi
                             authCookie.Value = inputNode.GetAttributeValue("value", "");
                             continue;
                         case "authCookieDomain":
-                            authCookie.Domain = "";
-                            //authCookie.Domain = inputNode.GetAttributeValue("value", "");
+                            String domain = inputNode.GetAttributeValue("value", "");
+                            authCookie.Domain = domain == null || domain == "null" ?  "" : domain;
                             continue;
                         case "authCookiePath":
-                            authCookie.Path = "";
-                            //authCookie.Path = inputNode.GetAttributeValue("value", "");
+                            String path = inputNode.GetAttributeValue("value", "");
+                            authCookie.Path = path == null || path == "null" ? "" : path;
                             continue;
                     }
                 }
