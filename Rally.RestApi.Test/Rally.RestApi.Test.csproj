@@ -32,6 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\Rally.Development.Key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -52,9 +58,14 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CachedRequestTest.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="IntegrationTestInfo.cs" />
     <Compile Include="OperationResultTest.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="QueryTest.cs" />
     <Compile Include="DynamicJsonSerializerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,6 +85,16 @@
     <Content Include="data\HtmlWithOneSamlForm.txt" />
     <Content Include="data\SSOTokenPage.html" />
     <Content Include="data\YahooSSOPasswordForm.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Rally.Development.Key.snk">
+      <Link>Rally.Development.Key.snk</Link>
+    </None>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
