@@ -8,7 +8,6 @@ namespace Rally.RestApi
     public enum AuthorizationType
     {
         Basic,
-        SSO,
-        SSOWithoutCred
+        SSO
     }
 }

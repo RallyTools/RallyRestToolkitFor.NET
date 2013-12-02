@@ -25,23 +25,6 @@ namespace Rally.RestApi
 
         public virtual void doSSOAuth()
         {
-            if (authType == AuthorizationType.SSO)
-            {
-                doBrowserSSOAuth();
-            }
-            else if (authType == AuthorizationType.SSOWithoutCred)
-            {
-                doNetworkSSOAuth();
-            }
-        }
-
-        protected virtual void doBrowserSSOAuth()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected virtual void doNetworkSSOAuth()
-        {
             throw new NotImplementedException();
         }
 
