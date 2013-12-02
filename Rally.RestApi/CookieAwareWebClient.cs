@@ -6,29 +6,30 @@ using System.Text;
 
 namespace Rally.RestApi
 {
-    internal class CookieAwareWebClient : WebClient
-    {
-        private readonly CookieContainer cookies;
+	[System.ComponentModel.DesignerCategory("")]
+	internal class CookieAwareWebClient : WebClient
+	{
+		protected CookieContainer Cookies { get; private set; }
 
-        public CookieAwareWebClient(CookieContainer cookies = null)
-            : base()
-        {
-            this.cookies = cookies ?? new CookieContainer();
-        }
+		public CookieAwareWebClient(CookieContainer cookies = null)
+			: base()
+		{
+			this.Cookies = cookies ?? new CookieContainer();
+		}
 
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            WebRequest request = base.GetWebRequest(address);
+		protected override WebRequest GetWebRequest(Uri address)
+		{
+			WebRequest request = base.GetWebRequest(address);
 
-            HttpWebRequest webRequest = request as HttpWebRequest;
-            if (webRequest != null)
-            {
-                webRequest.CookieContainer = cookies;
-            }
+			HttpWebRequest webRequest = request as HttpWebRequest;
+			if (webRequest != null)
+			{
+				webRequest.CookieContainer = Cookies;
+			}
 
-            request.Timeout = 300000;
+			request.Timeout = 300000;
 
-            return request;
-        }
-    }
+			return request;
+		}
+	}
 }
