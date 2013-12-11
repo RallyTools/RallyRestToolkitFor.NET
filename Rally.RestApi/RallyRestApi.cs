@@ -449,7 +449,34 @@ namespace Rally.RestApi
 			return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Get the object described by the specified reference scoped to the provided workspace.
+        /// </summary>
+        /// <param name="aRef">the reference</param>
+        /// <param name="workspaceRef">workspace scope</param>
+        /// <param name="fetchedFields">the list of object fields to be fetched</param>
+        /// <returns>The requested object</returns>
+        public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
+        {
+            if (fetchedFields.Length == 0)
+            {
+                fetchedFields = new string[] { "true" };
+            }
+
+            if (!aRef.Contains(".js"))
+            {
+                aRef = aRef + ".js";
+            }
+
+            string workspaceClause = "";
+            if (workspaceRef != null)
+                workspaceClause = "workspace="+workspaceRef+"&";
+
+            DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?" + workspaceClause + "fetch=" + string.Join(",", fetchedFields)));
+            return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
+        }
+
+        /// <summary>
 		/// Delete the object described by the specified type and object id.
 		/// </summary>
 		/// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>
