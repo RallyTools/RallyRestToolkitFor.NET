@@ -1,96 +1,120 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Web;
+using System;
 
 namespace Rally.RestApi.Test
 {
-    [TestClass()]
-    public class RequestTest
-    {
-        [TestMethod]
-        public void Clone()
-        {
-            var request = new Request("Defect");
-            request.Fetch = new List<string>() { "Name", "FormattedID" };
+	[TestClass()]
+	public class RequestTest
+	{
+		[TestMethod]
+		public void Clone()
+		{
+			var request = new Request("Defect");
+			request.Fetch = new List<string>() { "Name", "FormattedID" };
 
-            var request2 = request.Clone();
-            Assert.AreEqual(string.Join(",", request.Fetch),
-                string.Join(",", request2.Fetch));
+			var request2 = request.Clone();
+			Assert.AreEqual(string.Join(",", request.Fetch),
+					string.Join(",", request2.Fetch));
 
-            foreach (var parameterKey in request.Parameters.Keys)
-            {
-                Assert.AreEqual(request.Parameters[parameterKey],
-                    request2.Parameters[parameterKey]);
-            }
-            Assert.AreEqual(request.Endpoint, request2.Endpoint);
-        }
+			foreach (var parameterKey in request.Parameters.Keys)
+			{
+				Assert.AreEqual(request.Parameters[parameterKey],
+						request2.Parameters[parameterKey]);
+			}
+			Assert.AreEqual(request.Endpoint, request2.Endpoint);
+		}
 
-        [TestMethod]
-        public void CloneCollection()
-        {
-            DynamicJsonObject collection = new DynamicJsonObject();
-            collection["_ref"] = "/hierarchicalrequirement/12345/defect.js";
-            var request = new Request(collection);
-            request.Fetch = new List<string>() { "Name", "FormattedID" };
+		[TestMethod]
+		public void CloneCollection()
+		{
+			DynamicJsonObject collection = new DynamicJsonObject();
+			collection["_ref"] = "/hierarchicalrequirement/12345/defect.js";
+			var request = new Request(collection);
+			request.Fetch = new List<string>() { "Name", "FormattedID" };
 
-            var request2 = request.Clone();
-            Assert.AreEqual(string.Join(",", request.Fetch),
-                string.Join(",", request2.Fetch));
+			var request2 = request.Clone();
+			Assert.AreEqual(string.Join(",", request.Fetch),
+					string.Join(",", request2.Fetch));
 
-            foreach (var parameterKey in request.Parameters.Keys)
-            {
-                Assert.AreEqual(request.Parameters[parameterKey],
-                    request2.Parameters[parameterKey]);
-            }
-            Assert.AreEqual(request.Endpoint, request2.Endpoint);
-        }
+			foreach (var parameterKey in request.Parameters.Keys)
+			{
+				Assert.AreEqual(request.Parameters[parameterKey],
+						request2.Parameters[parameterKey]);
+			}
+			Assert.AreEqual(request.Endpoint, request2.Endpoint);
+		}
 
-        [TestMethod]
-        public void TestEndpointSubscription()
-        {
-            var request = new Request("Subscription");
-            request.Fetch = new List<string>() { "Name" };
+		[TestMethod]
+		public void TestEndpointSubscription()
+		{
+			var request = new Request("Subscription");
+			request.Fetch = new List<string>() { "Name" };
 
-            Assert.AreEqual("/subscriptions", request.Endpoint);
-        }
+			Assert.AreEqual("/subscriptions", request.Endpoint);
+		}
 
-        [TestMethod]
-        public void TestEndpointUser()
-        {
-            var request = new Request("User");
-            request.Fetch = new List<string>() { "FirstName" };
+		[TestMethod]
+		public void TestEndpointUser()
+		{
+			var request = new Request("User");
+			request.Fetch = new List<string>() { "FirstName" };
 
-            Assert.AreEqual("/users", request.Endpoint);
-        }
+			Assert.AreEqual("/users", request.Endpoint);
+		}
 
-        [TestMethod]
-        public void TestEndpointDefect()
-        {
-            var request = new Request("Defect");
-            request.Fetch = new List<string>() { "Name" };
+		[TestMethod]
+		public void TestEndpointDefect()
+		{
+			var request = new Request("Defect");
+			request.Fetch = new List<string>() { "Name" };
 
-            Assert.AreEqual("/defect", request.Endpoint);
-        }
+			Assert.AreEqual("/defect", request.Endpoint);
+		}
 
-        [TestMethod]
-        public void TestEndpointCollection()
-        {
-            DynamicJsonObject collection = new DynamicJsonObject();
-            collection["_ref"] = "https://rally1.rallydev.com/slm/webservice/v2.0/defect/12345/tasks";
+		[TestMethod]
+		public void TestEndpointCollection()
+		{
+			DynamicJsonObject collection = new DynamicJsonObject();
+			collection["_ref"] = "https://rally1.rallydev.com/slm/webservice/v2.0/defect/12345/tasks";
 
-            var request = new Request(collection);
+			var request = new Request(collection);
 
-            Assert.AreEqual("/defect/12345/tasks", request.Endpoint);
-        }
+			Assert.AreEqual("/defect/12345/tasks", request.Endpoint);
+		}
 
-        [TestMethod]
-        public void TestQueryStringUrlEncoded()
-        {
-            string query = "(Iteration.StartDate > Today+3)";
-            var request = new Request("Defect");
-            request.Fetch = new List<string>() { "Name" };
-            request.Query = new Query("(Iteration.StartDate > Today+3)");
-            request.RequestUrl.Contains(HttpUtility.UrlEncode(query));
-        }
-    }
+		[TestMethod]
+		public void TestQueryStringUrlEncoded()
+		{
+			string query = "(Iteration.StartDate > Today+3)";
+			var request = new Request("Defect");
+			request.Fetch = new List<string>() { "Name" };
+			request.Query = new Query("(Iteration.StartDate > Today+3)");
+			request.RequestUrl.Contains(HttpUtility.UrlEncode(query));
+		}
+
+		[TestMethod]
+		public void TestCreateFromRef()
+		{
+			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/defect.js?pagesize=1&order=Name+desc%2cObjectID&start=1&fetch=true",
+					"https://rally1.rallydev.com/slm/webservice/v2.0");
+			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement/12345/defect.js?pagesize=172&order=ObjectID&start=57&fetch=Name%2cFormattedID",
+					"https://rally1.rallydev.com/slm/webservice/v2.0");
+			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/Project/3195568271/Editors",
+					"https://rally1.rallydev.com/slm/webservice/v2.0");
+		}
+
+		private void TestCreateFromRefHelper(string urlToCheck, string removePriorToValidation = null)
+		{
+			Request request = Request.CreateFromUrl(urlToCheck);
+			if (removePriorToValidation != null)
+				urlToCheck = urlToCheck.Replace(removePriorToValidation, String.Empty);
+
+			if (urlToCheck.Contains("?"))
+				Assert.AreEqual(urlToCheck, request.RequestUrl);
+			else
+				Assert.AreEqual(urlToCheck, request.Endpoint);
+		}
+	}
 }
