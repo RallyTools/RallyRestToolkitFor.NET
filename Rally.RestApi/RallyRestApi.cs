@@ -124,6 +124,15 @@ namespace Rally.RestApi
 
 		#endregion
 
+		/// <summary>
+		/// Construct a new RallyRestApi with the specified
+		/// username, password, server and WSAPI version
+		/// </summary>
+		/// <param name="username">The username to be used for access</param>
+		/// <param name="password">The password to be used for access</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
 		public RallyRestApi(
 				string username,
 				string password,
@@ -153,12 +162,12 @@ namespace Rally.RestApi
 		)
 			: this(new ConnectionInfo()
 			{
-				authType = AuthorizationType.Basic,
-				username = username,
-				password = password,
-				server = serverUrl,
-				wsapiVersion = webServiceVersion,
-				proxy = proxy
+				AuthType = AuthorizationType.Basic,
+				UserName = username,
+				Password = password,
+				Server = serverUrl,
+				WsapiVersion = webServiceVersion,
+				Proxy = proxy
 			})
 		{
 		}
@@ -170,7 +179,7 @@ namespace Rally.RestApi
 		public RallyRestApi(IConnectionInfo connectionInfo)
 		{
 			Service = new HttpService(connectionInfo);
-			wsapiVersion = connectionInfo.wsapiVersion ?? DEFAULT_WSAPI_VERSION;
+			wsapiVersion = connectionInfo.WsapiVersion ?? DEFAULT_WSAPI_VERSION;
 		}
 
 		/// <summary>
@@ -250,7 +259,10 @@ namespace Rally.RestApi
 			return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
 		}
 
-		public DynamicJsonObject post(String relativeUri, DynamicJsonObject data)
+		/// <summary>
+		/// Performs a post of data to the provided URI.
+		/// </summary>
+		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
 			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", Service.Server.AbsoluteUri, wsapiVersion, relativeUri));
 			string postData = serializer.Serialize(data);
@@ -449,34 +461,34 @@ namespace Rally.RestApi
 			return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
 		}
 
-        /// <summary>
-        /// Get the object described by the specified reference scoped to the provided workspace.
-        /// </summary>
-        /// <param name="aRef">the reference</param>
-        /// <param name="workspaceRef">workspace scope</param>
-        /// <param name="fetchedFields">the list of object fields to be fetched</param>
-        /// <returns>The requested object</returns>
-        public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
-        {
-            if (fetchedFields.Length == 0)
-            {
-                fetchedFields = new string[] { "true" };
-            }
+		/// <summary>
+		/// Get the object described by the specified reference scoped to the provided workspace.
+		/// </summary>
+		/// <param name="aRef">the reference</param>
+		/// <param name="workspaceRef">workspace scope</param>
+		/// <param name="fetchedFields">the list of object fields to be fetched</param>
+		/// <returns>The requested object</returns>
+		public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
+		{
+			if (fetchedFields.Length == 0)
+			{
+				fetchedFields = new string[] { "true" };
+			}
 
-            if (!aRef.Contains(".js"))
-            {
-                aRef = aRef + ".js";
-            }
+			if (!aRef.Contains(".js"))
+			{
+				aRef = aRef + ".js";
+			}
 
-            string workspaceClause = "";
-            if (workspaceRef != null)
-                workspaceClause = "workspace="+workspaceRef+"&";
+			string workspaceClause = "";
+			if (workspaceRef != null)
+				workspaceClause = "workspace=" + workspaceRef + "&";
 
-            DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?" + workspaceClause + "fetch=" + string.Join(",", fetchedFields)));
-            return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
-        }
+			DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?" + workspaceClause + "fetch=" + string.Join(",", fetchedFields)));
+			return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
+		}
 
-        /// <summary>
+		/// <summary>
 		/// Delete the object described by the specified type and object id.
 		/// </summary>
 		/// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>

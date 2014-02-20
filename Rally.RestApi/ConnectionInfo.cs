@@ -7,30 +7,66 @@ using Rally.RestApi;
 
 namespace Rally.RestApi
 {
-    public class ConnectionInfo : IConnectionInfo
-    {
-        public ConnectionInfo()
-        {
-            port = 0;
-        }
+	/// <summary>
+	/// An object for tracking connection information.
+	/// </summary>
+	public class ConnectionInfo : IConnectionInfo
+	{
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public ConnectionInfo()
+		{
+			Port = 0;
+		}
 
-        public virtual AuthorizationType authType {get;set;}
-        public virtual Uri server { get; set; }
-        public virtual String username { get; set; }
-        public virtual String password { get; set; }
-        public virtual WebProxy proxy { get; set; }
-        public virtual String wsapiVersion { get; set; }
-        public virtual Cookie authCookie { get; set; }
-        public virtual int port { get; set; }
+		/// <summary>
+		/// The authorization type for this connection.
+		/// </summary>
+		public virtual AuthorizationType AuthType { get; set; }
+		/// <summary>
+		/// The server this connection is to.
+		/// </summary>
+		public virtual Uri Server { get; set; }
+		/// <summary>
+		/// The username for this connection.
+		/// </summary>
+		public virtual String UserName { get; set; }
+		/// <summary>
+		/// The password for this connection.
+		/// </summary>
+		public virtual String Password { get; set; }
+		/// <summary>
+		/// The proxy server to use for this connection.
+		/// </summary>
+		public virtual WebProxy Proxy { get; set; }
+		/// <summary>
+		/// The WSAPI version we are talking to.
+		/// </summary>
+		public virtual String WsapiVersion { get; set; }
+		/// <summary>
+		/// The authorization cookie for this connection.
+		/// </summary>
+		public virtual Cookie AuthCookie { get; set; }
+		/// <summary>
+		/// The port we are connecting to.
+		/// </summary>
+		public virtual int Port { get; set; }
 
-        public virtual void doSSOAuth()
-        {
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// Perform SSO authorization for this connection.
+		/// </summary>
+		public virtual void DoSSOAuth()
+		{
+			throw new NotImplementedException();
+		}
 
-        protected Cookie parseSSOLandingPage(String ssoLandingPage)
-        {
-            return SSOHelper.parsSSOLandingPage(ssoLandingPage);
-        }
-    }
+		/// <summary>
+		/// Parses an SSO landing page to retreive the Cookie that is embedded for SSO.
+		/// </summary>
+		protected Cookie ParseSSOLandingPage(String ssoLandingPage)
+		{
+			return SSOHelper.ParseSSOLandingPage(ssoLandingPage);
+		}
+	}
 }

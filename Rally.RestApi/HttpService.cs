@@ -26,14 +26,14 @@ namespace Rally.RestApi
 		{
 			this.connectionInfo = connectionInfo;
 
-			if (connectionInfo.authCookie != null)
+			if (connectionInfo.AuthCookie != null)
 			{
 				setAuthCookie();
 			}
-			else if (connectionInfo.authType == AuthorizationType.Basic)
+			else if (connectionInfo.AuthType == AuthorizationType.Basic)
 			{
-				Server = connectionInfo.server;
-				credentials = new CredentialCache { { connectionInfo.server, "Basic", new NetworkCredential(connectionInfo.username, connectionInfo.password) } };
+				Server = connectionInfo.Server;
+				credentials = new CredentialCache { { connectionInfo.Server, "Basic", new NetworkCredential(connectionInfo.UserName, connectionInfo.Password) } };
 			}
 			else
 			{
@@ -43,18 +43,18 @@ namespace Rally.RestApi
 
 		private void doSSOAuth()
 		{
-			connectionInfo.doSSOAuth();
+			connectionInfo.DoSSOAuth();
 			setAuthCookie();
 		}
 
 		void setAuthCookie()
 		{
-			var uriBuilder = new UriBuilder(connectionInfo.authCookie.Secure ? "https" : "http", connectionInfo.authCookie.Domain);
-			if (connectionInfo.port > 0)
-				uriBuilder.Port = connectionInfo.port;
+			var uriBuilder = new UriBuilder(connectionInfo.AuthCookie.Secure ? "https" : "http", connectionInfo.AuthCookie.Domain);
+			if (connectionInfo.Port > 0)
+				uriBuilder.Port = connectionInfo.Port;
 
 			Server = uriBuilder.Uri;
-			cookies.Add(connectionInfo.authCookie);
+			cookies.Add(connectionInfo.AuthCookie);
 		}
 
 		WebClient GetWebClient(IEnumerable<KeyValuePair<string, string>> headers = null, bool isCacheable = false)
@@ -75,8 +75,8 @@ namespace Rally.RestApi
 					webClient.Headers.Add(pairs.Key, pairs.Value);
 			if (credentials != null)
 				webClient.Credentials = credentials;
-			if (connectionInfo.proxy != null)
-				webClient.Proxy = connectionInfo.proxy;
+			if (connectionInfo.Proxy != null)
+				webClient.Proxy = connectionInfo.Proxy;
 			return webClient;
 		}
 
@@ -107,7 +107,7 @@ namespace Rally.RestApi
 				catch (WebException e)
 				{
 					if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
-							connectionInfo.authType != AuthorizationType.Basic)
+							connectionInfo.AuthType != AuthorizationType.Basic)
 					{
 						if (retries > MAX_RETRIES)
 						{
@@ -164,7 +164,7 @@ namespace Rally.RestApi
 				{
 					if (e.Response != null &&
 							((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
-							connectionInfo.authType != AuthorizationType.Basic)
+							connectionInfo.AuthType != AuthorizationType.Basic)
 					{
 						if (retries > MAX_RETRIES)
 						{

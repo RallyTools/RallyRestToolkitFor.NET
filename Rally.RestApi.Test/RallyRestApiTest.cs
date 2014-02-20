@@ -37,11 +37,11 @@ namespace Rally.RestApi.Test
 			}
 
 			var connInfo = new ConnectionInfo();
-			connInfo.authType = AuthorizationType.Basic;
-			connInfo.username = userName;
-			connInfo.password = password;
-			connInfo.server = new Uri(server);
-			connInfo.wsapiVersion = wsapiVersion;
+			connInfo.AuthType = AuthorizationType.Basic;
+			connInfo.UserName = userName;
+			connInfo.Password = password;
+			connInfo.Server = new Uri(server);
+			connInfo.WsapiVersion = wsapiVersion;
 
 			return new RallyRestApi(connInfo);
 		}

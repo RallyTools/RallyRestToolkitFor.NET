@@ -5,9 +5,18 @@ using System.Text;
 
 namespace Rally.RestApi
 {
-    public enum AuthorizationType
-    {
-        Basic,
-        SSO
-    }
+	/// <summary>
+	/// The types of authorization that are available.
+	/// </summary>
+	public enum AuthorizationType
+	{
+		/// <summary>
+		/// Basic authorization where the user provides a username and password.
+		/// </summary>
+		Basic,
+		/// <summary>
+		/// SSO authorization.
+		/// </summary>
+		SSO
+	}
 }

@@ -6,16 +6,25 @@ using System.Web.Script.Serialization;
 
 namespace Rally.RestApi
 {
+	/// <summary>
+	/// A class for serializing/deserizalizing dynamic JSON objects.
+	/// </summary>
 	public class DynamicJsonSerializer
 	{
 		readonly JavaScriptSerializer deSerializer;
+		/// <summary>
+		/// Constructor
+		/// </summary>
 		public DynamicJsonSerializer()
 		{
 			deSerializer = new JavaScriptSerializer();
 			deSerializer.MaxJsonLength = int.MaxValue;
 			deSerializer.RegisterConverters(new JavaScriptConverter[] { new DynamicJsonConverter() });
 		}
-		// as dynamic
+
+		/// <summary>
+		/// Deserializes a JSON data string into a dynamic JSON Object.
+		/// </summary>
 		public DynamicJsonObject Deserialize(string json)
 		{
 			try
@@ -30,10 +39,18 @@ namespace Rally.RestApi
 					throw;
 			}
 		}
+
+		/// <summary>
+		/// Serializes a dynamic JSON Object into a string.
+		/// </summary>
 		public string Serialize(DynamicJsonObject value)
 		{
 			return SerializeDictionary(value.Dictionary);
 		}
+
+		/// <summary>
+		/// Serializes a dictionary into a string.
+		/// </summary>
 		public string SerializeDictionary(IDictionary<string, object> dictionary)
 		{
 			var builder = new StringBuilder();
@@ -88,7 +105,7 @@ namespace Rally.RestApi
 			{
 				return "null";
 			}
-			
+
 			if (obj is string)
 			{
 				return "\"" + ((String)obj).Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
