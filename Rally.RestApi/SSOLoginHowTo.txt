@@ -1,0 +1,164 @@
+﻿This document explains how to use SSO login using this library.
+
+A brief Rally SSO primer
+-------------------------
+The Rally Web Services API (WSAPI) natively supports only Basic Authentication.  Using Basic Authentication, WSAPI sessions must be initiated with a username and password that is validated against a list of usernames and passwords stored directly in Rally.  This works fine until clients begin using Single Sign On (SSO).  SSO allows clients to use a single enterprise-wide authentication mechanism (like LDAP or Active Directory) to manage user credentials and passwords.  Until now, using WSAPI with SSO enabled has required clients to maintain a duplicate user list (the "white" list) in Rally for all users who wish to use the Rally WSAPI.  Recent changes to Rally now allow WSAPI users to access Rally using their SSO credentials and alleviate the need to maintain those users in the "white" list.
+
+Note:  Rally's current SSO implementation is based on the SAML specification which requires a user to interact with a browser to complete authentication.  As such, this technique requires the user to interact with a browser, so it is incompatible with headless WSAPI clients like those that synchronize Rally with VCS and bug tracking tools.
+
+When initiating an SSO connection, the user provides a URL that starts the SSO handshake with Rally's Service Provider (SP), later involving the client's Identity Provider (IdP), and finishes with Rally responding with cookies that represent a valid authenticated session.  If that authenticated session cookie is included in any subsequent WSAPI calls, Rally will associate those calls with the authenticated user and the WSAPI calls will be authenticated.  To make it easy to get access to the authenticated session cookie for purposes of WSAPI calls following a successful SAML SSO authentication, Rally looks for a parameter added to the initial SSO URL that if present will return a special web page containing the session cookie in clear text as the final product of the SSO handshake.  Users can use that data to construct a cookie to be used in subsequent WSAPI calls.
+
+Note: The example URLs below are (potentially) specific to Rally's internal SSO implementation.  Since SSO is used to allow customers to provide their own authentication using their own SSO infrastructure (at least the IdP part), SSO URLs will be customer specific.  Contact your Rally TAM or Rally Support for help with SSO URLs.
+
+An original SSO URL looks something like:
+     https://sso.rallydev.com/sp/startSSO.ping?PartnerIdpId=pingidp.f4tech.com-29577
+
+The special parameter is:
+
+     TargetResource=https://us1.rallydev.com/slm/j_sso_security_check?noRedirect=true
+
+	Note: This name/value pair sets the SSO RelayState in Rally’s specific SSO implementation using PingIdentity as the SSO provider.  Other SSO providers may have a different parameter name used to set the RelayState.  For instance, some SSO providers use RelayState as the  parameter name.  In any case, the value is always the same (i.e. “https://us1.rallydev.com/slm/j_sso_security_check?noRedirect=true”)
+
+So a complete URL would look like:
+
+     https://sso.rallydev.com/sp/startSSO.ping?PartnerIdpId=pingidp.f4tech.com-29577&TargetResource=https://us1.rallydev.com/slm/j_sso_security_check?noRedirect=true
+
+If a user navigates to this modified SSO URL, after authentication, they will be presented with a web page that contains the following:
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <title>SSO Token</title>
+    </head>
+    <body>
+        <form>
+            <input type="hidden" name="authCookieName" value="ZSESSIONID"/>
+            <input type="hidden" name="authCookieValue" value="khkjhkhkhkhkjhh"/>
+        </form>
+    </body>
+</html>
+
+If the user creates a cookie based on the data contained in this page and passes that cookie along with their subsequent WSAPI calls, those calls will be successfully authenticated. Note that optional cookie data like secure and path must be inferred from call made to obtain the cookie as per the IETF specification for cookies.
+
+So the basic process for logging into Rally from a GUI interface (again, this does not work for headless environments) for the purpose of issuing WSAPI calls is the following:
+
+ - Collect the SSO URL from the user with the special parameter described above.
+ - Launch a browser pointed to that URL.
+ - After navigating is complete, scrape the cookie values from the returned HTML page.
+ - Close the browser.
+ - Construct a cookie from the cookie values.
+ - Store that cookie for later use.
+ - Send that cookie with all subsequent WSAPI calls.
+
+Repeat this process if the a WSAPI call fails for authentication using this cookie.  Remember that these cookies expire and you should be prepared to retry a failed call after reauthentication to create a smooth user experience.
+
+Rally C# ReST API
+------------------
+The Rally C# Rest API has a mechanism integrated into it's connection framework to make this process easy for different GUI clients including automatic re-authentication following session timeout.  This includes methods to parse the token page into a valid cookie.  Callers of this library can implement other features such as inferring optional cookie data (like domain, path, secure, and host port) to account for situations (like test environments) where Rally does not return complete cookie data.
+
+Connecting to Rally using the C# ReST API means constructing an instance of RallyRestApi.  There are two legacy constructors that assume Basic Authentication and take username and password among other parameters.  Constructing a RallyRestApi using one of these constructors will always use Basic Authentication and will never use SSO.
+
+A third constructor takes only an IConnectionInfo object.  This is the preferred way to obtain a RallyRestApi.  Using an IConnectionInfo object to construct a RallyRestApi allows the caller to specify all connection information in one object that can be used for SSO callbacks and authentication sharing between multiple RallyRestApi instances.
+
+IConnectionInfo and ConnectionInfo
+------------------------------------------------
+To facilitate SSO authentication, the C# ReST API introduced the IConnectionInfo interface and the ConnectionInfo class.  These classes represent an object that holds connection preferences and can initiate and complete a browser based SSO authentication session when requested to do so.  The ConnectionInfo class implements all of the connection preferences and has methods to parse the Rally SSO landing page into a usable Cookie.  This class can be used as is if only Basic Authentication is required.  IConnectionInfo is there for flexibility in case the caller does not want to extend or otherwise use ConnectionInfo.
+ 
+When using IConnectionInfo for Basic Auth simply create a new ConnectionInfo and set the appropriate publicly accessible fields.  Use that to construct a RallyRestApi.  Any authentication errors will throw exceptions.
+
+Example:
+
+var cInfo = new ConnectionInfo();
+cInfo.username = "myName";
+cInfo.password = "pass";
+cInfo.server = new Uri("https://host");
+cInfo.authType = Rally.RestApi.AuthorizationType.Basic;
+
+var conn = new RallyRestApi(cInfo);
+
+When using IConnectionInfo for SSO, the caller must implement DoSSOAuth().  Below is an annotated example. 
+
+public class MyConnectionInfo : Rally.RestApi.ConnectionInfo
+{
+    public override void doSSOAuth()
+    {
+	    // Launch a browser to the this.server URI.
+		// The browser will close automatically if it successfully reaches the SSO landing page 
+		// Users can cancel the SSO handshake
+		// Abort if the handshake is successful, but didn't arrive at the SSO landing page
+        var ssoDialog = new SSOAuthDialog(server);
+        DialogResult result = ssoDialog.ShowDialog();
+        if (result == DialogResult.Cancel)
+            throw new Exception("SSO authorization canceled");
+        else if (result == DialogResult.Abort)
+            throw new Exception(ssoDialog.abortReason);
+
+		// Parse the SSO landing page into a Cookie and save it
+        authCookie = parseSSOLandingPage(ssoDialog.getBrowser().DocumentText);
+
+        // Infer Cookie values from SO Landing Page URL if not set
+        if (String.IsNullOrWhiteSpace(authCookie.Domain) || authCookie.Domain == "null")
+            authCookie.Domain = ssoDialog.getBrowser().Url.Host;
+        authCookie.Secure = String.Equals(ssoDialog.getBrowser().Url.Scheme,"https",StringComparison.InvariantCultureIgnoreCase);
+
+        // Set a specific port port if the SSO Landing Page URL has one
+        if (!ssoDialog.getBrowser().Url.IsDefaultPort)
+            port = ssoDialog.getBrowser().Url.Port;
+    }
+} 
+
+This example uses a WinForms dialog with a browser component to present the SSO handshake to the user.  Remember, you can use any display technology you want to implement this part.
+
+public partial class SSOAuthDialog : Form
+{
+    public String abortReason;
+
+    public SSOAuthDialog(Uri url)
+    {
+        InitializeComponent();
+        webBrowser.Url = url;
+    }
+
+    private void documentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+    {
+	    // We have found the SSO Landing Page.
+        if (webBrowser.DocumentText.Contains("authCookieName") && webBrowser.DocumentText.Contains("authCookieValue"))
+        {
+            Trace.TraceInformation("Found SSO authentication token on page: {0}", e.Url.AbsolutePath);
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+		// We have landed on the Rally ALM page
+		// This is usually caused by a bad URL 
+        else if (webBrowser.DocumentText.Contains("window.FEATURE_TOGGLES"))
+        {
+            abortReason = String.Format("The SSO handshake was successful, but the 'RelayState' was not correctly set. Contact your administrator to obtain the correct URL parameter to set the SSO handshake 'RelayState' to: https://rally1.rallydev.com/slm/j_sso_security_check?noRedirect=true");
+            Trace.TraceError(abortReason);
+            DialogResult = DialogResult.Abort;
+            Close();
+        }
+    }
+
+    public WebBrowser getBrowser()
+    {
+        return webBrowser;
+    }
+}
+
+SSO Example:
+
+var cInfo = new MyConnectionInfo();
+cInfo.server = new Uri("https://host");
+cInfo.authType = Rally.RestApi.AuthorizationType.Basic;
+
+var conn = new RallyRestApi(cInfo);
+var conn2 = new RallyRestApi(cInfo);
+
+When using IConnectionInfo for SSO, it is important to cache the IConnectionInfo object that you send to construct a RallyRestApi.  After a successful SSO handshake, the resulting auth Cookie is stored in the IConnectionInfo object and will be used for all subsequent WSAPI calls made from that RallyRestApi object.  If you need to create another RallyRestApi object using the same auth Cookie from a previously successful SSO login, simply construct a new RallyRestApi object with the same IConnectionInfo object and if there is an auth Cookie present, it will be used.
+
+Retries
+---------
+Authorization Cookies can expire.  The C# ReST Api will detect an expired SSO Cookie and will initiate a new SSO login session as needed to obtain a new valid Cookie.
+
+That's all there is to it.

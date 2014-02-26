@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="RallyRestAPI.NET.shfbproj" />
+    <Content Include="SSOLoginHowTo.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Rally.Development.Key.snk">
