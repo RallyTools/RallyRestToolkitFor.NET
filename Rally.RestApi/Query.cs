@@ -243,7 +243,11 @@ namespace Rally.RestApi
 				// Quote the value
 				// Removed due to issues of double encoding, left for reference in case something breaks.
 				// var outValue = quote + Value.Replace("%", "%25").Replace("&", "%26").Replace("#", "%23").Replace("\"", "%22").Replace("+", "%2B") + quote;
-				var outValue = quote + Value + quote;
+				string outValue;
+				if (Value == null)
+					outValue = "null";
+				else
+					outValue = quote + Value + quote;
 				return string.Format("({0} {1} {2})", Attribute, GetOperator(QueryOperator), outValue);
 			}
 
