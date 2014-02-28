@@ -69,10 +69,10 @@ When using IConnectionInfo for Basic Auth simply create a new ConnectionInfo and
 Example:
 
 var cInfo = new ConnectionInfo();
-cInfo.username = "myName";
-cInfo.password = "pass";
-cInfo.server = new Uri("https://host");
-cInfo.authType = Rally.RestApi.AuthorizationType.Basic;
+cInfo.UserName = "myName";
+cInfo.Password = "pass";
+cInfo.Server = new Uri("https://host");
+cInfo.AuthType = Rally.RestApi.AuthorizationType.Basic;
 
 var conn = new RallyRestApi(cInfo);
 
@@ -94,20 +94,20 @@ public class MyConnectionInfo : Rally.RestApi.ConnectionInfo
             throw new Exception(ssoDialog.abortReason);
 
 		// Parse the SSO landing page into a Cookie and save it
-        authCookie = parseSSOLandingPage(ssoDialog.getBrowser().DocumentText);
+        AuthCookie = parseSSOLandingPage(ssoDialog.getBrowser().DocumentText);
 
         // Infer Cookie values from SO Landing Page URL if not set
         if (String.IsNullOrWhiteSpace(authCookie.Domain) || authCookie.Domain == "null")
             authCookie.Domain = ssoDialog.getBrowser().Url.Host;
-        authCookie.Secure = String.Equals(ssoDialog.getBrowser().Url.Scheme,"https",StringComparison.InvariantCultureIgnoreCase);
+        AuthCookie.Secure = String.Equals(ssoDialog.getBrowser().Url.Scheme,"https",StringComparison.InvariantCultureIgnoreCase);
 
         // Set a specific port port if the SSO Landing Page URL has one
         if (!ssoDialog.getBrowser().Url.IsDefaultPort)
-            port = ssoDialog.getBrowser().Url.Port;
+            Port = ssoDialog.getBrowser().Url.Port;
     }
 } 
 
-This example uses a WinForms dialog with a browser component to present the SSO handshake to the user.  Remember, you can use any display technology you want to implement this part.
+This example uses a WinForms dialog with a browser component to present the SSO handshake to the user.  Remember, you can use any display technology you want to implement this part.  Here is an annotated example:
 
 public partial class SSOAuthDialog : Form
 {
@@ -149,10 +149,12 @@ public partial class SSOAuthDialog : Form
 SSO Example:
 
 var cInfo = new MyConnectionInfo();
-cInfo.server = new Uri("https://host");
-cInfo.authType = Rally.RestApi.AuthorizationType.Basic;
+cInfo.Server = new Uri("https://host");
+cInfo.AuthType = Rally.RestApi.AuthorizationType.SSO;
 
+// This will cause an SSO authentication event
 var conn = new RallyRestApi(cInfo);
+// This will not b/c it will just use the auth Cookie already in cInfo
 var conn2 = new RallyRestApi(cInfo);
 
 When using IConnectionInfo for SSO, it is important to cache the IConnectionInfo object that you send to construct a RallyRestApi.  After a successful SSO handshake, the resulting auth Cookie is stored in the IConnectionInfo object and will be used for all subsequent WSAPI calls made from that RallyRestApi object.  If you need to create another RallyRestApi object using the same auth Cookie from a previously successful SSO login, simply construct a new RallyRestApi object with the same IConnectionInfo object and if there is an auth Cookie present, it will be used.
