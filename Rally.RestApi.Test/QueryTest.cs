@@ -7,6 +7,13 @@ namespace Rally.RestApi.Test
 	public class QueryTest
 	{
 		[TestMethod]
+		public void TestNullValue()
+		{
+			var q = new Query("Actuals ", Query.Operator.Equals, null);
+			Assert.AreEqual("(Actuals  = null)", q.QueryClause);
+		}
+
+		[TestMethod]
 		public void TestAnd()
 		{
 			var q = new Query("Release.Name", Query.Operator.Equals, "My Release");
