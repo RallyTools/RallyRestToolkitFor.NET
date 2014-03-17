@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace Rally.RestApi
@@ -161,49 +162,75 @@ namespace Rally.RestApi
 		/// <returns>A query string representation of this request</returns>
 		protected string BuildQueryString(string extension = "")
 		{
+			StringBuilder sb = new StringBuilder();
 			int pageSize = Math.Min(Math.Min(MAX_PAGE_SIZE, PageSize), Limit);
-			var list = new List<string>(new[] {
-                    "pagesize=" + pageSize
-                });
-			var fetch = Fetch.Count == 0 ? new List<string>() { "true" } : new List<string>(Fetch);
+			sb.AppendFormat("{0}{1}?pagesize={2}", Endpoint, extension, pageSize);
 
-			var tmpParameters = new Dictionary<string, dynamic>(Parameters);
-
-			if (tmpParameters.Keys.Contains("order"))
+			if (Fetch.Count == 0)
+				sb.Append("&fetch=true");
+			else
 			{
-				string orderString = tmpParameters["order"].ToString();
-				List<string> orderList = orderString.Split(',').ToList();
-
-				if (!orderList.Contains("ObjectID") && !orderList.Contains("ObjectID desc"))
+				bool first = true;
+				foreach (string currentFetch in Fetch)
 				{
-					// Add 'ObjectID' to an existing order clause to workaround server-side WSAPI bug
-					orderList.Add("ObjectID");
-					tmpParameters["order"] = string.Join(",", orderList);
+					if (first)
+					{
+						sb.AppendFormat("&fetch={0}", HttpUtility.UrlEncode(currentFetch));
+						first = false;
+					}
+					else
+						sb.AppendFormat(",{0}", HttpUtility.UrlEncode(currentFetch));
 				}
+			}
+
+			if (!Parameters.Keys.Contains("order"))
+			{
+				// Add order on 'ObjectID' clause to workaround server-side WSAPI bug
+				sb.AppendFormat("&order=ObjectID");
 			}
 			else
 			{
-				// Add order on 'ObjectID' clause to workaround server-side WSAPI bug
-				tmpParameters["order"] = "ObjectID";
+				string orderString = Parameters["order"].ToString();
+				List<string> orderList = orderString.Split(',').ToList();
+				bool first = true;
+				bool objectIdFound = false;
+				foreach (string currentOrder in orderList)
+				{
+					if (currentOrder.Contains("ObjectID") || currentOrder.Contains("ObjectID desc"))
+						objectIdFound = true;
+
+					if (first)
+					{
+						sb.AppendFormat("&order={0}", HttpUtility.UrlEncode(currentOrder));
+						first = false;
+					}
+					else
+						sb.AppendFormat(",{0}", HttpUtility.UrlEncode(currentOrder));
+				}
+
+				if (!objectIdFound)
+				{
+					// Add 'ObjectID' to an existing order clause to workaround server-side WSAPI bug
+					sb.AppendFormat(",ObjectID");
+				}
 			}
 
-			foreach (var key in from k in tmpParameters.Keys orderby k select k)
+			foreach (string currentParameter in Parameters.Keys)
 			{
-				if (tmpParameters[key] == null)
+				if (currentParameter.Equals("order", StringComparison.InvariantCultureIgnoreCase))
 					continue;
-				if (tmpParameters[key] is bool)
-				{
-					list.Add(key + "=" + HttpUtility.UrlEncode(tmpParameters[key].ToString().ToLower()));
-				}
+
+				dynamic value = Parameters[currentParameter];
+				if (value == null)
+					continue;
+
+				if (value is bool)
+					sb.AppendFormat("&{0}={1}", currentParameter, HttpUtility.UrlEncode(value.ToString().ToLower()));
 				else
-				{
-					string value = tmpParameters[key].ToString();
-					list.Add(key + "=" + HttpUtility.UrlEncode(value));
-				}
+					sb.AppendFormat("&{0}={1}", currentParameter, HttpUtility.UrlEncode(value.ToString()));
 			}
 
-			list.Add("fetch=" + HttpUtility.UrlEncode(string.Join(",", fetch)));
-			return Endpoint + extension + "?" + string.Join("&", list.ToArray());
+			return sb.ToString();
 		}
 
 		/// <summary>
@@ -211,7 +238,7 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="url">the url we are creating from</param>
 		/// <returns>A request object that represents the reference string.</returns>
-        public static Request CreateFromUrl(string url)
+		public static Request CreateFromUrl(string url)
 		{
 			Request request = new Request();
 			int index = url.IndexOf("?");

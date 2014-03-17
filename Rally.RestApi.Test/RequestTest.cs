@@ -97,9 +97,9 @@ namespace Rally.RestApi.Test
 		[TestMethod]
 		public void TestCreateFromRef()
 		{
-			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/defect.js?pagesize=1&order=Name+desc%2cObjectID&start=1&fetch=true",
+			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/defect.js?pagesize=1&fetch=true&order=Name+desc,ObjectID&start=1",
 					"https://rally1.rallydev.com/slm/webservice/v2.0");
-			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement/12345/defect.js?pagesize=172&order=ObjectID&start=57&fetch=Name%2cFormattedID",
+			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement/12345/defect.js?pagesize=172&fetch=Name&order=ObjectID&start=57",
 					"https://rally1.rallydev.com/slm/webservice/v2.0");
 			TestCreateFromRefHelper("https://rally1.rallydev.com/slm/webservice/v2.0/Project/3195568271/Editors",
 					"https://rally1.rallydev.com/slm/webservice/v2.0");
@@ -108,13 +108,14 @@ namespace Rally.RestApi.Test
 		private void TestCreateFromRefHelper(string urlToCheck, string removePriorToValidation = null)
 		{
 			Request request = Request.CreateFromUrl(urlToCheck);
+			string finalUrlToCheck = urlToCheck;
 			if (removePriorToValidation != null)
-				urlToCheck = urlToCheck.Replace(removePriorToValidation, String.Empty);
+				finalUrlToCheck = urlToCheck.Replace(removePriorToValidation, String.Empty);
 
-			if (urlToCheck.Contains("?"))
-				Assert.AreEqual(urlToCheck, request.RequestUrl);
+			if (finalUrlToCheck.Contains("?"))
+				Assert.AreEqual(finalUrlToCheck, request.RequestUrl);
 			else
-				Assert.AreEqual(urlToCheck, request.Endpoint);
+				Assert.AreEqual(finalUrlToCheck, request.Endpoint);
 		}
 	}
 }

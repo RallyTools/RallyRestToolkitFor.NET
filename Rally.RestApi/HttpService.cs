@@ -192,9 +192,9 @@ namespace Rally.RestApi
 			} while (true);
 		}
 
-		public string GetCacheable(Uri target, out bool isCachedResult, IDictionary<string, string> headers = null)
+		public DynamicJsonObject GetCacheable(Uri target, out bool isCachedResult, IDictionary<string, string> headers = null)
 		{
-			String response = "<No response>";
+			DynamicJsonObject response = null;
 			DateTime startTime = DateTime.Now;
 			String requestHeaders = "";
 			String responseHeaders = "";
@@ -206,7 +206,7 @@ namespace Rally.RestApi
 					CookieAwareCacheableWebClient cacheableWeb = webClient as CookieAwareCacheableWebClient;
 					if (cacheableWeb != null)
 					{
-						response = cacheableWeb.DownloadCacheableString(target, out isCachedResult);
+						response = cacheableWeb.DownloadCacheableResult(target, out isCachedResult);
 					}
 					else
 						throw new InvalidOperationException("GetWebClient failed to create a CookieAwareCacheableWebClient");

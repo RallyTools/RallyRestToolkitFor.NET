@@ -21,7 +21,7 @@ namespace Rally.RestApi.Test
 		public void QuerySchemaEndpointForWorkspaceTest()
 		{
 			RallyRestApi restApi = RallyRestApiTest.GetRallyRestApi(wsapiVersion: "v2.0");
-			long oid = 191977961;
+			long oid = 14949797488;
 
 			CacheableQueryResult results = restApi.GetTypes(String.Format("/workspace/{0}", oid));
 			Assert.IsNotNull(results);

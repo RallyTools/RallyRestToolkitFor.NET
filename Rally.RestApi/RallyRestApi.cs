@@ -251,7 +251,7 @@ namespace Rally.RestApi
 
 		DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
 		{
-			return serializer.Deserialize(Service.GetCacheable(uri, out isCachedResult, GetProcessedHeaders()));
+			return Service.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
 		}
 
 		DynamicJsonObject DoGet(Uri uri)

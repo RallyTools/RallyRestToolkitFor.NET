@@ -9,12 +9,13 @@ namespace Rally.RestApi
 	[System.ComponentModel.DesignerCategory("")]
 	internal class CookieAwareCacheableWebClient : CookieAwareWebClient
 	{
+		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		private class CachedResult
 		{
 			public string Url { get; set; }
-			public string ResponseData { get; set; }
+			public DynamicJsonObject ResponseData { get; set; }
 
-			public CachedResult(string redirectUrl, string responseData)
+			public CachedResult(string redirectUrl, DynamicJsonObject responseData)
 			{
 				Url = redirectUrl;
 				ResponseData = responseData;
@@ -58,9 +59,9 @@ namespace Rally.RestApi
 		/// <param name="address">A System.String containing the URI to download.</param>
 		/// <param name="isCachedResult">If the returned result was a cached result.</param>
 		/// <returns>A System.String containing the requested resource.</returns>
-		public string DownloadCacheableString(string address, out bool isCachedResult)
+		public DynamicJsonObject DownloadCacheableResult(string address, out bool isCachedResult)
 		{
-			return DownloadCacheableString(new Uri(address), out isCachedResult);
+			return DownloadCacheableResult(new Uri(address), out isCachedResult);
 		}
 
 		/// <summary>
@@ -70,7 +71,7 @@ namespace Rally.RestApi
 		/// <param name="address">A System.Uri object containing the URI to download.</param>
 		/// <param name="isCachedResult">If the returned result was a cached result.</param>
 		/// <returns>A System.String containing the requested resource.</returns>
-		public string DownloadCacheableString(Uri address, out bool isCachedResult)
+		public DynamicJsonObject DownloadCacheableResult(Uri address, out bool isCachedResult)
 		{
 			string results = DownloadString(address);
 
@@ -78,7 +79,7 @@ namespace Rally.RestApi
 			if (returnValue != null)
 				return returnValue.ResponseData;
 
-			return results;
+			return serializer.Deserialize(results);
 		}
 
 		protected override WebResponse GetWebResponse(WebRequest request)
@@ -104,7 +105,7 @@ namespace Rally.RestApi
 						CookieAwareWebClient webClient = GetWebClient();
 
 						string cacheableDataValue = webClient.DownloadString(uriString);
-						returnValue = CacheResult(credential.UserName, request.RequestUri.ToString(), uriString, cacheableDataValue);
+						returnValue = CacheResult(credential.UserName, request.RequestUri.ToString(), uriString, serializer.Deserialize(cacheableDataValue));
 					}
 					else
 						isCachedResult = true;
@@ -132,7 +133,7 @@ namespace Rally.RestApi
 			return webClient;
 		}
 
-		private CachedResult CacheResult(string userName, string sourceUrl, string redirectUrl, string responseData)
+		private CachedResult CacheResult(string userName, string sourceUrl, string redirectUrl, DynamicJsonObject responseData)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
 			CachedResult cachedResult = new CachedResult(redirectUrl, responseData);
