@@ -47,6 +47,17 @@ namespace Rally.RestApi.Test
 		}
 
 		[TestMethod]
+		public void FetchVsShallowFetch()
+		{
+			var request = new Request("Defect");
+			request.UseShallowFetch = true;
+			request.Fetch = new List<string>() { "Name", "FormattedID", "Parent[Name]" };
+			Assert.IsTrue(request.RequestUrl.Contains("shallowFetch"));
+			request.UseShallowFetch = false;
+			Assert.IsFalse(request.RequestUrl.Contains("shallowFetch"));
+		}
+
+		[TestMethod]
 		public void TestEndpointSubscription()
 		{
 			var request = new Request("Subscription");
