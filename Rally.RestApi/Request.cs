@@ -145,6 +145,17 @@ namespace Rally.RestApi
 		}
 
 		/// <summary>
+		/// Using ShallowFetch will only fetch the fields listed in the [] on the related items rather than fetching all fields on all objects.
+		/// An example of the param is: shallowFetch=Name,WorkProduct[Name;FormattedID]
+		/// The Fetch attributes will be treated as a shallow fetch if this is set to true.
+		/// </summary>
+		public bool UseShallowFetch
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		///  A sort string. 
 		///  <example>ObjectId Desc</example>
 		///  <example>FormattedId</example>
@@ -175,7 +186,11 @@ namespace Rally.RestApi
 				{
 					if (first)
 					{
-						sb.AppendFormat("&fetch={0}", HttpUtility.UrlEncode(currentFetch));
+						if (UseShallowFetch)
+							sb.AppendFormat("&shallowFetch={0}", HttpUtility.UrlEncode(currentFetch));
+						else
+							sb.AppendFormat("&fetch={0}", HttpUtility.UrlEncode(currentFetch));
+
 						first = false;
 					}
 					else
