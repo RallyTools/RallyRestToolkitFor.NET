@@ -24,12 +24,14 @@ namespace Rally.RestApi
 
 		// Tracking Key: Username|SourceUrl
 		private static Dictionary<string, CachedResult> cachedResults;
+		private static object dataLock;
 		private CachedResult returnValue = null;
 		private bool isCachedResult = false;
 
 		static CookieAwareCacheableWebClient()
 		{
 			cachedResults = new Dictionary<string, CachedResult>();
+			dataLock = new object();
 		}
 
 		public CookieAwareCacheableWebClient(CookieContainer cookies = null)
@@ -137,10 +139,13 @@ namespace Rally.RestApi
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
 			CachedResult cachedResult = new CachedResult(redirectUrl, responseData);
-			if (cachedResults.ContainsKey(cacheKey))
-				cachedResults[cacheKey] = cachedResult;
-			else
-				cachedResults.Add(cacheKey, cachedResult);
+			lock (dataLock)
+			{
+				if (cachedResults.ContainsKey(cacheKey))
+					cachedResults[cacheKey] = cachedResult;
+				else
+					cachedResults.Add(cacheKey, cachedResult);
+			}
 
 			return cachedResult;
 		}
@@ -148,17 +153,23 @@ namespace Rally.RestApi
 		private CachedResult GetCachedResult(string userName, string sourceUrl)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
-			if (cachedResults.ContainsKey(cacheKey))
-				return cachedResults[cacheKey];
-			else
-				return null;
+			lock (dataLock)
+			{
+				if (cachedResults.ContainsKey(cacheKey))
+					return cachedResults[cacheKey];
+				else
+					return null;
+			}
 		}
 
 		private void ClearCacheResult(string userName, string sourceUrl)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
-			if (cachedResults.ContainsKey(cacheKey))
-				cachedResults.Remove(cacheKey);
+			lock (dataLock)
+			{
+				if (cachedResults.ContainsKey(cacheKey))
+					cachedResults.Remove(cacheKey);
+			}
 		}
 
 		private string GetCacheKey(string userName, string sourceUrl)

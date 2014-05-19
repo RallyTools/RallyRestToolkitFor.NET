@@ -686,5 +686,18 @@ namespace Rally.RestApi
 
 			return result;
 		}
+
+		/// <summary>
+		/// Sets the default maximum concurrent connection limit for this application.
+		/// <para>Note: This will affect all connections that use Service Point.</para>
+		/// </summary>
+		/// <param name="maxConnections">The maximum number of concurrent connections. Allowed values are between 1 and 25.</param>
+		public static void SetDefaultConnectionLimit(ushort maxConnections)
+		{
+			if ((maxConnections < 1) || (25 < maxConnections))
+				throw new ArgumentOutOfRangeException("maxConnections", "Allowed values are between 1 and 25.");
+
+			ServicePointManager.DefaultConnectionLimit = maxConnections;
+		}
 	}
 }
