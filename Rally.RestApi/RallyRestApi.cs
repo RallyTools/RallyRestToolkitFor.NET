@@ -8,6 +8,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
 using System.Text.RegularExpressions;
+using Rally.RestApi.Web;
+using Rally.RestApi.Connection;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi
 {

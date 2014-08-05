@@ -5,7 +5,7 @@ using System.Collections;
 using System.Globalization;
 using System.Web.Script.Serialization;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Json
 {
 	/// <summary>
 	/// Representation of a Rally object

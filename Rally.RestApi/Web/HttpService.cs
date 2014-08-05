@@ -6,8 +6,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
+using Rally.RestApi.Connection;
+using Rally.RestApi.Json;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Web
 {
 	internal class HttpService
 	{

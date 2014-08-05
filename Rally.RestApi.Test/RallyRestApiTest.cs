@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
+using Rally.RestApi.Connection;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi.Test
 {

@@ -6,7 +6,7 @@ using System.Net;
 using Rally.RestApi;
 using System.Text.RegularExpressions;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Connection
 {
 	/// <summary>
 	/// An object for tracking connection information.
