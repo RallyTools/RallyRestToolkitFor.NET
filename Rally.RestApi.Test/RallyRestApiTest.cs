@@ -355,14 +355,14 @@ namespace Rally.RestApi.Test
 		public void TestIsWsapi2()
 		{
 			var restApi = GetRallyRestApi2x();
-			Assert.IsTrue(restApi.IsWsapi2);
+			Assert.IsTrue(restApi.ConnectionInfo.IsWsapi2);
 		}
 
 		[TestMethod]
 		public void TestIsNotWsapi2()
 		{
 			var restApi = GetRallyRestApi1x();
-			Assert.IsFalse(restApi.IsWsapi2);
+			Assert.IsFalse(restApi.ConnectionInfo.IsWsapi2);
 		}
 
 		private static void VerifyAttributes(QueryResult result)

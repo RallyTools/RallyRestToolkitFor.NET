@@ -14,7 +14,7 @@ namespace Rally.RestApi
 		const int MAX_RETRIES = 4;
 		readonly CredentialCache credentials;
 		readonly CookieContainer cookies = new CookieContainer();
-		readonly IConnectionInfo connectionInfo;
+		readonly ConnectionInfo connectionInfo;
 
 		internal Uri Server { get; set; }
 
@@ -22,7 +22,7 @@ namespace Rally.RestApi
 		/// 
 		/// </summary>
 		/// <param name="connectionInfo">Connection Information</param>
-		public HttpService(IConnectionInfo connectionInfo)
+		public HttpService(ConnectionInfo connectionInfo)
 		{
 			this.connectionInfo = connectionInfo;
 

@@ -64,7 +64,6 @@
     <Compile Include="DynamicJsonObject.cs" />
     <Compile Include="DynamicJsonSerializer.cs" />
     <Compile Include="HttpService.cs" />
-    <Compile Include="IConnectionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="RallyUnavailableException.cs" />
