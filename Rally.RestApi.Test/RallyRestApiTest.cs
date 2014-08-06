@@ -258,7 +258,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApi125 = GetRallyRestApi1x();
 			QueryResult result125 = restApi125.GetAttributesByType("Preference");
-			VerifyAttributes(result125);
+			VerifyAttributes(result125, false);
 		}
 
 		[TestMethod]
@@ -266,7 +266,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApiv2 = GetRallyRestApi2x();
 			QueryResult resultv2 = restApiv2.GetAttributesByType("Preference");
-			VerifyAttributes(resultv2);
+			VerifyAttributes(resultv2, true);
 		}
 
 		[TestMethod]
@@ -387,12 +387,17 @@ namespace Rally.RestApi.Test
 			Assert.IsFalse(restApi.ConnectionInfo.IsWsapi2);
 		}
 
-		private static void VerifyAttributes(QueryResult result)
+		private static void VerifyAttributes(QueryResult result, bool forWsapi2)
 		{
 			var list = (IEnumerable<object>)result.Results;
 			IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
 																	select i["Name"] as string;
-			var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+			string[] expectedNames;
+			if (forWsapi2)
+				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+			else
+				expectedNames = new string[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+
 			Assert.AreEqual(result.TotalResultCount, list.Count());
 			Assert.AreEqual(expectedNames.Length, list.Count());
 			IEnumerable<string> complement = expectedNames.Except(names);
