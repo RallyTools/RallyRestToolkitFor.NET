@@ -682,7 +682,7 @@ namespace Rally.RestApi
 			{
 				string output = null;
 				string value = Headers[headerType];
-				FieldInfo fieldInfo = value.GetType().GetField(value.ToString());
+				FieldInfo fieldInfo = headerType.GetType().GetField(headerType.ToString());
 				StringValue[] attrs = fieldInfo.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
 				if (attrs.Length > 0)
 					output = attrs[0].Value;
