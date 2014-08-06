@@ -23,6 +23,10 @@ namespace Rally.RestApi.Connection
 		/// </summary>
 		public string SecurityToken { get; set; }
 		/// <summary>
+		/// The API Key for this connection.
+		/// </summary>
+		public string ApiKey { get; set; }
+		/// <summary>
 		/// The server this connection is to.
 		/// </summary>
 		public virtual Uri Server { get; set; }

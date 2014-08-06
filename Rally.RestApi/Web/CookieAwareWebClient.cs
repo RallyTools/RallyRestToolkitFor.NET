@@ -31,5 +31,10 @@ namespace Rally.RestApi.Web
 
 			return request;
 		}
+
+		internal void AddCookie(Uri uri, string name, string value)
+		{
+			Cookies.Add(uri, new Cookie(name, value));
+		}
 	}
 }

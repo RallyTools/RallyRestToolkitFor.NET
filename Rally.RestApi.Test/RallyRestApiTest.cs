@@ -48,6 +48,17 @@ namespace Rally.RestApi.Test
 			return new RallyRestApi(connInfo);
 		}
 
+		public static RallyRestApi GetRallyRestApiWithApiKey(string apiKey = "",
+			string server = RallyRestApi.DEFAULT_SERVER, string wsapiVersion = "")
+		{
+			if (String.IsNullOrWhiteSpace(apiKey))
+			{
+				apiKey = Settings.Default.ApiKey;
+			}
+
+			return new RallyRestApi(rallyServer: server, apiKey: apiKey, webServiceVersion: wsapiVersion);
+		}
+
 		RallyRestApi GetRallyRestApi1x()
 		{
 			return GetRallyRestApi(wsapiVersion: "1.43");
@@ -283,6 +294,15 @@ namespace Rally.RestApi.Test
 			dynamic user = restApi.GetCurrentUser();
 			Assert.AreEqual("user", Ref.GetTypeFromRef(user._ref), "Type test");
 			Assert.AreEqual(Settings.Default.UserName, user.UserName, "Name test");
+		}
+
+		[TestMethod]
+		public void ApiKeyGetCurrentUser()
+		{
+			RallyRestApi restApi = GetRallyRestApiWithApiKey();
+			dynamic user = restApi.GetCurrentUser();
+			Assert.IsNotNull(user);
+			Assert.AreEqual("user", Ref.GetTypeFromRef(user._ref), "Type test");
 		}
 
 

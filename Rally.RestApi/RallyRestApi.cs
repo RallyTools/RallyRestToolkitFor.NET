@@ -117,30 +117,34 @@ namespace Rally.RestApi
 		/// Construct a new RallyRestApi with the specified
 		/// username, password, server and WSAPI version
 		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="username">The username to be used for access</param>
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(string username, string password, string rallyServer = DEFAULT_SERVER,
-				string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
+		public RallyRestApi(string username = "", string password = "",
+			string rallyServer = DEFAULT_SERVER, string webServiceVersion = DEFAULT_WSAPI_VERSION,
+			string apiKey = "", WebProxy proxy = null)
 		{
-			Configure(AuthorizationType.Basic, username, password, new Uri(rallyServer),
+			Configure(apiKey, username, password, new Uri(rallyServer),
 				webServiceVersion, proxy);
 		}
 		/// <summary>
 		/// Construct a new RallyRestApi with the specified
 		/// username, password, server and WSAPI version
 		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="username">The username to be used for access</param>
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(string username, string password, Uri serverUrl,
-				string webServiceVersion = DEFAULT_WSAPI_VERSION, WebProxy proxy = null)
+		public RallyRestApi(Uri serverUrl, string username = "", string password = "",
+			string webServiceVersion = DEFAULT_WSAPI_VERSION,
+			string apiKey = "", WebProxy proxy = null)
 		{
-			Configure(AuthorizationType.Basic, username, password, serverUrl,
+			Configure(apiKey, username, password, serverUrl,
 				webServiceVersion, proxy);
 		}
 		/// <summary>
@@ -156,11 +160,16 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Configures the API using the provided values.
 		/// </summary>
-		protected void Configure(AuthorizationType authType, string username, string password, Uri serverUrl,
+		protected void Configure(string apiKey, string username, string password, Uri serverUrl,
 				string webServiceVersion, WebProxy proxy)
 		{
+			AuthorizationType authType = AuthorizationType.Basic;
+			if (!String.IsNullOrWhiteSpace(apiKey))
+				authType = AuthorizationType.ApiKey;
+
 			ConnectionInfo connectionInfo = new ConnectionInfo();
 			connectionInfo.AuthType = authType;
+			connectionInfo.ApiKey = apiKey;
 			connectionInfo.UserName = username;
 			connectionInfo.Password = password;
 			connectionInfo.Server = serverUrl;

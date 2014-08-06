@@ -15,6 +15,10 @@ namespace Rally.RestApi.Connection
 		/// </summary>
 		Basic,
 		/// <summary>
+		/// Authentication using an API Key.
+		/// </summary>
+		ApiKey,
+		/// <summary>
 		/// SSO authorization.
 		/// </summary>
 		SSO
