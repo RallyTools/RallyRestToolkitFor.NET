@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Web
 {
 	[System.ComponentModel.DesignerCategory("")]
 	internal class CookieAwareWebClient : WebClient
@@ -30,6 +30,11 @@ namespace Rally.RestApi
 			request.Timeout = 300000;
 
 			return request;
+		}
+
+		internal void AddCookie(Uri uri, string name, string value)
+		{
+			Cookies.Add(uri, new Cookie(name, value));
 		}
 	}
 }

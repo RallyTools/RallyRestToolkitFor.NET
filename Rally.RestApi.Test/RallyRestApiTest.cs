@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
+using Rally.RestApi.Connection;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi.Test
 {
@@ -44,6 +46,17 @@ namespace Rally.RestApi.Test
 			connInfo.WsapiVersion = wsapiVersion;
 
 			return new RallyRestApi(connInfo);
+		}
+
+		public static RallyRestApi GetRallyRestApiWithApiKey(string apiKey = "",
+			string server = RallyRestApi.DEFAULT_SERVER, string wsapiVersion = "")
+		{
+			if (String.IsNullOrWhiteSpace(apiKey))
+			{
+				apiKey = Settings.Default.ApiKey;
+			}
+
+			return new RallyRestApi(rallyServer: server, apiKey: apiKey, webServiceVersion: wsapiVersion);
 		}
 
 		RallyRestApi GetRallyRestApi1x()
@@ -245,7 +258,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApi125 = GetRallyRestApi1x();
 			QueryResult result125 = restApi125.GetAttributesByType("Preference");
-			VerifyAttributes(result125);
+			VerifyAttributes(result125, false);
 		}
 
 		[TestMethod]
@@ -253,7 +266,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApiv2 = GetRallyRestApi2x();
 			QueryResult resultv2 = restApiv2.GetAttributesByType("Preference");
-			VerifyAttributes(resultv2);
+			VerifyAttributes(resultv2, true);
 		}
 
 		[TestMethod]
@@ -281,6 +294,15 @@ namespace Rally.RestApi.Test
 			dynamic user = restApi.GetCurrentUser();
 			Assert.AreEqual("user", Ref.GetTypeFromRef(user._ref), "Type test");
 			Assert.AreEqual(Settings.Default.UserName, user.UserName, "Name test");
+		}
+
+		[TestMethod]
+		public void ApiKeyGetCurrentUser()
+		{
+			RallyRestApi restApi = GetRallyRestApiWithApiKey();
+			dynamic user = restApi.GetCurrentUser();
+			Assert.IsNotNull(user);
+			Assert.AreEqual("user", Ref.GetTypeFromRef(user._ref), "Type test");
 		}
 
 
@@ -355,22 +377,27 @@ namespace Rally.RestApi.Test
 		public void TestIsWsapi2()
 		{
 			var restApi = GetRallyRestApi2x();
-			Assert.IsTrue(restApi.IsWsapi2);
+			Assert.IsTrue(restApi.ConnectionInfo.IsWsapi2);
 		}
 
 		[TestMethod]
 		public void TestIsNotWsapi2()
 		{
 			var restApi = GetRallyRestApi1x();
-			Assert.IsFalse(restApi.IsWsapi2);
+			Assert.IsFalse(restApi.ConnectionInfo.IsWsapi2);
 		}
 
-		private static void VerifyAttributes(QueryResult result)
+		private static void VerifyAttributes(QueryResult result, bool forWsapi2)
 		{
 			var list = (IEnumerable<object>)result.Results;
 			IEnumerable<string> names = from DynamicJsonObject i in list.Cast<DynamicJsonObject>()
 																	select i["Name"] as string;
-			var expectedNames = new[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+			string[] expectedNames;
+			if (forWsapi2)
+				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+			else
+				expectedNames = new string[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+
 			Assert.AreEqual(result.TotalResultCount, list.Count());
 			Assert.AreEqual(expectedNames.Length, list.Count());
 			IEnumerable<string> complement = expectedNames.Except(names);

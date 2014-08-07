@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi.Response
 {

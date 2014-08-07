@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Rally.RestApi.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Web
 {
 	[System.ComponentModel.DesignerCategory("")]
 	internal class CookieAwareCacheableWebClient : CookieAwareWebClient

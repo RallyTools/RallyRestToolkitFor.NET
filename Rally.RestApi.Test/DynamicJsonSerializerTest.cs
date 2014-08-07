@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rally.RestApi.Json;
+using Rally.RestApi.Exceptions;
 
 namespace Rally.RestApi.Test
 {

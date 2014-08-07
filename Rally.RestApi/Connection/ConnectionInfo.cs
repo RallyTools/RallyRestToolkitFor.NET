@@ -4,26 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using Rally.RestApi;
+using System.Text.RegularExpressions;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Connection
 {
 	/// <summary>
 	/// An object for tracking connection information.
 	/// </summary>
-	public class ConnectionInfo : IConnectionInfo
+	public class ConnectionInfo
 	{
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		public ConnectionInfo()
-		{
-			Port = 0;
-		}
-
+		#region Properties
 		/// <summary>
 		/// The authorization type for this connection.
 		/// </summary>
 		public virtual AuthorizationType AuthType { get; set; }
+		/// <summary>
+		/// The security token for this connection.
+		/// </summary>
+		public string SecurityToken { get; set; }
+		/// <summary>
+		/// The API Key for this connection.
+		/// </summary>
+		public string ApiKey { get; set; }
 		/// <summary>
 		/// The server this connection is to.
 		/// </summary>
@@ -45,6 +47,10 @@ namespace Rally.RestApi
 		/// </summary>
 		public virtual String WsapiVersion { get; set; }
 		/// <summary>
+		/// Is this connection using WSAPI 2?
+		/// </summary>
+		internal bool IsWsapi2 { get { return !new Regex("^1[.]\\d+").IsMatch(WsapiVersion); } }
+		/// <summary>
 		/// The authorization cookie for this connection.
 		/// </summary>
 		public virtual Cookie AuthCookie { get; set; }
@@ -52,7 +58,19 @@ namespace Rally.RestApi
 		/// The port we are connecting to.
 		/// </summary>
 		public virtual int Port { get; set; }
+		#endregion
 
+		#region Constructor
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public ConnectionInfo()
+		{
+			Port = 0;
+		}
+		#endregion
+
+		#region DoSSOAuth
 		/// <summary>
 		/// Perform SSO authorization for this connection.
 		/// </summary>
@@ -60,7 +78,9 @@ namespace Rally.RestApi
 		{
 			throw new NotImplementedException();
 		}
+		#endregion
 
+		#region ParseSSOLandingPage
 		/// <summary>
 		/// Parses an SSO landing page to retreive the Cookie that is embedded for SSO.
 		/// </summary>
@@ -68,5 +88,6 @@ namespace Rally.RestApi
 		{
 			return SSOHelper.ParseSSOLandingPage(ssoLandingPage);
 		}
+		#endregion
 	}
 }

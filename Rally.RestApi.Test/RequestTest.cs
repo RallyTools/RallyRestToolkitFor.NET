@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using System;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi.Test
 {

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Rally.RestApi.Exceptions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Web.Script.Serialization;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Json
 {
 	/// <summary>
 	/// A class for serializing/deserizalizing dynamic JSON objects.

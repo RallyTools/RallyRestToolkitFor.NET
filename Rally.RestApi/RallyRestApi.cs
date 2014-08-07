@@ -8,6 +8,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
 using System.Text.RegularExpressions;
+using Rally.RestApi.Web;
+using Rally.RestApi.Connection;
+using Rally.RestApi.Json;
 
 namespace Rally.RestApi
 {
@@ -16,10 +19,7 @@ namespace Rally.RestApi
 	/// </summary>
 	public class RallyRestApi
 	{
-		#region Properties
-
-		private const int MAX_THREADS_ALLOWED = 6;
-
+		#region Enumeration: HeaderType
 		/// <summary>
 		/// Enumeration of the valid HTTP headers that
 		/// may be passed on REST requests
@@ -57,304 +57,193 @@ namespace Rally.RestApi
 			[StringValue("X-RallyIntegrationVersion")]
 			Version
 		}
+		#endregion
 
+		#region Child Class: StringValue (Attribute)
+		internal class StringValue : Attribute
+		{
+			private string _value;
+
+			public StringValue(string value) { _value = value; }
+
+			public string Value { get { return _value; } }
+		}
+		#endregion
+
+		#region Constants
+		/// <summary>
+		/// The maximum number of threads allowed when performing parallel operations.
+		/// </summary>
+		private const int MAX_THREADS_ALLOWED = 6;
 		/// <summary>
 		/// The default WSAPI version to use
 		/// </summary>
 		public const string DEFAULT_WSAPI_VERSION = "v2.0";
-
 		/// <summary>
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
+		#endregion
 
+		#region Fields and Properties
+		private HttpService httpService;
+		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
 		/// The HTTP headers to be included on all REST requests
 		/// </summary>
-		public readonly Dictionary<HeaderType, string> Headers = new Dictionary<HeaderType, string>
-                                                                     {
-                                                                         {HeaderType.Library, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
-                                                                                typeof(RallyRestApi).Assembly, typeof(AssemblyTitleAttribute), false)).Title + " v" + typeof(RallyRestApi).Assembly.GetName().Version.ToString()},
-                                                                         {HeaderType.Vendor, ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(
-                                                                                typeof(RallyRestApi).Assembly, typeof(AssemblyCompanyAttribute), false)).Company},
-                                                                         {HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
-                                                                                typeof(RallyRestApi).Assembly, typeof(AssemblyTitleAttribute), false)).Title},
-                                                                         {HeaderType.Version, typeof(RallyRestApi).Assembly.GetName().Version.ToString()}
-                                                                     };
-
-		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
-		private readonly string wsapiVersion;
-		private string securityToken;
-		internal HttpService Service { get; set; }
-
-		internal Dictionary<string, string> GetProcessedHeaders()
-		{
-			var result = new Dictionary<string, string>();
-			foreach (var pair in Headers)
-			{
-				result.Add(getStringValue(pair.Key), pair.Value);
-			}
-			return result;
-		}
-
-		internal class StringValue : System.Attribute
-		{
-			private string _value;
-
-			public StringValue(string value)
-			{
-				_value = value;
-			}
-
-			public string Value
-			{
-				get { return _value; }
-			}
-		}
-
-		internal static string getStringValue(Enum value)
-		{
-			string output = null;
-			FieldInfo fi = value.GetType().GetField(value.ToString());
-			StringValue[] attrs = fi.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
-			if (attrs.Length > 0)
-				output = attrs[0].Value;
-			return output;
-		}
-
+		public Dictionary<HeaderType, string> Headers { get; private set; }
+		/// <summary>
+		/// The connection info thsi API is using.
+		/// </summary>
+		internal ConnectionInfo ConnectionInfo { get; private set; }
 		#endregion
 
-		/// <summary>
-		/// Construct a new RallyRestApi with the specified
-		/// username, password, server and WSAPI version
-		/// </summary>
-		/// <param name="username">The username to be used for access</param>
-		/// <param name="password">The password to be used for access</param>
-		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
-		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(
-				string username,
-				string password,
-				string rallyServer = DEFAULT_SERVER,
-				string webServiceVersion = DEFAULT_WSAPI_VERSION,
-				WebProxy proxy = null
-		)
-			: this(username, password, new Uri(rallyServer), webServiceVersion, proxy)
-		{
-		}
+		#region Calculated Properties
 
-		/// <summary>
-		/// Construct a new RallyRestApi with the specified
-		/// username, password, server and WSAPI version
-		/// </summary>
-		/// <param name="username">The username to be used for access</param>
-		/// <param name="password">The password to be used for access</param>
-		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
-		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(
-				string username,
-				string password,
-				Uri serverUrl,
-				string webServiceVersion = DEFAULT_WSAPI_VERSION,
-				WebProxy proxy = null
-		)
-			: this(new ConnectionInfo()
-			{
-				AuthType = AuthorizationType.Basic,
-				UserName = username,
-				Password = password,
-				Server = serverUrl,
-				WsapiVersion = webServiceVersion,
-				Proxy = proxy
-			})
-		{
-		}
-
-		/// <summary>
-		/// Construct a new RallyRestApi from the specified ConnectionInfo
-		/// </summary>
-		/// <param name="connectionInfo">ConnectionInfo</param>
-		public RallyRestApi(IConnectionInfo connectionInfo)
-		{
-			Service = new HttpService(connectionInfo);
-			wsapiVersion = connectionInfo.WsapiVersion ?? DEFAULT_WSAPI_VERSION;
-		}
-
+		#region WebServiceUrl
 		/// <summary>
 		/// The full WSAPI url
 		/// </summary>
 		public string WebServiceUrl
 		{
-			get { return Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion; }
+			get { return String.Format("{0}slm/webservice/{1}", httpService.Server.AbsoluteUri, ConnectionInfo.WsapiVersion); }
 		}
+		#endregion
 
-		#region Non Public
+		#endregion
 
-		private static IEnumerable<string> DecodeArrayList(IEnumerable list)
+		#region Constructor
+		/// <summary>
+		/// Construct a new RallyRestApi with the specified
+		/// username, password, server and WSAPI version
+		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
+		/// <param name="username">The username to be used for access</param>
+		/// <param name="password">The password to be used for access</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public RallyRestApi(string username = "", string password = "",
+			string rallyServer = DEFAULT_SERVER, string webServiceVersion = DEFAULT_WSAPI_VERSION,
+			string apiKey = "", WebProxy proxy = null)
 		{
-			return list.Cast<string>();
+			Configure(apiKey, username, password, new Uri(rallyServer),
+				webServiceVersion, proxy);
+		}
+		/// <summary>
+		/// Construct a new RallyRestApi with the specified
+		/// username, password, server and WSAPI version
+		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
+		/// <param name="username">The username to be used for access</param>
+		/// <param name="password">The password to be used for access</param>
+		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public RallyRestApi(Uri serverUrl, string username = "", string password = "",
+			string webServiceVersion = DEFAULT_WSAPI_VERSION,
+			string apiKey = "", WebProxy proxy = null)
+		{
+			Configure(apiKey, username, password, serverUrl,
+				webServiceVersion, proxy);
+		}
+		/// <summary>
+		/// Construct a new RallyRestApi from the specified ConnectionInfo
+		/// </summary>
+		public RallyRestApi(ConnectionInfo connectionInfo)
+		{
+			Configure(connectionInfo);
+		}
+		#endregion
+
+		#region Configure
+		/// <summary>
+		/// Configures the API using the provided values.
+		/// </summary>
+		protected void Configure(string apiKey, string username, string password, Uri serverUrl,
+				string webServiceVersion, WebProxy proxy)
+		{
+			AuthorizationType authType = AuthorizationType.Basic;
+			if (!String.IsNullOrWhiteSpace(apiKey))
+				authType = AuthorizationType.ApiKey;
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = authType;
+			connectionInfo.ApiKey = apiKey;
+			connectionInfo.UserName = username;
+			connectionInfo.Password = password;
+			connectionInfo.Server = serverUrl;
+			connectionInfo.WsapiVersion = webServiceVersion;
+			connectionInfo.Proxy = proxy;
+
+			Configure(connectionInfo);
 		}
 
 		/// <summary>
-		/// Ensure the specified ref is fully qualified
-		/// with the full WSAPI url
+		/// Configures the API using the provided connection.
 		/// </summary>
-		/// <param name="aRef">A Rally object ref</param>
-		/// <returns>The fully qualified ref</returns>
-		protected string GetFullyQualifiedRef(string aRef)
+		protected void Configure(ConnectionInfo connectionInfo)
 		{
-			if (!aRef.StartsWith(WebServiceUrl))
-			{
-				aRef = WebServiceUrl + aRef;
-			}
+			this.ConnectionInfo = connectionInfo;
+			httpService = new HttpService(connectionInfo);
+			if (String.IsNullOrWhiteSpace(connectionInfo.WsapiVersion))
+				connectionInfo.WsapiVersion = DEFAULT_WSAPI_VERSION;
 
-			return aRef;
+			Headers = new Dictionary<HeaderType, string>();
+			Assembly assembly = typeof(RallyRestApi).Assembly;
+			Headers.Add(HeaderType.Library, String.Format("{0} v{1}",
+				((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyTitleAttribute), false)).Title, assembly.GetName().Version.ToString()));
+			Headers.Add(HeaderType.Vendor,
+				((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyCompanyAttribute), false)).Company);
+			Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyTitleAttribute), false)).Title);
+			Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
 		}
+		#endregion
 
+		#region SetDefaultConnectionLimit
 		/// <summary>
-		/// Ensure the specified ref is fully qualified with the full WSAPI url
+		/// Sets the default maximum concurrent connection limit for this application.
+		/// <para>Note: This will affect all connections that use Service Point.</para>
 		/// </summary>
-		/// <param name="aRef">A Rally object ref</param>
-		/// <returns>The fully qualified ref</returns>
-		protected Uri GetFullyQualifiedV2xSchemaUri(string aRef)
+		/// <param name="maxConnections">The maximum number of concurrent connections. Allowed values are between 1 and 25.</param>
+		public static void SetDefaultConnectionLimit(ushort maxConnections)
 		{
-			// HACK: This is a total hack to access a custom API that does not follow standard endpoint behavior.
-			// The schema endpoint has a different base and version, and therefore requires this workaround.
-			return new Uri(GetFullyQualifiedRef(aRef).Replace("webservice/v2.0", "schema/v2.x"));
-		}
+			if ((maxConnections < 1) || (25 < maxConnections))
+				throw new ArgumentOutOfRangeException("maxConnections", "Allowed values are between 1 and 25.");
 
-		/// <summary>
-		/// Ensure the specified ref is fully qualified
-		/// with the full WSAPI url
-		/// </summary>
-		/// <param name="aRef">A Rally object ref</param>
-		/// <returns>The fully qualified ref</returns>
-		protected Uri GetFullyQualifiedUri(string aRef)
-		{
-			return new Uri(GetFullyQualifiedRef(aRef));
+			ServicePointManager.DefaultConnectionLimit = maxConnections;
 		}
+		#endregion
 
-		internal Uri FormatCreateUri(string workspaceRef, string typePath)
-		{
-			String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
-			return new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
-		}
-
-		internal Uri FormatUpdateUri(string typePath, string objectId)
-		{
-			return
-					new Uri(Service.Server.AbsoluteUri + "slm/webservice/" + wsapiVersion + "/" + typePath + "/" + objectId +
-									".js");
-		}
-
-		DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
-		{
-			return Service.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
-		}
-
-		DynamicJsonObject DoGet(Uri uri)
-		{
-			return serializer.Deserialize(Service.Get(uri, GetProcessedHeaders()));
-		}
-
+		#region Post
 		/// <summary>
 		/// Performs a post of data to the provided URI.
 		/// </summary>
 		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
-			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", Service.Server.AbsoluteUri, wsapiVersion, relativeUri));
+			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, ConnectionInfo.WsapiVersion, relativeUri));
 			string postData = serializer.Serialize(data);
-			return serializer.Deserialize(Service.Post(uri, postData, GetProcessedHeaders()));
+			return serializer.Deserialize(httpService.Post(uri, postData, GetProcessedHeaders()));
 		}
+		#endregion
 
-		DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data)
+		#region DoDelete
+		private DynamicJsonObject DoDelete(Uri uri, bool retry = true)
 		{
-			return DoPost(uri, data, true);
-		}
-
-		DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry)
-		{
-			var response = serializer.Deserialize(Service.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
-			if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
+			var response = serializer.Deserialize(httpService.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
+			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0)
 			{
-				securityToken = null;
-				return DoPost(uri, data, false);
-			}
-			return response;
-		}
-
-		DynamicJsonObject DoDelete(Uri uri)
-		{
-			return DoDelete(uri, true);
-		}
-
-		DynamicJsonObject DoDelete(Uri uri, bool retry)
-		{
-			var response = serializer.Deserialize(Service.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
-			if (retry && securityToken != null && response[response.Fields.First()].Errors.Count > 0)
-			{
-				securityToken = null;
+				ConnectionInfo.SecurityToken = null;
 				return DoDelete(uri, false);
 			}
 			return response;
 		}
-
-		internal bool IsWsapi2
-		{
-			get
-			{
-				return !new Regex("^1[.]\\d+").IsMatch(wsapiVersion);
-			}
-		}
-
-		Uri GetSecuredUri(Uri uri)
-		{
-			if (IsWsapi2)
-			{
-				if (string.IsNullOrEmpty(securityToken))
-				{
-					securityToken = GetSecurityToken();
-				}
-
-				UriBuilder builder = new UriBuilder(uri);
-				string csrfToken = string.Format("key={0}", securityToken);
-				if (string.IsNullOrEmpty(builder.Query))
-				{
-					builder.Query = csrfToken;
-				}
-				else
-				{
-					builder.Query += "&" + csrfToken;
-				}
-
-				return builder.Uri;
-			}
-			return uri;
-		}
-
-		string GetSecurityToken()
-		{
-			try
-			{
-				DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef("/security/authorize")));
-				return securityTokenResponse["OperationResult"]["SecurityToken"];
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		private IEnumerable<object> GetCollection(object arr)
-		{
-			var list = arr as ArrayList;
-			return list.Cast<object>();
-		}
-
 		#endregion
 
+		#region Query
 		/// <summary>
 		/// Perform a read against the WSAPI operation based
 		/// on the data in the specified request
@@ -406,17 +295,19 @@ namespace Rally.RestApi
 			result.Results = allResults;
 			return result;
 		}
+		#endregion
 
+		#region GetCurrentUser
 		/// <summary>
 		/// Get the current user
 		/// </summary>
-		/// <param name="fetchedFields">p</param>
-		/// <returns></returns>
 		public dynamic GetCurrentUser(params string[] fetchedFields)
 		{
 			return GetByReference("/user.js", fetchedFields);
 		}
+		#endregion
 
+		#region GetSubscription
 		/// <summary>
 		/// Get the current subscription
 		/// </summary>
@@ -426,7 +317,9 @@ namespace Rally.RestApi
 		{
 			return GetByReference("/subscription.js", fetchedFields);
 		}
+		#endregion
 
+		#region GetByReference
 		/// <summary>
 		/// Get the object described by the specified type and object id.
 		/// </summary>
@@ -460,7 +353,9 @@ namespace Rally.RestApi
 			DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?fetch=" + string.Join(",", fetchedFields)));
 			return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
 		}
+		#endregion
 
+		#region GetByReferenceAndWorkspace
 		/// <summary>
 		/// Get the object described by the specified reference scoped to the provided workspace.
 		/// </summary>
@@ -487,7 +382,9 @@ namespace Rally.RestApi
 			DynamicJsonObject wrappedReponse = DoGet(GetFullyQualifiedUri(aRef + "?" + workspaceClause + "fetch=" + string.Join(",", fetchedFields)));
 			return string.Equals(wrappedReponse.Fields.FirstOrDefault(), "OperationResult", StringComparison.CurrentCultureIgnoreCase) ? null : wrappedReponse[wrappedReponse.Fields.First()];
 		}
+		#endregion
 
+		#region Delete
 		/// <summary>
 		/// Delete the object described by the specified type and object id.
 		/// </summary>
@@ -540,6 +437,19 @@ namespace Rally.RestApi
 			result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
 			return result;
 		}
+		#endregion
+
+		#region Create
+		/// <summary>
+		/// Create an object of the specified type from the specified object
+		/// </summary>
+		/// <param name="typePath">the type to be created</param>
+		/// <param name="obj">the object to be created</param>
+		/// <returns></returns>
+		public CreateResult Create(string typePath, DynamicJsonObject obj)
+		{
+			return Create(null, typePath, obj);
+		}
 
 		/// <summary>
 		/// Create an object of the specified type from the specified object
@@ -564,18 +474,9 @@ namespace Rally.RestApi
 			createResponse.Warnings.AddRange(DecodeArrayList(createResult["Warnings"]));
 			return createResponse;
 		}
+		#endregion
 
-		/// <summary>
-		/// Create an object of the specified type from the specified object
-		/// </summary>
-		/// <param name="typePath">the type to be created</param>
-		/// <param name="obj">the object to be created</param>
-		/// <returns></returns>
-		public CreateResult Create(string typePath, DynamicJsonObject obj)
-		{
-			return Create(null, typePath, obj);
-		}
-
+		#region Update
 		/// <summary>
 		/// Update the item described by the specified reference with
 		/// the fields of the specified object
@@ -606,7 +507,9 @@ namespace Rally.RestApi
 			result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
 			return result;
 		}
+		#endregion
 
+		#region GetAllowedAttributeValues
 		/// <summary>
 		/// Get the allowed values for the specified type and attribute
 		/// </summary>
@@ -621,7 +524,7 @@ namespace Rally.RestApi
 			{
 				var allowedValues = attribute["AllowedValues"];
 
-				if (IsWsapi2)
+				if (ConnectionInfo.IsWsapi2)
 				{
 					Request allowedValuesRequest = new Request(allowedValues);
 					var response = Query(allowedValuesRequest);
@@ -637,7 +540,9 @@ namespace Rally.RestApi
 
 			return attributes;
 		}
+		#endregion
 
+		#region GetTypes
 		/// <summary>
 		/// Get the attribute definitions for the specified type
 		/// </summary>
@@ -645,7 +550,7 @@ namespace Rally.RestApi
 		/// <returns>The type definitions for the specified query</returns>
 		public CacheableQueryResult GetTypes(string queryString)
 		{
-			if (!IsWsapi2)
+			if (!ConnectionInfo.IsWsapi2)
 				throw new InvalidOperationException("This method requires WSAPI 2.0");
 
 			Uri uri = GetFullyQualifiedV2xSchemaUri(queryString);
@@ -654,7 +559,9 @@ namespace Rally.RestApi
 
 			return new CacheableQueryResult(response["QueryResult"], isCachedResult);
 		}
+		#endregion
 
+		#region GetAttributesByType
 		/// <summary>
 		/// Get the attribute definitions for the specified type
 		/// </summary>
@@ -670,7 +577,7 @@ namespace Rally.RestApi
 			if (typeDefResult != null)
 			{
 				var attributes = typeDefResult["Attributes"];
-				if (IsWsapi2)
+				if (ConnectionInfo.IsWsapi2)
 				{
 					Request attributeRequest = new Request(attributes);
 					var response = Query(attributeRequest);
@@ -686,18 +593,165 @@ namespace Rally.RestApi
 
 			return result;
 		}
+		#endregion
 
-		/// <summary>
-		/// Sets the default maximum concurrent connection limit for this application.
-		/// <para>Note: This will affect all connections that use Service Point.</para>
-		/// </summary>
-		/// <param name="maxConnections">The maximum number of concurrent connections. Allowed values are between 1 and 25.</param>
-		public static void SetDefaultConnectionLimit(ushort maxConnections)
+		#region Helper Methods
+
+		#region FormatCreateUri
+		internal Uri FormatCreateUri(string workspaceRef, string typePath)
 		{
-			if ((maxConnections < 1) || (25 < maxConnections))
-				throw new ArgumentOutOfRangeException("maxConnections", "Allowed values are between 1 and 25.");
-
-			ServicePointManager.DefaultConnectionLimit = maxConnections;
+			String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
+			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + ConnectionInfo.WsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
 		}
+		#endregion
+
+		#region FormatUpdateUri
+		internal Uri FormatUpdateUri(string typePath, string objectId)
+		{
+			return
+					new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + ConnectionInfo.WsapiVersion + "/" + typePath + "/" + objectId +
+									".js");
+		}
+		#endregion
+
+		#region DoGetCacheable
+		private DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
+		{
+			return httpService.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
+		}
+		#endregion
+
+		#region DoGet
+		private DynamicJsonObject DoGet(Uri uri)
+		{
+			return serializer.Deserialize(httpService.Get(uri, GetProcessedHeaders()));
+		}
+		#endregion
+
+		#region DoPost
+		private DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry = true)
+		{
+			var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
+			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0)
+			{
+				ConnectionInfo.SecurityToken = null;
+				return DoPost(uri, data, false);
+			}
+			return response;
+		}
+		#endregion
+
+		#region GetSecuredUri
+		private Uri GetSecuredUri(Uri uri)
+		{
+			if (ConnectionInfo.IsWsapi2)
+			{
+				if (String.IsNullOrEmpty(ConnectionInfo.SecurityToken))
+				{
+					ConnectionInfo.SecurityToken = GetSecurityToken();
+				}
+
+				UriBuilder builder = new UriBuilder(uri);
+				string csrfToken = String.Format("key={0}", ConnectionInfo.SecurityToken);
+				if (String.IsNullOrEmpty(builder.Query))
+				{
+					builder.Query = csrfToken;
+				}
+				else
+				{
+					builder.Query += "&" + csrfToken;
+				}
+
+				return builder.Uri;
+			}
+			return uri;
+		}
+		#endregion
+
+		#region GetSecurityToken
+		private string GetSecurityToken()
+		{
+			try
+			{
+				DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef("/security/authorize")));
+				return securityTokenResponse["OperationResult"]["SecurityToken"];
+			}
+			catch
+			{
+				return null;
+			}
+		}
+		#endregion
+
+		#region GetProcessedHeaders
+		internal Dictionary<string, string> GetProcessedHeaders()
+		{
+			var result = new Dictionary<string, string>();
+			foreach (HeaderType headerType in Headers.Keys)
+			{
+				string output = null;
+				string value = Headers[headerType];
+				FieldInfo fieldInfo = headerType.GetType().GetField(headerType.ToString());
+				StringValue[] attrs = fieldInfo.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
+				if (attrs.Length > 0)
+					output = attrs[0].Value;
+
+				result.Add(output, value);
+			}
+			return result;
+		}
+		#endregion
+
+		#region GetFullyQualifiedUri
+		/// <summary>
+		/// Ensure the specified ref is fully qualified
+		/// with the full WSAPI url
+		/// </summary>
+		/// <param name="aRef">A Rally object ref</param>
+		/// <returns>The fully qualified ref</returns>
+		protected Uri GetFullyQualifiedUri(string aRef)
+		{
+			return new Uri(GetFullyQualifiedRef(aRef));
+		}
+		#endregion
+
+		#region GetFullyQualifiedRef
+		/// <summary>
+		/// Ensure the specified ref is fully qualified
+		/// with the full WSAPI url
+		/// </summary>
+		/// <param name="aRef">A Rally object ref</param>
+		/// <returns>The fully qualified ref</returns>
+		protected string GetFullyQualifiedRef(string aRef)
+		{
+			if (!aRef.StartsWith(WebServiceUrl))
+				return String.Format("{0}{1}", WebServiceUrl, aRef);
+			else
+				return aRef;
+		}
+		#endregion
+
+		#region GetFullyQualifiedV2xSchemaUri
+		/// <summary>
+		/// Ensure the specified ref is fully qualified with the full WSAPI url
+		/// </summary>
+		/// <param name="aRef">A Rally object ref</param>
+		/// <returns>The fully qualified ref</returns>
+		protected Uri GetFullyQualifiedV2xSchemaUri(string aRef)
+		{
+			// HACK: This is a total hack to access a custom API that does not follow standard endpoint behavior.
+			// The schema endpoint has a different base and version, and therefore requires this workaround.
+			return new Uri(GetFullyQualifiedRef(aRef).Replace("webservice/v2.0", "schema/v2.x"));
+		}
+		#endregion
+
+		#region DecodeArrayList
+		private static IEnumerable<string> DecodeArrayList(IEnumerable list)
+		{
+			return list.Cast<string>();
+		}
+		#endregion
+
+		#endregion
 	}
 }

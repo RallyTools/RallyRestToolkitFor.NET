@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rally.RestApi
+namespace Rally.RestApi.Connection
 {
 	/// <summary>
 	/// The types of authorization that are available.
@@ -14,6 +14,10 @@ namespace Rally.RestApi
 		/// Basic authorization where the user provides a username and password.
 		/// </summary>
 		Basic,
+		/// <summary>
+		/// Authentication using an API Key.
+		/// </summary>
+		ApiKey,
 		/// <summary>
 		/// SSO authorization.
 		/// </summary>
