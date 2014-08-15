@@ -25,7 +25,7 @@ namespace Rally.RestApi.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("vsuser@rallydev.com")]
         public string UserName {
             get {
                 return ((string)(this["UserName"]));
@@ -34,7 +34,7 @@ namespace Rally.RestApi.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("BeerIsGood!")]
         public string Password {
             get {
                 return ((string)(this["Password"]));
@@ -43,7 +43,7 @@ namespace Rally.RestApi.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://trial.rallydev.com")]
         public string TestServer {
             get {
                 return ((string)(this["TestServer"]));

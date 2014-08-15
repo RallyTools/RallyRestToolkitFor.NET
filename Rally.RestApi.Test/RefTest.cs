@@ -125,6 +125,7 @@ namespace Rally.RestApi.Test
 		[TestMethod()]
 		public void ShouldSupportProjectPermissionRefs()
 		{
+			// Note: Although this looks like an OID, it is actually a compound string consisting of [UserOID]u[ProjectOID]p[PermissionLevel]
 			Assert.AreEqual(Ref.GetRelativeRef("https://rally1.rallydev.com/slm/webservice/1.38/projectpermission/123u456p1"), "/projectpermission/123u456p1", "Valid project permission ref");
 			Assert.AreEqual(Ref.GetOidFromRef("/projectpermission/123u456p1.js"), "123u456p1", "Get oid from project permission ref");
 			Assert.AreEqual(Ref.GetTypeFromRef("/projectpermission/123u456p1.js"), "projectpermission", "Get type from project permission ref");

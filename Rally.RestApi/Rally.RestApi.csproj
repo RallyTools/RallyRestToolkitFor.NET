@@ -58,6 +58,9 @@
   <ItemGroup>
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
+    <Compile Include="Sso\ISsoDriver.cs" />
+    <Compile Include="Sso\SsoNotAllowedDriver.cs" />
+    <Compile Include="Web\SsoWebClient.cs" />
     <Compile Include="Web\CookieAwareCacheableWebClient.cs" />
     <Compile Include="Web\CookieAwareWebClient.cs" />
     <Compile Include="Json\DynamicJsonConverter.cs" />
@@ -74,11 +77,9 @@
     <Compile Include="Response\QueryResult.cs" />
     <Compile Include="RallyRestApi.cs" />
     <Compile Include="Request.cs" />
-    <Compile Include="SSOHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="RallyRestAPI.NET.shfbproj" />
-    <Content Include="SSOLoginHowTo.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Rally.Development.Key.snk">

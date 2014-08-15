@@ -73,7 +73,6 @@
     <Compile Include="RallyRestApiTest.cs" />
     <Compile Include="RefTest.cs" />
     <Compile Include="RequestTest.cs" />
-    <Compile Include="SSOHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rally.RestApi\Rally.RestApi.csproj">
