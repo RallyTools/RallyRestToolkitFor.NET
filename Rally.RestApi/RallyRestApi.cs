@@ -21,6 +21,27 @@ namespace Rally.RestApi
 	/// </summary>
 	public class RallyRestApi
 	{
+		#region Enumeration: AuthenticationResult
+		/// <summary>
+		/// Enumeration of the different authentication results that may occur.
+		/// </summary>
+		public enum AuthenticationResult
+		{
+			/// <summary>
+			/// The user is authenticated.
+			/// </summary>
+			Authenticated,
+			/// <summary>
+			/// The user needs to perform SSO authentication.
+			/// </summary>
+			PendingSSO,
+			/// <summary>
+			/// The user is not authorized.
+			/// </summary>
+			NotAuthorized,
+		}
+		#endregion
+
 		#region Enumeration: HeaderType
 		/// <summary>
 		/// Enumeration of the valid HTTP headers that
@@ -155,10 +176,34 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
+		/// <param name="userName">The username to be used for access</param>
+		/// <param name="zSessionID">The ZSessionID to be used for access. This would have been provided by Rally on a previous call.</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult AuthenticateWithZSessionID(string userName, string zSessionID,
+			string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
+		{
+			if (String.IsNullOrWhiteSpace(rallyServer))
+				rallyServer = DEFAULT_SERVER;
+
+			if (!ssoDriver.IsSsoAuthorized)
+				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = AuthorizationType.ZSessionID;
+			connectionInfo.UserName = userName;
+			connectionInfo.ZSessionID = zSessionID;
+			connectionInfo.Server = new Uri(rallyServer);
+			connectionInfo.Proxy = proxy;
+			return AuthenticateWithConnectionInfo(connectionInfo);
+		}
+		/// <summary>
+		/// Authenticates against Rally with the specified credentials
+		/// </summary>
 		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public void AuthenticateWithApiKey(string apiKey, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
 		{
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
@@ -168,7 +213,7 @@ namespace Rally.RestApi
 			connectionInfo.ApiKey = apiKey;
 			connectionInfo.Server = new Uri(rallyServer);
 			connectionInfo.Proxy = proxy;
-			AuthenticateWithConnectionInfo(connectionInfo);
+			return AuthenticateWithConnectionInfo(connectionInfo);
 		}
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
@@ -176,7 +221,7 @@ namespace Rally.RestApi
 		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public void AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null)
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null)
 		{
 			if (serverUrl == null)
 				serverUrl = new Uri(DEFAULT_SERVER);
@@ -186,7 +231,7 @@ namespace Rally.RestApi
 			connectionInfo.ApiKey = apiKey;
 			connectionInfo.Server = serverUrl;
 			connectionInfo.Proxy = proxy;
-			AuthenticateWithConnectionInfo(connectionInfo);
+			return AuthenticateWithConnectionInfo(connectionInfo);
 		}
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
@@ -195,7 +240,7 @@ namespace Rally.RestApi
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public void Authenticate(string username, string password, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
+		public AuthenticationResult Authenticate(string username, string password, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
 		{
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
@@ -206,7 +251,7 @@ namespace Rally.RestApi
 			connectionInfo.Password = password;
 			connectionInfo.Server = new Uri(rallyServer);
 			connectionInfo.Proxy = proxy;
-			AuthenticateWithConnectionInfo(connectionInfo);
+			return AuthenticateWithConnectionInfo(connectionInfo);
 		}
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
@@ -215,7 +260,7 @@ namespace Rally.RestApi
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		public void Authenticate(string username, string password, Uri serverUrl, WebProxy proxy = null)
+		public AuthenticationResult Authenticate(string username, string password, Uri serverUrl, WebProxy proxy = null)
 		{
 			if (serverUrl == null)
 				serverUrl = new Uri(DEFAULT_SERVER);
@@ -226,13 +271,13 @@ namespace Rally.RestApi
 			connectionInfo.Password = password;
 			connectionInfo.Server = serverUrl;
 			connectionInfo.Proxy = proxy;
-			AuthenticateWithConnectionInfo(connectionInfo);
+			return AuthenticateWithConnectionInfo(connectionInfo);
 		}
 
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		private void AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo)
+		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo)
 		{
 			this.ConnectionInfo = connectionInfo;
 			httpService = new HttpService(ssoDriver, connectionInfo);
@@ -253,6 +298,7 @@ namespace Rally.RestApi
 			try
 			{
 				GetCurrentUser("Name");
+				return AuthenticationResult.Authenticated;
 			}
 			catch
 			{
@@ -262,6 +308,8 @@ namespace Rally.RestApi
 					httpService = null;
 					throw;
 				}
+
+				return AuthenticationResult.PendingSSO;
 			}
 		}
 		#endregion
