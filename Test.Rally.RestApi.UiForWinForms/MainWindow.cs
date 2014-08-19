@@ -57,11 +57,11 @@ namespace Test.Rally.RestApi.UiForWinForms
 				catch (WebException we)
 				{
 					if (we.Response == null)
-						MessageBox.Show("Exception: {0}", we.Message);
+						MessageBox.Show(String.Format("Exception: {0}", we.Message));
 					else if (((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.Unauthorized)
 						MessageBox.Show("(401) Unauthorized");
 					else if (((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.NotFound)
-						MessageBox.Show("(404) Not Found");
+						MessageBox.Show(String.Format("(404) Not Found"));
 					else
 						MessageBox.Show("Exception: {0}", we.Message);
 

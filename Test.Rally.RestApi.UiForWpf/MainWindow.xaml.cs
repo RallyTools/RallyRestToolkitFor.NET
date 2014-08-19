@@ -60,13 +60,13 @@ namespace Test.Rally.RestApi.UiForWpf
 			catch (WebException we)
 			{
 				if (we.Response == null)
-					MessageBox.Show("Exception: {0}", we.Message);
+					MessageBox.Show(String.Format("Exception: {0}", we.Message));
 				else if (((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.Unauthorized)
 					MessageBox.Show("(401) Unauthorized");
 				else if (((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.NotFound)
 					MessageBox.Show("(404) Not Found");
 				else
-					MessageBox.Show("Exception: {0}", we.Message);
+					MessageBox.Show(String.Format("Exception: {0}", we.Message));
 
 				// Make sure we log the user out in case they are using stored credentials.
 				LogoutAndResetUI();
