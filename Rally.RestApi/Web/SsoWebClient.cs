@@ -43,6 +43,7 @@ namespace Rally.RestApi.Web
 		protected override WebResponse GetWebResponse(WebRequest request)
 		{
 			request.ContentType = "application/json";
+
 			WebResponse response = base.GetWebResponse(request);
 			HttpWebResponse webResponse = response as HttpWebResponse;
 			if (webResponse != null)

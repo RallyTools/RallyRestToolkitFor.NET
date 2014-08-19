@@ -412,21 +412,36 @@ namespace Rally.RestApi.Web
 				SsoWebClient ssoWebClient = webClient as SsoWebClient;
 				if (ssoWebClient != null)
 				{
-					if (ssoWebClient.CheckIfRedirect(connectionInfo.Server, connectionInfo.UserName))
+					try
 					{
-						string spacerChar = "?";
-						if (ssoWebClient.RedirectTo.Contains("?"))
-							spacerChar = "&";
+						if (ssoWebClient.CheckIfRedirect(connectionInfo.Server, connectionInfo.UserName))
+						{
+							string spacerChar = "?";
+							if (ssoWebClient.RedirectTo.Contains("?"))
+								spacerChar = "&";
 
-						string portInfo = String.Empty;
-						if (connectionInfo.Port > 0)
-							portInfo = String.Format(":{0}", connectionInfo.Port);
+							string portInfo = String.Empty;
+							if (connectionInfo.Port > 0)
+								portInfo = String.Format(":{0}", connectionInfo.Port);
 
-						ssoRedirectUri = new Uri(String.Format("{0}{1}TargetResource={2}://{3}{4}/slm/j_sso_security_check?noRedirect=true",
-							ssoWebClient.RedirectTo, spacerChar, connectionInfo.Server.Scheme, connectionInfo.Server.Host, portInfo));
+							ssoRedirectUri = new Uri(String.Format("{0}{1}TargetResource={2}://{3}{4}/slm/j_sso_security_check?noRedirect=true",
+								ssoWebClient.RedirectTo, spacerChar, connectionInfo.Server.Scheme, connectionInfo.Server.Host, portInfo));
 
-						return true;
+							return true;
+						}
 					}
+					catch (WebException we)
+					{
+						if ((we.Response != null) &&
+							(((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.MethodNotAllowed))
+						{
+							ssoRedirectUri = null;
+							return false;
+						}
+
+						throw;
+					}
+
 				}
 				else
 					throw new InvalidOperationException("GetWebClient failed to create a SsoWebClient");
