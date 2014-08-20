@@ -74,9 +74,9 @@ namespace Rally.RestApi.UiForWpf
 						{
 							if (SsoResults != null)
 							{
+								Close();
 								SsoResults.Invoke(true, currentCookie.Value);
 								SsoResults = null;
-								Close();
 							}
 						}
 					}
