@@ -64,6 +64,7 @@ namespace Rally.RestApi.UiForWinforms
 					{
 						if (SsoResults != null)
 						{
+							WindowState = FormWindowState.Minimized;
 							SsoResults.Invoke(true, currentCookie.Value);
 							SsoResults = null;
 							Close();

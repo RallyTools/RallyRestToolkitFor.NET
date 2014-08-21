@@ -74,6 +74,7 @@ namespace Rally.RestApi.UiForWpf
 						{
 							if (SsoResults != null)
 							{
+								WindowState = WindowState.Minimized;
 								SsoResults.Invoke(true, currentCookie.Value);
 								SsoResults = null;
 								Close();
