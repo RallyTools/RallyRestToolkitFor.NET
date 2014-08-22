@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="UserName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">vsuser@rallydev.com</Value>
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">BeerIsGood!</Value>
     </Setting>
     <Setting Name="TestServer" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">https://trial.rallydev.com</Value>
     </Setting>
     <Setting Name="ApiKey" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />

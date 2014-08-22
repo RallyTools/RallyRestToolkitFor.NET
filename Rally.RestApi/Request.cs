@@ -14,6 +14,47 @@ namespace Rally.RestApi
 	[Serializable]
 	public class Request
 	{
+		#region Constructor
+		/// <summary>
+		/// Create a new Request with the specified artifact type
+		/// </summary>
+		/// <param name="artifactName">The Rally artifact type being requested</param>
+		public Request(string artifactName)
+		{
+			Configure(artifactName: artifactName);
+		}
+		/// <summary>
+		/// Create a new Request for the specified collection. (ie Defect.Tasks)
+		/// The collection should have a _ref property.
+		/// </summary>
+		/// <param name="collection">The object containing the collection ref</param>
+		public Request(DynamicJsonObject collection)
+		{
+			Configure(collection: collection);
+		}
+		/// <summary>
+		/// Create a new empty Request.
+		/// </summary>
+		public Request()
+		{
+			Configure();
+		}
+		#endregion
+
+		#region Configure
+		private void Configure(string artifactName = null, DynamicJsonObject collection = null)
+		{
+			ArtifactName = artifactName;
+			this.collection = collection;
+			Parameters = new Dictionary<string, dynamic>();
+			Fetch = new List<string>();
+			PageSize = MAX_PAGE_SIZE;
+			Start = 1;
+			Limit = PageSize;
+		}
+		#endregion
+
+		#region Properties and Fields
 		/// <summary>
 		/// The maximum page size (200).
 		/// </summary>
@@ -22,78 +63,43 @@ namespace Rally.RestApi
 		internal Dictionary<string, dynamic> Parameters { get; private set; }
 
 		private DynamicJsonObject collection;
-
 		/// <summary>
-		/// Create a new Request with the specified artifact type
+		/// An upper bound on the total results to be returned.
 		/// </summary>
-		/// <param name="artifactName">The Rally artifact type being requested</param>
-		public Request(string artifactName)
-			: this()
-		{
-			ArtifactName = artifactName;
-		}
-
+		public int Limit { get; set; }
 		/// <summary>
-		/// Create a new Request for the specified collection. (ie Defect.Tasks)
-		/// The collection should have a _ref property.
+		/// The name of the artifact that will be queried
 		/// </summary>
-		/// <param name="collection">The object containing the collection ref</param>
-		public Request(DynamicJsonObject collection)
-			: this()
-		{
-			this.collection = collection;
-		}
-
+		public string ArtifactName { get; set; }
 		/// <summary>
-		/// Create a new empty Request.
+		/// Page size for results. Must be between 1 and MAX_PAGE_SIZE, default is MAX_PAGE_SIZE. 
 		/// </summary>
-		public Request()
-		{
-			Parameters = new Dictionary<string, dynamic>();
-			Fetch = new List<string>();
-			PageSize = MAX_PAGE_SIZE;
-			Start = 1;
-			Limit = PageSize;
-		}
-
-
+		public int PageSize { get; set; }
+		/// <summary>
+		/// A list of attributes to be returned in the result set.
+		/// If null or empty true will be used.
+		/// </summary>
+		public List<string> Fetch { get; set; }
+		/// <summary>
+		/// Using ShallowFetch will only fetch the fields listed in the [] on the related items rather than fetching all fields on all objects.
+		/// An example of the param is: shallowFetch=Name,WorkProduct[Name;FormattedID]
+		/// The Fetch attributes will be treated as a shallow fetch if this is set to true.
+		/// </summary>
+		public bool UseShallowFetch { get; set; }
 		/// <summary>
 		/// A filter query to be applied to results before being returned
 		/// </summary>
 		public Query Query
 		{
-			get { return Parameters.ContainsKey("query") ? Parameters["query"] : null; }
+			get { return GetParameterValue("query"); }
 			set { Parameters["query"] = value; }
-		}
-
-		/// <summary>
-		/// An upper bound on the total results to be returned.
-		/// </summary>
-		public int Limit
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// The name of the artifact that will be queried
-		/// </summary>
-		public string ArtifactName { get; set; }
-
-		/// <summary>
-		/// Page size for results. Must be between 1 and MAX_PAGE_SIZE, default is MAX_PAGE_SIZE. 
-		/// </summary>
-		public int PageSize
-		{
-			get;
-			set;
 		}
 		/// <summary>
 		/// Default is the user's default from Rally. In addition to the specified project, include projects above the specified one. 
 		/// </summary>
 		public bool? ProjectScopeUp
 		{
-			get { return Parameters.ContainsKey("projectScopeUp") ? Parameters["projectScopeUp"] : null; }
+			get { return GetParameterValue("projectScopeUp"); }
 			set { Parameters["projectScopeUp"] = value; }
 		}
 		/// <summary>
@@ -101,7 +107,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public bool? ProjectScopeDown
 		{
-			get { return Parameters.ContainsKey("projectScopeDown") ? Parameters["projectScopeDown"] : null; }
+			get { return GetParameterValue("projectScopeDown"); }
 			set { Parameters["projectScopeDown"] = value; }
 		}
 		/// <summary>
@@ -109,7 +115,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public int Start
 		{
-			get { return Parameters.ContainsKey("start") ? Parameters["start"] : 1; }
+			get { return GetParameterValue("start", 1); }
 			set { Parameters["start"] = value; }
 		}
 		/// <summary>
@@ -120,7 +126,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public string Workspace
 		{
-			get { return Parameters.ContainsKey("workspace") ? Parameters["workspace"] : null; }
+			get { return GetParameterValue("workspace"); }
 			set { Parameters["workspace"] = value; }
 		}
 		/// <summary>
@@ -131,31 +137,9 @@ namespace Rally.RestApi
 		/// </summary>
 		public string Project
 		{
-			get { return Parameters.ContainsKey("project") ? Parameters["project"] : null; }
+			get { return GetParameterValue("project"); }
 			set { Parameters["project"] = value; }
 		}
-
-		/// <summary>
-		/// A list of attributes to be returned in the result set.
-		/// If null or empty true will be used.
-		/// </summary>
-		public List<string> Fetch
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Using ShallowFetch will only fetch the fields listed in the [] on the related items rather than fetching all fields on all objects.
-		/// An example of the param is: shallowFetch=Name,WorkProduct[Name;FormattedID]
-		/// The Fetch attributes will be treated as a shallow fetch if this is set to true.
-		/// </summary>
-		public bool UseShallowFetch
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		///  A sort string. 
 		///  <example>ObjectId Desc</example>
@@ -163,10 +147,50 @@ namespace Rally.RestApi
 		/// </summary>
 		public string Order
 		{
-			get { return Parameters.ContainsKey("order") ? Parameters["order"] : null; }
+			get { return GetParameterValue("order"); }
 			set { Parameters["order"] = value; }
 		}
+		#endregion
 
+		#region Calculated Properties
+
+		internal string Endpoint
+		{
+			get
+			{
+				if (!string.IsNullOrEmpty(ArtifactName))
+				{
+					switch (ArtifactName.ToLower())
+					{
+						case "user":
+						case "subscription":
+							return "/" + ArtifactName.ToLower() + "s"; //special case for user/subscription endpoints
+					}
+
+					return "/" + ArtifactName.ToLower();
+				}
+				else
+				{
+					return Ref.GetRelativeRef(collection["_ref"]);
+				}
+			}
+		}
+
+		internal virtual string RequestUrl { get { return BuildQueryString(".js"); } }
+
+		#endregion
+
+		#region Helper: GetParameterValue
+		private dynamic GetParameterValue(string keyValue, object defaultValue = null)
+		{
+			if (Parameters.ContainsKey(keyValue))
+				return Parameters[keyValue];
+			else
+				return defaultValue;
+		}
+		#endregion
+
+		#region BuildQueryString
 		/// <summary>
 		/// Create a query string from this request.
 		/// </summary>
@@ -248,7 +272,9 @@ namespace Rally.RestApi
 
 			return sb.ToString();
 		}
+		#endregion
 
+		#region CreateFromUrl
 		/// <summary>
 		/// Create a request object from a url string.
 		/// </summary>
@@ -327,56 +353,29 @@ namespace Rally.RestApi
 
 			return request;
 		}
+		#endregion
 
-		internal string Endpoint
-		{
-			get
-			{
-				if (!string.IsNullOrEmpty(ArtifactName))
-				{
-					switch (ArtifactName.ToLower())
-					{
-						case "user":
-						case "subscription":
-							return "/" + ArtifactName.ToLower() + "s"; //special case for user/subscription endpoints
-					}
-
-					return "/" + ArtifactName.ToLower();
-				}
-				else
-				{
-					return Ref.GetRelativeRef(collection["_ref"]);
-				}
-			}
-		}
-
-		internal virtual string RequestUrl
-		{
-			get { return BuildQueryString(".js"); }
-		}
-
+		#region Clone
 		/// <summary>
 		/// Perform a deep clone of this request and all its parameters.
 		/// </summary>
 		/// <returns>The clone request</returns>
 		public Request Clone()
 		{
-			var request = collection != null ? new Request(collection) : new Request(ArtifactName);
+			Request request;
+			if (collection != null)
+				request = new Request(collection);
+			else
+				request = new Request(ArtifactName);
+
 			request.Limit = Limit;
-			foreach (var dictionaryKey in Parameters.Keys)
+			foreach (string dictionaryKey in Parameters.Keys)
 			{
 				request.Parameters[dictionaryKey] = Parameters[dictionaryKey];
 			}
 			request.Fetch = new List<string>(this.Fetch);
 			return request;
 		}
-
-		internal Request Clone(int pageStart)
-		{
-			var request = Clone();
-			request.Start = pageStart;
-			return request;
-		}
-
+		#endregion
 	}
 }

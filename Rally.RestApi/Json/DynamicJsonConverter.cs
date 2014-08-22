@@ -13,6 +13,7 @@ namespace Rally.RestApi.Json
 
 			return type == typeof(object) ? new DynamicJsonObject(dictionary) : null;
 		}
+
 		public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
 		{
 			throw new NotImplementedException();
@@ -22,8 +23,5 @@ namespace Rally.RestApi.Json
 		{
 			get { return new List<Type>(new[] { typeof(object) }).AsReadOnly(); }
 		}
-
-
-
 	}
 }

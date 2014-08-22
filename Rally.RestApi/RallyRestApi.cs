@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using Rally.RestApi.Web;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
+using Rally.RestApi.Sso;
+using System.Threading;
 
 namespace Rally.RestApi
 {
@@ -19,6 +21,27 @@ namespace Rally.RestApi
 	/// </summary>
 	public class RallyRestApi
 	{
+		#region Enumeration: AuthenticationResult
+		/// <summary>
+		/// Enumeration of the different authentication results that may occur.
+		/// </summary>
+		public enum AuthenticationResult
+		{
+			/// <summary>
+			/// The user is authenticated.
+			/// </summary>
+			Authenticated,
+			/// <summary>
+			/// The user needs to perform SSO authentication.
+			/// </summary>
+			PendingSSO,
+			/// <summary>
+			/// The user is not authorized.
+			/// </summary>
+			NotAuthorized,
+		}
+		#endregion
+
 		#region Enumeration: HeaderType
 		/// <summary>
 		/// Enumeration of the valid HTTP headers that
@@ -72,6 +95,10 @@ namespace Rally.RestApi
 
 		#region Constants
 		/// <summary>
+		/// The identifier for the authentication cookie used by Rally.
+		/// </summary>
+		public const string ZSessionID = "ZSESSIONID";
+		/// <summary>
 		/// The maximum number of threads allowed when performing parallel operations.
 		/// </summary>
 		private const int MAX_THREADS_ALLOWED = 6;
@@ -85,7 +112,8 @@ namespace Rally.RestApi
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
 		#endregion
 
-		#region Fields and Properties
+		#region Properties and Fields
+		private ISsoDriver ssoDriver;
 		private HttpService httpService;
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
@@ -96,7 +124,20 @@ namespace Rally.RestApi
 		/// The connection info thsi API is using.
 		/// </summary>
 		internal ConnectionInfo ConnectionInfo { get; private set; }
+		/// <summary>
+		/// The WSAPI version we are talking to.
+		/// </summary>
+		public virtual String WsapiVersion { get; set; }
+		/// <summary>
+		/// Is this connection using WSAPI 2?
+		/// </summary>
+		internal bool IsWsapi2 { get { return !new Regex("^1[.]\\d+").IsMatch(WsapiVersion); } }
 		#endregion
+
+		/// <summary>
+		/// An event that indicates changes to SSO authentication.
+		/// </summary>
+		public event SsoResults SsoResults;
 
 		#region Calculated Properties
 
@@ -106,7 +147,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public string WebServiceUrl
 		{
-			get { return String.Format("{0}slm/webservice/{1}", httpService.Server.AbsoluteUri, ConnectionInfo.WsapiVersion); }
+			get { return String.Format("{0}slm/webservice/{1}", httpService.Server.AbsoluteUri, WsapiVersion); }
 		}
 		#endregion
 
@@ -114,80 +155,133 @@ namespace Rally.RestApi
 
 		#region Constructor
 		/// <summary>
-		/// Construct a new RallyRestApi with the specified
-		/// username, password, server and WSAPI version
+		/// Construct a new RallyRestApi configured to work with the specified WSAPI version
 		/// </summary>
-		/// <param name="apiKey">The API key to be used for access</param>
-		/// <param name="username">The username to be used for access</param>
-		/// <param name="password">The password to be used for access</param>
-		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="ssoDriver">The SSO Driver to use when authentication requires it. If no driver is provided, SSO will not be enabled.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(string username = "", string password = "",
-			string rallyServer = DEFAULT_SERVER, string webServiceVersion = DEFAULT_WSAPI_VERSION,
-			string apiKey = "", WebProxy proxy = null)
+		public RallyRestApi(ISsoDriver ssoDriver = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
 		{
-			Configure(apiKey, username, password, new Uri(rallyServer),
-				webServiceVersion, proxy);
-		}
-		/// <summary>
-		/// Construct a new RallyRestApi with the specified
-		/// username, password, server and WSAPI version
-		/// </summary>
-		/// <param name="apiKey">The API key to be used for access</param>
-		/// <param name="username">The username to be used for access</param>
-		/// <param name="password">The password to be used for access</param>
-		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
-		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		/// <param name="proxy">Optional proxy configuration</param>
-		public RallyRestApi(Uri serverUrl, string username = "", string password = "",
-			string webServiceVersion = DEFAULT_WSAPI_VERSION,
-			string apiKey = "", WebProxy proxy = null)
-		{
-			Configure(apiKey, username, password, serverUrl,
-				webServiceVersion, proxy);
-		}
-		/// <summary>
-		/// Construct a new RallyRestApi from the specified ConnectionInfo
-		/// </summary>
-		public RallyRestApi(ConnectionInfo connectionInfo)
-		{
-			Configure(connectionInfo);
+			if (ssoDriver == null)
+				ssoDriver = new SsoNotAllowedDriver();
+
+			this.ssoDriver = ssoDriver;
+
+			WsapiVersion = webServiceVersion;
+			if (String.IsNullOrWhiteSpace(WsapiVersion))
+				WsapiVersion = DEFAULT_WSAPI_VERSION;
 		}
 		#endregion
 
-		#region Configure
+		#region Authenticate
 		/// <summary>
-		/// Configures the API using the provided values.
+		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		protected void Configure(string apiKey, string username, string password, Uri serverUrl,
-				string webServiceVersion, WebProxy proxy)
+		/// <param name="userName">The username to be used for access</param>
+		/// <param name="zSessionID">The ZSessionID to be used for access. This would have been provided by Rally on a previous call.</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult AuthenticateWithZSessionID(string userName, string zSessionID,
+			string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
 		{
-			AuthorizationType authType = AuthorizationType.Basic;
-			if (!String.IsNullOrWhiteSpace(apiKey))
-				authType = AuthorizationType.ApiKey;
+			if (String.IsNullOrWhiteSpace(rallyServer))
+				rallyServer = DEFAULT_SERVER;
+
+			if (!ssoDriver.IsSsoAuthorized)
+				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
-			connectionInfo.AuthType = authType;
+			connectionInfo.AuthType = AuthorizationType.ZSessionID;
+			connectionInfo.UserName = userName;
+			connectionInfo.ZSessionID = zSessionID;
+			connectionInfo.Server = new Uri(rallyServer);
+			connectionInfo.Proxy = proxy;
+			return AuthenticateWithConnectionInfo(connectionInfo);
+		}
+		/// <summary>
+		/// Authenticates against Rally with the specified credentials
+		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
+		{
+			if (String.IsNullOrWhiteSpace(rallyServer))
+				rallyServer = DEFAULT_SERVER;
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = AuthorizationType.ApiKey;
 			connectionInfo.ApiKey = apiKey;
+			connectionInfo.Server = new Uri(rallyServer);
+			connectionInfo.Proxy = proxy;
+			return AuthenticateWithConnectionInfo(connectionInfo);
+		}
+		/// <summary>
+		/// Authenticates against Rally with the specified credentials
+		/// </summary>
+		/// <param name="apiKey">The API key to be used for access</param>
+		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null)
+		{
+			if (serverUrl == null)
+				serverUrl = new Uri(DEFAULT_SERVER);
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = AuthorizationType.ApiKey;
+			connectionInfo.ApiKey = apiKey;
+			connectionInfo.Server = serverUrl;
+			connectionInfo.Proxy = proxy;
+			return AuthenticateWithConnectionInfo(connectionInfo);
+		}
+		/// <summary>
+		/// Authenticates against Rally with the specified credentials
+		/// </summary>
+		/// <param name="username">The username to be used for access</param>
+		/// <param name="password">The password to be used for access</param>
+		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult Authenticate(string username, string password, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
+		{
+			if (String.IsNullOrWhiteSpace(rallyServer))
+				rallyServer = DEFAULT_SERVER;
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = AuthorizationType.Basic;
+			connectionInfo.UserName = username;
+			connectionInfo.Password = password;
+			connectionInfo.Server = new Uri(rallyServer);
+			connectionInfo.Proxy = proxy;
+			return AuthenticateWithConnectionInfo(connectionInfo);
+		}
+		/// <summary>
+		/// Authenticates against Rally with the specified credentials
+		/// </summary>
+		/// <param name="username">The username to be used for access</param>
+		/// <param name="password">The password to be used for access</param>
+		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
+		/// <param name="proxy">Optional proxy configuration</param>
+		public AuthenticationResult Authenticate(string username, string password, Uri serverUrl, WebProxy proxy = null)
+		{
+			if (serverUrl == null)
+				serverUrl = new Uri(DEFAULT_SERVER);
+
+			ConnectionInfo connectionInfo = new ConnectionInfo();
+			connectionInfo.AuthType = AuthorizationType.Basic;
 			connectionInfo.UserName = username;
 			connectionInfo.Password = password;
 			connectionInfo.Server = serverUrl;
-			connectionInfo.WsapiVersion = webServiceVersion;
 			connectionInfo.Proxy = proxy;
-
-			Configure(connectionInfo);
+			return AuthenticateWithConnectionInfo(connectionInfo);
 		}
 
 		/// <summary>
-		/// Configures the API using the provided connection.
+		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		protected void Configure(ConnectionInfo connectionInfo)
+		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo)
 		{
 			this.ConnectionInfo = connectionInfo;
-			httpService = new HttpService(connectionInfo);
-			if (String.IsNullOrWhiteSpace(connectionInfo.WsapiVersion))
-				connectionInfo.WsapiVersion = DEFAULT_WSAPI_VERSION;
+			httpService = new HttpService(ssoDriver, connectionInfo);
+			httpService.SsoResults += SsoCompleted;
 
 			Headers = new Dictionary<HeaderType, string>();
 			Assembly assembly = typeof(RallyRestApi).Assembly;
@@ -200,6 +294,37 @@ namespace Rally.RestApi
 			Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
 				typeof(AssemblyTitleAttribute), false)).Title);
 			Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
+
+			try
+			{
+				GetCurrentUser("Name");
+				return AuthenticationResult.Authenticated;
+			}
+			catch
+			{
+				if (!httpService.PerformSsoAuthentication())
+				{
+					connectionInfo = null;
+					httpService = null;
+					throw;
+				}
+
+				return AuthenticationResult.PendingSSO;
+			}
+		}
+		#endregion
+
+		#region SsoCompleted
+		private void SsoCompleted(bool success, string zSessionID)
+		{
+			if (success)
+			{
+				ConnectionInfo.AuthType = AuthorizationType.ZSessionID;
+				ConnectionInfo.ZSessionID = zSessionID;
+			}
+
+			if (SsoResults != null)
+				SsoResults.Invoke(success, zSessionID);
 		}
 		#endregion
 
@@ -224,7 +349,10 @@ namespace Rally.RestApi
 		/// </summary>
 		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
-			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, ConnectionInfo.WsapiVersion, relativeUri));
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
+			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, WsapiVersion, relativeUri));
 			string postData = serializer.Serialize(data);
 			return serializer.Deserialize(httpService.Post(uri, postData, GetProcessedHeaders()));
 		}
@@ -233,6 +361,9 @@ namespace Rally.RestApi
 		#region DoDelete
 		private DynamicJsonObject DoDelete(Uri uri, bool retry = true)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var response = serializer.Deserialize(httpService.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
 			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0)
 			{
@@ -252,6 +383,9 @@ namespace Rally.RestApi
 		/// <returns>The results of the read operation</returns>
 		public QueryResult Query(Request request)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
 			var result = new QueryResult(response["QueryResult"]);
 			int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
@@ -260,7 +394,8 @@ namespace Rally.RestApi
 
 			while ((maxResultsAllowed - alreadyDownloadedItems) > 0)
 			{
-				var newRequest = request.Clone(request.Start + request.PageSize);
+				Request newRequest = request.Clone();
+				newRequest.Start = request.Start + request.PageSize;
 				request.Start += request.PageSize;
 
 				//makes sure partial pages are downloaded. IE limit 201
@@ -315,6 +450,9 @@ namespace Rally.RestApi
 		/// <returns></returns>
 		public dynamic GetSubscription(params string[] fetchedFields)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			return GetByReference("/subscription.js", fetchedFields);
 		}
 		#endregion
@@ -340,6 +478,9 @@ namespace Rally.RestApi
 		/// <returns>The requested object</returns>
 		public dynamic GetByReference(string aRef, params string[] fetchedFields)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			if (fetchedFields.Length == 0)
 			{
 				fetchedFields = new string[] { "true" };
@@ -365,6 +506,9 @@ namespace Rally.RestApi
 		/// <returns>The requested object</returns>
 		public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			if (fetchedFields.Length == 0)
 			{
 				fetchedFields = new string[] { "true" };
@@ -426,6 +570,9 @@ namespace Rally.RestApi
 		/// <returns>An OperationResult with information on the status of the request</returns>
 		public OperationResult Delete(string workspaceRef, string aRef)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var result = new OperationResult();
 			if (!aRef.Contains(".js"))
 			{
@@ -460,6 +607,9 @@ namespace Rally.RestApi
 		/// <returns></returns>
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
 			DynamicJsonObject response = DoPost(FormatCreateUri(workspaceRef, typePath), data);
@@ -499,6 +649,9 @@ namespace Rally.RestApi
 		/// <returns>An OperationResult describing the status of the request</returns>
 		public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var result = new OperationResult();
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
@@ -518,13 +671,16 @@ namespace Rally.RestApi
 		/// <returns>The allowed values for the specified attribute</returns>
 		public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			QueryResult attributes = GetAttributesByType(typePath);
 			var attribute = attributes.Results.SingleOrDefault(a => a.ElementName.ToLower() == attributeName.ToLower().Replace(" ", ""));
 			if (attribute != null)
 			{
 				var allowedValues = attribute["AllowedValues"];
 
-				if (ConnectionInfo.IsWsapi2)
+				if (IsWsapi2)
 				{
 					Request allowedValuesRequest = new Request(allowedValues);
 					var response = Query(allowedValuesRequest);
@@ -550,7 +706,10 @@ namespace Rally.RestApi
 		/// <returns>The type definitions for the specified query</returns>
 		public CacheableQueryResult GetTypes(string queryString)
 		{
-			if (!ConnectionInfo.IsWsapi2)
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
+			if (!IsWsapi2)
 				throw new InvalidOperationException("This method requires WSAPI 2.0");
 
 			Uri uri = GetFullyQualifiedV2xSchemaUri(queryString);
@@ -569,6 +728,9 @@ namespace Rally.RestApi
 		/// <returns>The attribute definitions for the specified type</returns>
 		public QueryResult GetAttributesByType(string type)
 		{
+			if (ConnectionInfo == null)
+				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
 			var typeDefRequest = new Request("TypeDefinition");
 			typeDefRequest.Fetch = new List<string>() { "Attributes" };
 			typeDefRequest.Query = new Query("TypePath", RestApi.Query.Operator.Equals, type.Replace(" ", ""));
@@ -577,7 +739,7 @@ namespace Rally.RestApi
 			if (typeDefResult != null)
 			{
 				var attributes = typeDefResult["Attributes"];
-				if (ConnectionInfo.IsWsapi2)
+				if (IsWsapi2)
 				{
 					Request attributeRequest = new Request(attributes);
 					var response = Query(attributeRequest);
@@ -601,7 +763,7 @@ namespace Rally.RestApi
 		internal Uri FormatCreateUri(string workspaceRef, string typePath)
 		{
 			String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
-			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + ConnectionInfo.WsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
+			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
 		}
 		#endregion
 
@@ -609,7 +771,7 @@ namespace Rally.RestApi
 		internal Uri FormatUpdateUri(string typePath, string objectId)
 		{
 			return
-					new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + ConnectionInfo.WsapiVersion + "/" + typePath + "/" + objectId +
+					new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/" + objectId +
 									".js");
 		}
 		#endregion
@@ -644,7 +806,7 @@ namespace Rally.RestApi
 		#region GetSecuredUri
 		private Uri GetSecuredUri(Uri uri)
 		{
-			if (ConnectionInfo.IsWsapi2)
+			if (IsWsapi2)
 			{
 				if (String.IsNullOrEmpty(ConnectionInfo.SecurityToken))
 				{
