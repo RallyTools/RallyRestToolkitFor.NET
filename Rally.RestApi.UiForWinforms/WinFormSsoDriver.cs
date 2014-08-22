@@ -57,7 +57,13 @@ namespace Rally.RestApi.UiForWinforms
 			try
 			{
 				CookieContainer cookiejar = GetUriCookieContainer(browser.Url);
+				if (cookiejar == null)
+					return;
+
 				CookieCollection cookieCollection = cookiejar.GetCookies(browser.Url);
+				if (cookieCollection == null)
+					return;
+
 				foreach (Cookie currentCookie in cookieCollection)
 				{
 					if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))

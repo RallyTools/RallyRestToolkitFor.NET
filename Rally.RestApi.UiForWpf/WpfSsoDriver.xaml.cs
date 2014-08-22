@@ -67,7 +67,13 @@ namespace Rally.RestApi.UiForWpf
 				if (document != null)
 				{
 					CookieContainer cookiejar = GetUriCookieContainer(new Uri(document.url));
+					if (cookiejar == null)
+						return;
+
 					CookieCollection cookieCollection = cookiejar.GetCookies(new Uri(document.url));
+					if (cookieCollection == null)
+						return;
+
 					foreach (Cookie currentCookie in cookieCollection)
 					{
 						if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))
