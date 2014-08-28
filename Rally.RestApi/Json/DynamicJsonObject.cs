@@ -39,14 +39,14 @@ namespace Rally.RestApi.Json
 		/// </summary>
 		/// <param name="binder">The member to get</param>
 		/// <param name="result">The value</param>
-		/// <returns>true if successful, false otherwise</returns>
+		/// <returns>true. even if member contains a null value or if the member does not exist. </returns>
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			result = GetMember(binder.Name);
-			return (result != null) ? true : false;
+		    result = GetMember(binder.Name);
+            return true;  // Prevent exceptions
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Get the value of the specified member
 		/// Equivalent to using [name].
 		/// </summary>
