@@ -8,6 +8,7 @@ using System.Collections;
 using System.Reflection;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
+using Rally.RestApi.Sso;
 
 namespace Rally.RestApi.Web
 {
@@ -19,88 +20,80 @@ namespace Rally.RestApi.Web
 		readonly ConnectionInfo connectionInfo;
 
 		internal Uri Server { get; set; }
-
 		/// <summary>
-		/// 
+		/// An event that indicates changes to SSO authentication.
 		/// </summary>
+		internal event SsoResults SsoResults;
+		private ISsoDriver ssoDriver;
+
+		#region HttpService
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="ssoDriver">The SSO driver to use.</param>
 		/// <param name="connectionInfo">Connection Information</param>
-		public HttpService(ConnectionInfo connectionInfo)
+		internal HttpService(ISsoDriver ssoDriver, ConnectionInfo connectionInfo)
 		{
+			if (ssoDriver == null)
+				throw new ArgumentNullException("ssoDriver");
+
+			if (connectionInfo == null)
+				throw new ArgumentNullException("connectionInfo");
+
+			this.ssoDriver = ssoDriver;
 			this.connectionInfo = connectionInfo;
 
-			if (connectionInfo.AuthCookie != null)
-			{
-				SetAuthCookie();
-			}
-			else if (connectionInfo.AuthType == AuthorizationType.Basic)
+			if (connectionInfo.AuthType == AuthorizationType.Basic)
 			{
 				Server = connectionInfo.Server;
 				credentials = new CredentialCache { { connectionInfo.Server, "Basic", new NetworkCredential(connectionInfo.UserName, connectionInfo.Password) } };
+			}
+			else if (connectionInfo.AuthType == AuthorizationType.ZSessionID)
+			{
+				Server = connectionInfo.Server;
+				credentials = null;
 			}
 			else if (connectionInfo.AuthType == AuthorizationType.ApiKey)
 			{
 				Server = connectionInfo.Server;
 				credentials = new CredentialCache { { connectionInfo.Server, "Basic", new NetworkCredential(connectionInfo.ApiKey, connectionInfo.ApiKey) } };
 			}
-			else
-			{
-				doSSOAuth();
-			}
 		}
+		#endregion
 
-		private void doSSOAuth()
-		{
-			connectionInfo.DoSSOAuth();
-			SetAuthCookie();
-		}
-
-		void SetAuthCookie()
-		{
-			var uriBuilder = new UriBuilder(connectionInfo.AuthCookie.Secure ? "https" : "http", connectionInfo.AuthCookie.Domain);
-			if (connectionInfo.Port > 0)
-				uriBuilder.Port = connectionInfo.Port;
-
-			Server = uriBuilder.Uri;
-			cookies.Add(connectionInfo.AuthCookie);
-		}
-
-		void AddApiKeyCookie(ConnectionInfo connectionInfo)
-		{
-			UriBuilder uriBuilder = new UriBuilder(connectionInfo.Server);
-			if (connectionInfo.Port > 0)
-				uriBuilder.Port = connectionInfo.Port;
-
-			Server = uriBuilder.Uri;
-			cookies.Add(new Cookie("ZSESSIONID", ""));
-		}
-
-		WebClient GetWebClient(IEnumerable<KeyValuePair<string, string>> headers = null, bool isCacheable = false)
+		#region GetWebClient
+		WebClient GetWebClient(IEnumerable<KeyValuePair<string, string>> headers = null, bool isCacheable = false, bool isSsoCheck = false)
 		{
 			CookieAwareWebClient webClient;
 			if (isCacheable)
-			{
 				webClient = new CookieAwareCacheableWebClient(cookies);
-			}
+			else if (isSsoCheck)
+				webClient = new SsoWebClient(cookies);
 			else
-			{
 				webClient = new CookieAwareWebClient(cookies);
-			}
 
 			if (connectionInfo.AuthType == AuthorizationType.ApiKey)
 				webClient.AddCookie(connectionInfo.Server, "ZSESSIONID", connectionInfo.ApiKey);
+			else if (connectionInfo.AuthType == AuthorizationType.ZSessionID)
+				webClient.AddCookie(connectionInfo.Server, "ZSESSIONID", connectionInfo.ZSessionID);
 
 			webClient.Encoding = Encoding.UTF8;
 			if (headers != null)
+			{
 				foreach (var pairs in headers)
 					webClient.Headers.Add(pairs.Key, pairs.Value);
+			}
+
 			if (credentials != null)
 				webClient.Credentials = credentials;
 			if (connectionInfo.Proxy != null)
 				webClient.Proxy = connectionInfo.Proxy;
 			return webClient;
 		}
+		#endregion
 
-		public string Post(Uri target, string data, IDictionary<string, string> headers = null)
+		#region Post
+		internal string Post(Uri target, string data, IDictionary<string, string> headers = null)
 		{
 			String response = "<No response>";
 			DateTime startTime = DateTime.Now;
@@ -116,18 +109,19 @@ namespace Rally.RestApi.Web
 				{
 					using (var webClient = GetWebClient(headers))
 					{
-						cookiesBefore = makeDisplayableCookieString(cookies);
+						cookiesBefore = MakeDisplayableCookieString(cookies);
 						requestHeaders = webClient.Headers.ToString();
 						response = webClient.UploadString(target, data);
-						cookiesAfter = makeDisplayableCookieString(cookies);
+						cookiesAfter = MakeDisplayableCookieString(cookies);
 						responseHeaders = webClient.ResponseHeaders.ToString();
 						return response;
 					}
 				}
 				catch (WebException e)
 				{
-					if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
-							(connectionInfo.AuthType == AuthorizationType.SSO))
+					if ((e.Response != null) &&
+						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
+						(connectionInfo.AuthType == AuthorizationType.ZSessionID))
 					{
 						if (retries > MAX_RETRIES)
 						{
@@ -136,7 +130,7 @@ namespace Rally.RestApi.Web
 						}
 
 						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						doSSOAuth();
+						PerformSsoAuthentication();
 						continue;
 					}
 					throw;
@@ -155,8 +149,10 @@ namespace Rally.RestApi.Web
 				}
 			} while (true);
 		}
+		#endregion
 
-		public string Get(Uri target, IDictionary<string, string> headers = null)
+		#region Get
+		internal string Get(Uri target, IDictionary<string, string> headers = null)
 		{
 			String response = "<No response>";
 			DateTime startTime = DateTime.Now;
@@ -172,19 +168,29 @@ namespace Rally.RestApi.Web
 				{
 					using (var webClient = GetWebClient(headers))
 					{
-						cookiesBefore = makeDisplayableCookieString(cookies);
+						if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
+							(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
+						{
+							// Sending blank username
+							string auth = string.Format(":{0}", connectionInfo.ZSessionID);
+							string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+							string cred = string.Format("{0} {1}", "Basic", enc);
+							webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
+						}
+
+						cookiesBefore = MakeDisplayableCookieString(cookies);
 						requestHeaders = webClient.Headers.ToString();
 						response = webClient.DownloadString(target);
-						cookiesAfter = makeDisplayableCookieString(cookies);
+						cookiesAfter = MakeDisplayableCookieString(cookies);
 						responseHeaders = webClient.ResponseHeaders.ToString();
 						return response;
 					}
 				}
 				catch (WebException e)
 				{
-					if (e.Response != null &&
-							((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized &&
-							(connectionInfo.AuthType == AuthorizationType.SSO))
+					if ((e.Response != null) &&
+						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
+						(connectionInfo.AuthType == AuthorizationType.ZSessionID))
 					{
 						if (retries > MAX_RETRIES)
 						{
@@ -193,7 +199,7 @@ namespace Rally.RestApi.Web
 						}
 
 						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						doSSOAuth();
+						PerformSsoAuthentication();
 						continue;
 					}
 					throw;
@@ -211,8 +217,10 @@ namespace Rally.RestApi.Web
 				}
 			} while (true);
 		}
+		#endregion
 
-		public DynamicJsonObject GetCacheable(Uri target, out bool isCachedResult, IDictionary<string, string> headers = null)
+		#region GetCacheable
+		internal DynamicJsonObject GetCacheable(Uri target, out bool isCachedResult, IDictionary<string, string> headers = null)
 		{
 			DynamicJsonObject response = null;
 			DateTime startTime = DateTime.Now;
@@ -245,8 +253,10 @@ namespace Rally.RestApi.Web
 															 response);
 			}
 		}
+		#endregion
 
-		public string Delete(Uri target, IDictionary<string, string> headers = null)
+		#region Delete
+		internal string Delete(Uri target, IDictionary<string, string> headers = null)
 		{
 			String response = "<No response>";
 			DateTime startTime = DateTime.Now;
@@ -271,10 +281,10 @@ namespace Rally.RestApi.Web
 							request.Headers.Add(pairs.Key, pairs.Value);
 						}
 					}
-					cookiesBefore = makeDisplayableCookieString(cookies);
+					cookiesBefore = MakeDisplayableCookieString(cookies);
 					requestHeaders = request.Headers.ToString();
 					var httpResponse = (HttpWebResponse)request.GetResponse();
-					cookiesAfter = makeDisplayableCookieString(cookies);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
 					responseHeaders = httpResponse.Headers.ToString();
 					if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
 					{
@@ -285,7 +295,7 @@ namespace Rally.RestApi.Web
 						}
 
 						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						doSSOAuth();
+						PerformSsoAuthentication();
 						continue;
 					}
 					var enc = Encoding.ASCII;
@@ -307,11 +317,13 @@ namespace Rally.RestApi.Web
 				}
 			} while (true);
 		}
+		#endregion
 
-		private String makeDisplayableCookieString(CookieContainer cookieContainer)
+		#region MakeDisplayableCookieString
+		private String MakeDisplayableCookieString(CookieContainer cookieContainer)
 		{
 			StringBuilder sb = new StringBuilder();
-			foreach (Cookie cookie in getAllCookies(cookieContainer))
+			foreach (Cookie cookie in GetAllCookies(cookieContainer))
 			{
 				sb.AppendFormat("Name = {0}\nValue = {1}\nDomain = {2}\n\n",
 						cookie.Name,
@@ -320,8 +332,10 @@ namespace Rally.RestApi.Web
 			}
 			return sb.ToString();
 		}
+		#endregion
 
-		private CookieCollection getAllCookies(CookieContainer cookieJar)
+		#region GetAllCookies
+		private CookieCollection GetAllCookies(CookieContainer cookieJar)
 		{
 			CookieCollection cookieCollection = new CookieCollection();
 
@@ -359,5 +373,93 @@ namespace Rally.RestApi.Web
 
 			return cookieCollection;
 		}
+		#endregion
+
+		#region PerformSsoAuthentication
+		/// <summary>
+		/// Performs SSO Authentication
+		/// </summary>
+		/// <returns></returns>
+		internal bool PerformSsoAuthentication()
+		{
+			if ((ssoDriver == null) || (!ssoDriver.IsSsoAuthorized))
+				return false;
+
+			ConnectionInfo ssoConnection = new ConnectionInfo();
+			ssoConnection.AuthType = AuthorizationType.Basic;
+			ssoConnection.Server = new Uri(String.Format("{0}login/key.js", connectionInfo.Server.AbsoluteUri));
+			ssoConnection.Port = connectionInfo.Port;
+			ssoConnection.Proxy = connectionInfo.Proxy;
+			ssoConnection.UserName = connectionInfo.UserName;
+
+			HttpService ssoService = new HttpService(ssoDriver, ssoConnection);
+			Uri ssoRedirectUri = ssoConnection.Server;
+			if (ssoService.PerformSsoCheck(out ssoRedirectUri))
+			{
+				ssoDriver.SsoResults += SsoCompleted;
+				ssoDriver.ShowSsoPage(ssoRedirectUri);
+
+				return true;
+			}
+
+			return false;
+		}
+		#endregion
+
+		#region SsoCompleted
+		private void SsoCompleted(bool success, string zSessionID)
+		{
+			if (SsoResults != null)
+				SsoResults.Invoke(success, zSessionID);
+		}
+		#endregion
+
+		#region PerformSsoCheck
+		internal bool PerformSsoCheck(out Uri ssoRedirectUri, IDictionary<string, string> headers = null)
+		{
+			using (var webClient = GetWebClient(headers, isSsoCheck: true))
+			{
+				SsoWebClient ssoWebClient = webClient as SsoWebClient;
+				if (ssoWebClient != null)
+				{
+					try
+					{
+						if (ssoWebClient.CheckIfRedirect(connectionInfo.Server, connectionInfo.UserName))
+						{
+							string spacerChar = "?";
+							if (ssoWebClient.RedirectTo.Contains("?"))
+								spacerChar = "&";
+
+							string portInfo = String.Empty;
+							if (connectionInfo.Port > 0)
+								portInfo = String.Format(":{0}", connectionInfo.Port);
+
+							ssoRedirectUri = new Uri(String.Format("{0}{1}TargetResource={2}://{3}{4}/slm/j_sso_security_check?noRedirect=true",
+								ssoWebClient.RedirectTo, spacerChar, connectionInfo.Server.Scheme, connectionInfo.Server.Host, portInfo));
+
+							return true;
+						}
+					}
+					catch (WebException we)
+					{
+						if ((we.Response != null) &&
+							(((HttpWebResponse)we.Response).StatusCode == HttpStatusCode.MethodNotAllowed))
+						{
+							ssoRedirectUri = null;
+							return false;
+						}
+
+						throw;
+					}
+
+				}
+				else
+					throw new InvalidOperationException("GetWebClient failed to create a SsoWebClient");
+			}
+
+			ssoRedirectUri = null;
+			return false;
+		}
+		#endregion
 	}
 }

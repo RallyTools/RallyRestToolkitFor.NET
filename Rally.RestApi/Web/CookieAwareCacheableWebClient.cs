@@ -95,20 +95,38 @@ namespace Rally.RestApi.Web
 				if ((int)webResponse.StatusCode >= 300 && (int)webResponse.StatusCode <= 399)
 				{
 					string uriString = webResponse.Headers["Location"];
-					NetworkCredential credential = request.Credentials.GetCredential(request.RequestUri, "Basic");
-					returnValue = GetCachedResult(credential.UserName, request.RequestUri.ToString());
+					string cachingKey = String.Empty;
+					if (request.Credentials != null)
+					{
+						NetworkCredential credential = request.Credentials.GetCredential(request.RequestUri, "Basic");
+						cachingKey = credential.UserName;
+					}
+					else
+					{
+						CookieCollection cookieCollection = Cookies.GetCookies(request.RequestUri);
+						foreach (Cookie currentCookie in cookieCollection)
+						{
+							if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))
+							{
+								cachingKey = currentCookie.Value;
+								break;
+							}
+						}
+					}
+
+					returnValue = GetCachedResult(cachingKey, request.RequestUri.ToString());
 					if ((returnValue == null) || (!returnValue.Url.Equals(uriString)))
 					{
 						if (returnValue != null)
 						{
-							ClearCacheResult(credential.UserName, request.RequestUri.ToString());
+							ClearCacheResult(cachingKey, request.RequestUri.ToString());
 							returnValue = null;
 						}
 
 						CookieAwareWebClient webClient = GetWebClient();
 
 						string cacheableDataValue = webClient.DownloadString(uriString);
-						returnValue = CacheResult(credential.UserName, request.RequestUri.ToString(), uriString, serializer.Deserialize(cacheableDataValue));
+						returnValue = CacheResult(cachingKey, request.RequestUri.ToString(), uriString, serializer.Deserialize(cacheableDataValue));
 					}
 					else
 						isCachedResult = true;

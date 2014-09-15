@@ -17,6 +17,7 @@ namespace Rally.RestApi.Web
 			this.Cookies = cookies ?? new CookieContainer();
 		}
 
+
 		protected override WebRequest GetWebRequest(Uri address)
 		{
 			WebRequest request = base.GetWebRequest(address);

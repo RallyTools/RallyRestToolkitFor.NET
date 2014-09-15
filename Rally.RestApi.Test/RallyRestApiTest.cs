@@ -38,14 +38,9 @@ namespace Rally.RestApi.Test
 				wsapiVersion = RallyRestApi.DEFAULT_WSAPI_VERSION;
 			}
 
-			var connInfo = new ConnectionInfo();
-			connInfo.AuthType = AuthorizationType.Basic;
-			connInfo.UserName = userName;
-			connInfo.Password = password;
-			connInfo.Server = new Uri(server);
-			connInfo.WsapiVersion = wsapiVersion;
-
-			return new RallyRestApi(connInfo);
+			RallyRestApi api = new RallyRestApi(webServiceVersion: wsapiVersion);
+			api.Authenticate(userName, password, server);
+			return api;
 		}
 
 		public static RallyRestApi GetRallyRestApiWithApiKey(string apiKey = "",
@@ -56,7 +51,9 @@ namespace Rally.RestApi.Test
 				apiKey = Settings.Default.ApiKey;
 			}
 
-			return new RallyRestApi(rallyServer: server, apiKey: apiKey, webServiceVersion: wsapiVersion);
+			RallyRestApi api = new RallyRestApi(webServiceVersion: wsapiVersion);
+			api.AuthenticateWithApiKey(apiKey, server);
+			return api;
 		}
 
 		RallyRestApi GetRallyRestApi1x()
@@ -377,14 +374,14 @@ namespace Rally.RestApi.Test
 		public void TestIsWsapi2()
 		{
 			var restApi = GetRallyRestApi2x();
-			Assert.IsTrue(restApi.ConnectionInfo.IsWsapi2);
+			Assert.IsTrue(restApi.IsWsapi2);
 		}
 
 		[TestMethod]
 		public void TestIsNotWsapi2()
 		{
 			var restApi = GetRallyRestApi1x();
-			Assert.IsFalse(restApi.ConnectionInfo.IsWsapi2);
+			Assert.IsFalse(restApi.IsWsapi2);
 		}
 
 		private static void VerifyAttributes(QueryResult result, bool forWsapi2)

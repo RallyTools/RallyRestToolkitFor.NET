@@ -19,8 +19,8 @@ namespace Rally.RestApi.Connection
 		/// </summary>
 		ApiKey,
 		/// <summary>
-		/// SSO authorization.
+		/// Authentication using a ZSessionID.
 		/// </summary>
-		SSO
+		ZSessionID,
 	}
 }
