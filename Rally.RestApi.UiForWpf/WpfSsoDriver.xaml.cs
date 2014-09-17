@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -53,8 +54,16 @@ namespace Rally.RestApi.UiForWpf
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");
 
-			browser.Source = ssoUrl;
-			Show();
+			try
+			{
+				browser.Source = ssoUrl;
+				Show();
+			}
+			catch
+			{
+				// If current thread is not the dispacher thread, then we can't launch the window.
+				// Fail and consider SSO not available.
+			}
 		}
 		#endregion
 
