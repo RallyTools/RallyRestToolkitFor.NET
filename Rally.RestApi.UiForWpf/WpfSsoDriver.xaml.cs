@@ -32,6 +32,7 @@ namespace Rally.RestApi.UiForWpf
 		/// Is SSO authorized?
 		/// </summary>
 		public bool IsSsoAuthorized { get { return true; } }
+		private Uri ssoUrl;
 
 		#region WpfSsoDriver
 		/// <summary>
@@ -56,16 +57,24 @@ namespace Rally.RestApi.UiForWpf
 
 			try
 			{
-				browser.Source = ssoUrl;
+				this.ssoUrl = ssoUrl;
+				SetUrl();
 				Show();
 			}
 			catch
 			{
+				Dispatcher.Invoke(SetUrl);
+				Dispatcher.Invoke(Show);
 				// If current thread is not the dispacher thread, then we can't launch the window.
 				// Fail and consider SSO not available.
 			}
 		}
 		#endregion
+
+		private void SetUrl()
+		{
+			browser.Source = ssoUrl;
+		}
 
 		#region browser_LoadCompleted
 		void browser_LoadCompleted(object sender, NavigationEventArgs e)
