@@ -25,6 +25,10 @@ namespace Rally.RestApi
 		/// The endpoint for getting a CSRF token. This has custom logic in HttpService for SSO users.
 		/// </summary>
 		public const string SECURITY_ENDPOINT = "/security/authorize";
+		/// <summary>
+		/// Is SSO in progress?
+		/// </summary>
+		public bool IsSsoInProgress { get; private set; }
 
 		#region Enumeration: AuthenticationResult
 		/// <summary>
@@ -319,7 +323,18 @@ namespace Rally.RestApi
 					throw;
 				}
 
+				IsSsoInProgress = true;
 				return AuthenticationResult.PendingSSO;
+			}
+		}
+		#endregion
+
+		#region BlockIfSsoInProgress
+		private void BlockIfSsoInProgress()
+		{
+			while (IsSsoInProgress)
+			{
+				Thread.CurrentThread.Join(100);
 			}
 		}
 		#endregion
@@ -332,6 +347,8 @@ namespace Rally.RestApi
 				ConnectionInfo.AuthType = AuthorizationType.ZSessionID;
 				ConnectionInfo.ZSessionID = zSessionID;
 			}
+
+			IsSsoInProgress = false;
 
 			if (SsoResults != null)
 				SsoResults.Invoke(success, zSessionID);
@@ -359,6 +376,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -371,6 +389,7 @@ namespace Rally.RestApi
 		#region DoDelete
 		private DynamicJsonObject DoDelete(Uri uri, bool retry = true)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -393,6 +412,7 @@ namespace Rally.RestApi
 		/// <returns>The results of the read operation</returns>
 		public QueryResult Query(Request request)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -460,6 +480,7 @@ namespace Rally.RestApi
 		/// <returns></returns>
 		public dynamic GetSubscription(params string[] fetchedFields)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -488,6 +509,7 @@ namespace Rally.RestApi
 		/// <returns>The requested object</returns>
 		public dynamic GetByReference(string aRef, params string[] fetchedFields)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -516,6 +538,7 @@ namespace Rally.RestApi
 		/// <returns>The requested object</returns>
 		public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -580,6 +603,7 @@ namespace Rally.RestApi
 		/// <returns>An OperationResult with information on the status of the request</returns>
 		public OperationResult Delete(string workspaceRef, string aRef)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -617,6 +641,7 @@ namespace Rally.RestApi
 		/// <returns></returns>
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -659,6 +684,7 @@ namespace Rally.RestApi
 		/// <returns>An OperationResult describing the status of the request</returns>
 		public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -681,6 +707,7 @@ namespace Rally.RestApi
 		/// <returns>The allowed values for the specified attribute</returns>
 		public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -716,6 +743,7 @@ namespace Rally.RestApi
 		/// <returns>The type definitions for the specified query</returns>
 		public CacheableQueryResult GetTypes(string queryString)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
@@ -738,6 +766,7 @@ namespace Rally.RestApi
 		/// <returns>The attribute definitions for the specified type</returns>
 		public QueryResult GetAttributesByType(string type)
 		{
+			BlockIfSsoInProgress();
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
