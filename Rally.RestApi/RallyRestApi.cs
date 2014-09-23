@@ -316,14 +316,20 @@ namespace Rally.RestApi
 			}
 			catch
 			{
-				if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
+				try
 				{
-					connectionInfo = null;
-					httpService = null;
-					throw;
+					if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
+					{
+						connectionInfo = null;
+						httpService = null;
+						throw;
+					}
+				}
+				finally
+				{
+					IsSsoInProgress = true;
 				}
 
-				IsSsoInProgress = true;
 				return AuthenticationResult.PendingSSO;
 			}
 		}
