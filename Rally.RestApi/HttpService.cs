@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
+using System.Threading;
 
 namespace Rally.RestApi
 {
@@ -15,6 +16,7 @@ namespace Rally.RestApi
         readonly CredentialCache credentials;
         readonly CookieContainer cookies = new CookieContainer();
         readonly IConnectionInfo connectionInfo;
+        CancellationToken cancellationToken;
 
         internal Uri Server { get; set; }
 
@@ -22,8 +24,10 @@ namespace Rally.RestApi
         /// 
         /// </summary>
         /// <param name="connectionInfo">Connection Information</param>
-        public HttpService(IConnectionInfo connectionInfo)
+        /// <param name="ct">Cancellation token</param>
+        public HttpService(IConnectionInfo connectionInfo, CancellationToken ct)
         {
+            this.cancellationToken = ct;
             this.connectionInfo = connectionInfo;
 
             if (connectionInfo.authCookie != null)
@@ -68,6 +72,11 @@ namespace Rally.RestApi
                 webClient.Credentials = credentials;
             if (connectionInfo.proxy != null)
                 webClient.Proxy = connectionInfo.proxy;
+
+            if (cancellationToken.CanBeCanceled)
+            {
+                cancellationToken.Register(webClient.CancelAsync);
+            }
             return webClient;
         }
 

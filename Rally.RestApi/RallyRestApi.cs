@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
 using System.Text.RegularExpressions;
@@ -128,10 +129,11 @@ namespace Rally.RestApi
             string username, 
             string password, 
             string rallyServer = DEFAULT_SERVER,
-            string webServiceVersion = DEFAULT_WSAPI_VERSION, 
-            WebProxy proxy = null
+            string webServiceVersion = DEFAULT_WSAPI_VERSION,
+            WebProxy proxy = null,
+            CancellationToken? cancellationToken = null
         )
-            : this(username, password, new Uri(rallyServer), webServiceVersion, proxy)
+            : this(username, password, new Uri(rallyServer), webServiceVersion, proxy, cancellationToken)
         {        
         }
 
@@ -144,19 +146,21 @@ namespace Rally.RestApi
         /// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
         /// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
         /// <param name="proxy">Optional proxy configuration</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         public RallyRestApi(
             string username,
             string password,
             Uri serverUrl,
             string webServiceVersion = DEFAULT_WSAPI_VERSION,
-            WebProxy proxy = null
+            WebProxy proxy = null,
+            CancellationToken? cancellationToken = null
         )
             : this(new ConnectionInfo() {authType = AuthorizationType.Basic,
                                          username = username,
                                          password = password,
                                          server = serverUrl,
                                          wsapiVersion = webServiceVersion,
-                                         proxy = proxy})
+                                         proxy = proxy}, cancellationToken)
         {
         }
 
@@ -164,9 +168,10 @@ namespace Rally.RestApi
         /// Construct a new RallyRestApi from the specified ConnectionInfo
         /// </summary>
         /// <param name="connectionInfo">ConnectionInfo</param>
-        public RallyRestApi(IConnectionInfo connectionInfo)
+        /// <param name="cancellationToken">Cancellation Token</param>
+        public RallyRestApi(IConnectionInfo connectionInfo, CancellationToken? cancellationToken = null)
         {
-            Service = new HttpService(connectionInfo);
+            Service = new HttpService(connectionInfo, cancellationToken.HasValue ? cancellationToken.Value : CancellationToken.None);
             wsapiVersion = connectionInfo.wsapiVersion ?? DEFAULT_WSAPI_VERSION;
         }
 
