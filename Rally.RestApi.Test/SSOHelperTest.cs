@@ -16,18 +16,18 @@ namespace Rally.RestApi.Test
 		{
 		}
 
-
-		[TestMethod]
-		[DeploymentItem("Rally.RestApi.Test\\data\\")]
-		public void ParseSSOTokenPage()
-		{
-			Cookie cookie = SSOHelper.ParseSSOLandingPage(getDataFromFile("SSOTokenPage.html"));
-			Assert.IsNotNull(cookie);
-			Assert.AreEqual(cookie.Name, "ZSESSIONID");
-			Assert.AreEqual(cookie.Value, "khkjhkhkhkhkjhh");
-			Assert.AreEqual(cookie.Domain, "us1.rallydev.com");
-			Assert.AreEqual(cookie.Path, "/");
-		}
+		// TODO: Remove if it works
+		//[TestMethod]
+		//[DeploymentItem("Rally.RestApi.Test\\data\\")]
+		//public void ParseSSOTokenPage()
+		//{
+		//  Cookie cookie = SSOHelper.ParseSSOLandingPage(getDataFromFile("SSOTokenPage.html"));
+		//  Assert.IsNotNull(cookie);
+		//  Assert.AreEqual(cookie.Name, "ZSESSIONID");
+		//  Assert.AreEqual(cookie.Value, "khkjhkhkhkhkjhh");
+		//  Assert.AreEqual(cookie.Domain, "us1.rallydev.com");
+		//  Assert.AreEqual(cookie.Path, "/");
+		//}
 
 		private String getDataFromFile(String filename)
 		{

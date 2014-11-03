@@ -61,12 +61,13 @@ namespace Rally.RestApi
 			throw new NotImplementedException();
 		}
 
-		/// <summary>
-		/// Parses an SSO landing page to retreive the Cookie that is embedded for SSO.
-		/// </summary>
-		protected Cookie ParseSSOLandingPage(String ssoLandingPage)
-		{
-			return SSOHelper.ParseSSOLandingPage(ssoLandingPage);
-		}
+		// TODO: Remove if it works
+		///// <summary>
+		///// Parses an SSO landing page to retreive the Cookie that is embedded for SSO.
+		///// </summary>
+		//protected Cookie ParseSSOLandingPage(String ssoLandingPage)
+		//{
+		//  return SSOHelper.ParseSSOLandingPage(ssoLandingPage);
+		//}
 	}
 }
