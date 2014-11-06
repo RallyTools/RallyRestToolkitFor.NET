@@ -698,6 +698,7 @@ namespace Rally.RestApi
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
 			dynamic response = DoPost(FormatUpdateUri(typePath, oid), data);
+			result.Object = response.OperationResult.Object;
 			result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
 			result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
 			return result;
