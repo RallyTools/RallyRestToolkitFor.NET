@@ -803,6 +803,23 @@ namespace Rally.RestApi
 		}
 		#endregion
 
+		/// <summary>
+		/// Downloads an attachment from Rally.
+		/// </summary>
+		/// <param name="relativeUrl">The relative URL to the attachment.</param>
+		/// <returns>The result of the request.</returns>
+		public AttachmentResult DownloadAttachment(string relativeUrl)
+		{
+			if (relativeUrl.Length < 5)
+				throw new ArgumentOutOfRangeException("A valid relative URL must be provided.");
+
+			AttachmentResult result = new AttachmentResult();
+			string expectedUrl = String.Format("{0}{1}", httpService.Server.AbsoluteUri, relativeUrl.Substring(1));
+			Uri uri = new Uri(expectedUrl);
+			result.FileContents = httpService.Download(uri, GetProcessedHeaders());
+			return result;
+		}
+
 		#region Helper Methods
 
 		#region FormatCreateUri

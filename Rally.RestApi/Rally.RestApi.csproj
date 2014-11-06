@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
+    <Compile Include="Response\AttachmentResult.cs" />
     <Compile Include="Sso\ISsoDriver.cs" />
     <Compile Include="Sso\SsoNotAllowedDriver.cs" />
     <Compile Include="Web\SsoWebClient.cs" />

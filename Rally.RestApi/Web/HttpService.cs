@@ -92,6 +92,51 @@ namespace Rally.RestApi.Web
 		}
 		#endregion
 
+		#region Download
+		internal byte[] Download(Uri target, IDictionary<string, string> headers = null)
+		{
+			byte[] response = null;
+			DateTime startTime = DateTime.Now;
+			String requestHeaders = "";
+			String responseHeaders = "";
+			String cookiesBefore = "";
+			String cookiesAfter = "";
+			try
+			{
+				using (var webClient = GetWebClient(headers))
+				{
+					if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
+						(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
+					{
+						// Sending blank username
+						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
+						string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+						string cred = string.Format("{0} {1}", "Basic", enc);
+						webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
+					}
+
+					cookiesBefore = MakeDisplayableCookieString(cookies);
+					requestHeaders = webClient.Headers.ToString();
+					response = webClient.DownloadData(target);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
+					responseHeaders = webClient.ResponseHeaders.ToString();
+					return response;
+				}
+			}
+			finally
+			{
+				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
+		}
+		#endregion
+
 		#region Post
 		internal string Post(Uri target, string data, IDictionary<string, string> headers = null)
 		{
