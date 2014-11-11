@@ -1,4 +1,4 @@
-﻿<Window x:Class="Rally.RestApi.UiForWpf.WpfSsoDriver"
+﻿<Window x:Class="Rally.RestApi.UiForWpf.SsoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Single Sign On for Rally" Height="700" Width="800">

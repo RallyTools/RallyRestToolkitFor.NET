@@ -19,24 +19,20 @@ using System.Windows.Shapes;
 namespace Rally.RestApi.UiForWpf
 {
 	/// <summary>
-	/// Interaction logic for WpfSsoDriver.xaml
+	/// Interaction logic for SsoWindow.xaml
 	/// </summary>
-	public partial class WpfSsoDriver : Window, ISsoDriver
+	public partial class SsoWindow : Window
 	{
 		/// <summary>
 		/// The event that is triggered when SSO is completed.
 		/// </summary>
 		public event SsoResults SsoResults;
-		/// <summary>
-		/// Is SSO authorized?
-		/// </summary>
-		public bool IsSsoAuthorized { get { return true; } }
 
-		#region WpfSsoDriver
+		#region Constructor
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public WpfSsoDriver()
+		public SsoWindow()
 		{
 			InitializeComponent();
 			browser.LoadCompleted += browser_LoadCompleted;
@@ -48,7 +44,7 @@ namespace Rally.RestApi.UiForWpf
 		/// Shows the specified SSO URL to the user.
 		/// </summary>
 		/// <param name="ssoUrl">The URL that the user was redirected to in order to perform their SSO authentication.</param>
-		public void ShowSsoPage(Uri ssoUrl)
+		internal void ShowSsoPage(Uri ssoUrl)
 		{
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");

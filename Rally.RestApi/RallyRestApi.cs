@@ -128,7 +128,7 @@ namespace Rally.RestApi
 		/// <summary>
 		/// The connection info thsi API is using.
 		/// </summary>
-		internal ConnectionInfo ConnectionInfo { get; private set; }
+		public ConnectionInfo ConnectionInfo { get; private set; }
 		/// <summary>
 		/// The WSAPI version we are talking to.
 		/// </summary>

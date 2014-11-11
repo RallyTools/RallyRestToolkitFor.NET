@@ -56,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\IAuthorizationManager.cs" />
+    <Compile Include="Auth\ConsoleAuthenticationManager.cs" />
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="Sso\ISsoDriver.cs" />

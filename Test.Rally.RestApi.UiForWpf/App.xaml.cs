@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rally.RestApi.UiForWpf;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,9 +18,6 @@ namespace Test.Rally.RestApi.UiForWpf
 	{
 		public App()
 		{
-			//Change SSL checks so that all checks pass
-			ServicePointManager.ServerCertificateValidationCallback =
-					new RemoteCertificateValidationCallback(delegate { return true; });
 		}
 	}
 }
