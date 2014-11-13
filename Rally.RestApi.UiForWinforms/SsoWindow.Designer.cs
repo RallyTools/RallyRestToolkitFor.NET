@@ -1,6 +1,6 @@
 ﻿namespace Rally.RestApi.UiForWinforms
 {
-	partial class WinFormSsoDriver
+	partial class SsoWindow
 	{
 		/// <summary>
 		/// Required designer variable.

@@ -2,18 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
-namespace Rally.RestApi.UiForWpf
+namespace Rally.RestApi.UiForWinforms
 {
 	/// <summary>
-	/// A WPF based authentication manager.
+	/// A Winforms based authentication manager.
 	/// </summary>
-	public class RestApiAuthMgrWpf : ApiAuthBaseManager
+	public class RestApiAuthMgrWinforms : ApiAuthBaseManager
 	{
 		LoginWindow loginControl = null;
 		internal SsoAuthenticationComplete LoginWindowSsoAuthenticationComplete;
@@ -23,7 +20,7 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public RestApiAuthMgrWpf(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
+		public RestApiAuthMgrWinforms(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
 			: base(true, webServiceVersion)
 		{
 		}
@@ -33,7 +30,7 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Configures the authorization manger. This must be called before any other method.
 		/// </summary>
-		public static void ConfigureUserInterface(bool trustAllSslCertificates, ImageSource loginWindowLogo,
+		public static void ConfigureUserInterface(bool trustAllSslCertificates, object loginWindowLogo,
 			string loginWindowHeaderLabelText,
 			string loginWindowCredentialsTabText = null,
 			string loginWindowUserNameLabelText = null, string loginWindowPwdLabelText = null,

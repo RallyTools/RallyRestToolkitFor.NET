@@ -1,25 +1,18 @@
 ﻿using Rally.RestApi.Auth;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Forms;
 
-namespace Rally.RestApi.UiForWpf
+namespace Rally.RestApi.UiForWinforms
 {
-	/// <summary>
-	/// Interaction logic for LoginWindow.xaml
-	/// </summary>
-	public partial class LoginWindow : Window
+	public partial class LoginWindow : Form
 	{
 		#region Enum: TabType
 		private enum TabType
@@ -43,7 +36,7 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region Static Values
-		private static ImageSource LogoImage;
+		private static object LogoImage;
 		private static string HeaderLabelText;
 		private static string CredentialsTabText;
 		private static string RallyServerTabText;
@@ -69,7 +62,7 @@ namespace Rally.RestApi.UiForWpf
 		Dictionary<EditorControlType, Control> controls;
 		Dictionary<Control, Label> controlReadOnlyLabels;
 
-		internal RestApiAuthMgrWpf AuthMgr { get; set; }
+		internal RestApiAuthMgrWinforms AuthMgr { get; set; }
 		internal event AuthenticationComplete AuthenticationComplete;
 		Label ssoInProgressLabel;
 		Button loginButton;
@@ -84,8 +77,8 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 
-			Logo.Source = LogoImage;
-			headerLabel.Content = HeaderLabelText;
+			//Logo.Source = LogoImage;
+			//headerLabel.Content = HeaderLabelText;
 			controls = new Dictionary<EditorControlType, Control>();
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
 		}
@@ -96,7 +89,7 @@ namespace Rally.RestApi.UiForWpf
 		/// <para>Configure this control with the items that it needs to work.</para>
 		/// <para>Nullable parameters have defaults that will be used if not provided.</para>
 		/// </summary>
-		internal static void Configure(ImageSource logo, string headerLabelText,
+		internal static void Configure(object logo, string headerLabelText,
 			Uri defaultServer, Uri defaultProxyServer,
 			string credentialsTabText, string userNameLabelText, string pwdLabelText,
 			string serverTabText, string serverLabelText,
@@ -185,19 +178,19 @@ namespace Rally.RestApi.UiForWpf
 			switch (AuthMgr.Api.AuthenticationState)
 			{
 				case RallyRestApi.AuthenticationResult.Authenticated:
-					loginButton.Visibility = Visibility.Hidden;
-					logoutButton.Visibility = Visibility.Visible;
-					ssoInProgressLabel.Visibility = Visibility.Hidden;
+					loginButton.Visible = false;
+					logoutButton.Visible = true;
+					ssoInProgressLabel.Visible = false;
 					break;
 				case RallyRestApi.AuthenticationResult.PendingSSO:
-					loginButton.Visibility = Visibility.Hidden;
-					logoutButton.Visibility = Visibility.Hidden;
-					ssoInProgressLabel.Visibility = Visibility.Visible;
+					loginButton.Visible = false;
+					logoutButton.Visible = false;
+					ssoInProgressLabel.Visible = true;
 					break;
 				case RallyRestApi.AuthenticationResult.NotAuthorized:
-					loginButton.Visibility = Visibility.Visible;
-					logoutButton.Visibility = Visibility.Hidden;
-					ssoInProgressLabel.Visibility = Visibility.Hidden;
+					loginButton.Visible = true;
+					logoutButton.Visible = false;
+					ssoInProgressLabel.Visible = false;
 					isReadOnly = false;
 					break;
 				default:
@@ -208,27 +201,27 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
-		#region BuildLayout
-		internal void BuildLayout(RestApiAuthMgrWpf authMgr)
+		#region Removed - BuildLayout
+		internal void BuildLayout(RestApiAuthMgrWinforms authMgr)
 		{
 			AuthMgr = authMgr;
 			TabControl tabControl = new TabControl();
-			tabControl.Margin = new Thickness(10);
-			Grid.SetColumn(tabControl, 0);
-			Grid.SetColumnSpan(tabControl, 2);
-			Grid.SetRow(tabControl, 1);
-			layoutGrid.Children.Add(tabControl);
+			tabControl.Margin = new Padding(10);
+			//TableLayoutPanel.SetColumn(tabControl, 0);
+			//TableLayoutPanel.SetColumnSpan(tabControl, 2);
+			//TableLayoutPanel.SetRow(tabControl, 1);
+			//layoutTableLayoutPanel.Children.Add(tabControl);
 
-			AddTab(tabControl, TabType.Credentials);
-			AddTab(tabControl, TabType.Rally);
-			AddTab(tabControl, TabType.Proxy);
+			//AddTab(tabControl, TabType.Credentials);
+			//AddTab(tabControl, TabType.Rally);
+			//AddTab(tabControl, TabType.Proxy);
 
-			inputRow.Height = new GridLength(tabControl.Height + 35, GridUnitType.Pixel);
-			inputRow.MinHeight = inputRow.Height.Value;
+			//inputRow.Height = new TableLayoutPanelLength(tabControl.Height + 35, TableLayoutPanelUnitType.Pixel);
+			//inputRow.MinHeight = inputRow.Height.Value;
 
-			this.Height = inputRow.Height.Value + (28 * 2) + 50 + 50;
-			this.MinHeight = this.Height;
-			this.MaxHeight = this.Height;
+			//this.Height = inputRow.Height.Value + (28 * 2) + 50 + 50;
+			//this.MinHeight = this.Height;
+			//this.MaxHeight = this.Height;
 
 			AddButtons();
 		}
@@ -242,89 +235,88 @@ namespace Rally.RestApi.UiForWpf
 			{
 				Control control = GetEditor(editorControlType);
 				if (isReadOnly)
-					control.Visibility = Visibility.Hidden;
+					control.Visible = false;
 				else
-					control.Visibility = Visibility.Visible;
+					control.Visible = true;
 
 				if (controlReadOnlyLabels.ContainsKey(control))
 				{
 					Label label = controlReadOnlyLabels[control];
 					TextBox textBox = control as TextBox;
 					if (textBox != null)
-						label.Content = textBox.Text;
+						label.Text = textBox.Text;
 
 					if (isReadOnly)
-						label.Visibility = Visibility.Visible;
+						label.Visible = true;
 					else
-						label.Visibility = Visibility.Hidden;
+						label.Visible = false;
 				}
 			}
 		}
 		#endregion
 
-		#region AddTab
+		#region Removed - AddTab
 		private void AddTab(TabControl tabControl, TabType tabType)
 		{
-			TabItem tab = new TabItem();
-			tabControl.Items.Add(tab);
+			//TabPage tab = new TabPage();
+			//tabControl.TabPages.Add(tab);
 
-			Grid tabGrid = new Grid();
-			tab.Content = tabGrid;
-			tabGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
-			tabGrid.VerticalAlignment = VerticalAlignment.Top;
-			AddColumnDefinition(tabGrid, 120);
-			AddColumnDefinition(tabGrid);
+			//TableLayoutPanel tabTableLayoutPanel = new TableLayoutPanel();
+			//tab.Content = tabTableLayoutPanel;
+			//tabTableLayoutPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+			//tabTableLayoutPanel.VerticalAlignment = VerticalAlignment.Top;
+			//AddColumnDefinition(tabTableLayoutPanel, 120);
+			//AddColumnDefinition(tabTableLayoutPanel);
 
-			if (tabType == TabType.Credentials)
-			{
-				tab.Header = CredentialsTabText;
-				AddInputToTabGrid(tabGrid, UserNameLabelText, GetEditor(EditorControlType.Username));
-				AddInputToTabGrid(tabGrid, PwdLabelText, GetEditor(EditorControlType.Password), true);
-			}
-			else if (tabType == TabType.Rally)
-			{
-				tab.Header = RallyServerTabText;
-				AddInputToTabGrid(tabGrid, ServerLabelText, GetEditor(EditorControlType.RallyServer));
-			}
-			else if (tabType == TabType.Proxy)
-			{
-				tab.Header = ProxyServerTabText;
-				AddInputToTabGrid(tabGrid, ProxyServerLabelText, GetEditor(EditorControlType.ProxyServer));
-				AddInputToTabGrid(tabGrid, ProxyUserNameLabelText, GetEditor(EditorControlType.ProxyUsername));
-				AddInputToTabGrid(tabGrid, ProxyPwdLabelText, GetEditor(EditorControlType.ProxyPassword), true);
-			}
-			else
-				throw new NotImplementedException();
+			//if (tabType == TabType.Credentials)
+			//{
+			//	tab.Header = CredentialsTabText;
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, UserNameLabelText, GetEditor(EditorControlType.Username));
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, PwdLabelText, GetEditor(EditorControlType.Password), true);
+			//}
+			//else if (tabType == TabType.Rally)
+			//{
+			//	tab.Header = RallyServerTabText;
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, ServerLabelText, GetEditor(EditorControlType.RallyServer));
+			//}
+			//else if (tabType == TabType.Proxy)
+			//{
+			//	tab.Header = ProxyServerTabText;
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, ProxyServerLabelText, GetEditor(EditorControlType.ProxyServer));
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, ProxyUserNameLabelText, GetEditor(EditorControlType.ProxyUsername));
+			//	AddInputToTabTableLayoutPanel(tabTableLayoutPanel, ProxyPwdLabelText, GetEditor(EditorControlType.ProxyPassword), true);
+			//}
+			//else
+			//	throw new NotImplementedException();
 
-			if ((tabControl.Height.ToString().Equals("NaN", StringComparison.InvariantCultureIgnoreCase)) ||
-				(tabControl.Height < tabGrid.Height + 20))
-			{
-				tabControl.Height = tabGrid.Height + 20;
-				tabControl.MinHeight = tabControl.Height;
-			}
+			//if ((tabControl.Height.ToString().Equals("NaN", StringComparison.InvariantCultureIgnoreCase)) ||
+			//	(tabControl.Height < tabTableLayoutPanel.Height + 20))
+			//{
+			//	tabControl.Height = tabTableLayoutPanel.Height + 20;
+			//}
 		}
 		#endregion
 
-		#region AddInputToTabGrid
-		private void AddInputToTabGrid(Grid tabGrid, string labelText, Control control, bool skipReadOnlyLabel = false)
+		#region Removed - AddInputToTabTableLayoutPanel
+		private void AddInputToTabTableLayoutPanel(TableLayoutPanel tabTableLayoutPanel, string labelText, Control control, bool skipReadOnlyLabel = false)
 		{
-			int rowIndex = tabGrid.RowDefinitions.Count;
-			AddRowDefinition(tabGrid, 28);
-			Label label = new Label();
-			label.Content = labelText;
-			label.FontWeight = FontWeights.Bold;
-			AddControlToGrid(tabGrid, label, rowIndex, 0);
+			//int rowIndex = tabTableLayoutPanel.RowDefinitions.Count;
+			//AddRowDefinition(tabTableLayoutPanel, 28);
+			//Label label = new Label();
+			//label.Text = labelText;
+			//label.Font.Bold = true;
+			//AddControlToTableLayoutPanel(tabTableLayoutPanel, label, rowIndex, 0);
 
-			if (control != null)
-			{
-				AddControlToGrid(tabGrid, control, rowIndex, 1);
-				if (!skipReadOnlyLabel)
-				{
-					Label readOnlyLabel = new Label();
-					controlReadOnlyLabels.Add(control, readOnlyLabel);
-					AddControlToGrid(tabGrid, readOnlyLabel, rowIndex, 1);
-				}
-			}
+			//if (control != null)
+			//{
+			//	AddControlToTableLayoutPanel(tabTableLayoutPanel, control, rowIndex, 1);
+			//	if (!skipReadOnlyLabel)
+			//	{
+			//		Label readOnlyLabel = new Label();
+			//		controlReadOnlyLabels.Add(control, readOnlyLabel);
+			//		AddControlToTableLayoutPanel(tabTableLayoutPanel, readOnlyLabel, rowIndex, 1);
+			//	}
+			//}
 		}
 		#endregion
 
@@ -342,6 +334,8 @@ namespace Rally.RestApi.UiForWpf
 					case EditorControlType.RallyServer:
 					case EditorControlType.ProxyServer:
 					case EditorControlType.ProxyUsername:
+					case EditorControlType.Password:
+					case EditorControlType.ProxyPassword:
 						TextBox textBox = new TextBox();
 						switch (controlType)
 						{
@@ -367,24 +361,23 @@ namespace Rally.RestApi.UiForWpf
 								else if (DefaultProxyServer != null)
 									textBox.Text = DefaultProxyServer.ToString();
 								break;
+							case EditorControlType.Password:
+							case EditorControlType.ProxyPassword:
+								textBox.UseSystemPasswordChar = true;
+								break;
 							default:
 								break;
 						}
 						control = textBox;
 						break;
-					case EditorControlType.Password:
-					case EditorControlType.ProxyPassword:
-						PasswordBox passwordBox = new PasswordBox();
-						passwordBox.PasswordChar = '*';
-						control = passwordBox;
-						break;
 					default:
 						throw new NotImplementedException();
 				}
 
-				control.Margin = new Thickness(0, 0, 10, 0);
-				control.HorizontalAlignment = HorizontalAlignment.Stretch;
-				control.MinWidth = 150;
+				control.Margin = new Padding(0, 0, 10, 0);
+				// TODO: Fix width
+				//control.HorizontalAlignment = HorizontalAlignment.Stretch;
+				//control.MinWidth = 150;
 				control.Height = 20;
 				controls.Add(controlType, control);
 			}
@@ -404,103 +397,100 @@ namespace Rally.RestApi.UiForWpf
 			if (textBox != null)
 				return textBox.Text;
 
-			PasswordBox passwordBox = control as PasswordBox;
-			if (passwordBox != null)
-				return passwordBox.Password;
-
 			return null;
 		}
 		#endregion
 
-		#region AddButtons
+		#region Removed - AddButtons
 		private void AddButtons()
 		{
-			Grid buttonGrid = new Grid();
-			Grid.SetColumn(buttonGrid, 1);
-			Grid.SetRow(buttonGrid, 4);
-			layoutGrid.Children.Add(buttonGrid);
+			//TableLayoutPanel buttonTableLayoutPanel = new TableLayoutPanel();
+			//TableLayoutPanel.SetColumn(buttonTableLayoutPanel, 1);
+			//TableLayoutPanel.SetRow(buttonTableLayoutPanel, 4);
+			//layoutTableLayoutPanel.Children.Add(buttonTableLayoutPanel);
 
-			AddColumnDefinition(buttonGrid, 70);
-			AddColumnDefinition(buttonGrid, 70);
-			AddColumnDefinition(buttonGrid);
+			//AddColumnDefinition(buttonTableLayoutPanel, 70);
+			//AddColumnDefinition(buttonTableLayoutPanel, 70);
+			//AddColumnDefinition(buttonTableLayoutPanel);
 
-			Thickness margin = new Thickness(5, 0, 5, 0);
+			//Padding margin = new Padding(5, 0, 5, 0);
 
-			ssoInProgressLabel = new Label();
-			ssoInProgressLabel.Content = SsoInProgressText;
-			AddControlToGrid(buttonGrid, ssoInProgressLabel, 0, 0);
+			//ssoInProgressLabel = new Label();
+			//ssoInProgressLabel.Content = SsoInProgressText;
+			//AddControlToTableLayoutPanel(buttonTableLayoutPanel, ssoInProgressLabel, 0, 0);
 
-			loginButton = new Button();
-			loginButton.Margin = margin;
-			loginButton.IsDefault = true;
-			loginButton.Content = LoginText;
-			loginButton.Click += loginButton_Click;
-			AddControlToGrid(buttonGrid, loginButton, 0, 0);
+			//loginButton = new Button();
+			//loginButton.Margin = margin;
+			//loginButton.IsDefault = true;
+			//loginButton.Text = LoginText;
+			//loginButton.Click += loginButton_Click;
+			//AddControlToTableLayoutPanel(buttonTableLayoutPanel, loginButton, 0, 0);
 
-			logoutButton = new Button();
-			logoutButton.Margin = margin;
-			logoutButton.Content = LogoutText;
-			logoutButton.Click += logoutButton_Click;
-			AddControlToGrid(buttonGrid, logoutButton, 0, 0);
+			//logoutButton = new Button();
+			//logoutButton.Margin = margin;
+			//logoutButton.Text = LogoutText;
+			//logoutButton.Click += logoutButton_Click;
+			//AddControlToTableLayoutPanel(buttonTableLayoutPanel, logoutButton, 0, 0);
 
-			cancelButton = new Button();
-			cancelButton.Margin = margin;
-			cancelButton.Content = CancelText;
-			cancelButton.Click += cancelButton_Click;
-			AddControlToGrid(buttonGrid, cancelButton, 0, 1);
+			//cancelButton = new Button();
+			//cancelButton.Margin = margin;
+			//cancelButton.Text = CancelText;
+			//cancelButton.Click += cancelButton_Click;
+			//AddControlToTableLayoutPanel(buttonTableLayoutPanel, cancelButton, 0, 1);
 		}
 		#endregion
 
-		#region AddControlToGrid
-		private void AddControlToGrid(Grid grid, UIElement control, int row, int column, int rowSpan = 1, int colSpan = 1)
+		#region Removed - AddControlToTableLayoutPanel
+		private void AddControlToTableLayoutPanel(TableLayoutPanel grid, Control control, int row, int column, int rowSpan = 1, int colSpan = 1)
 		{
-			if (row >= 0)
-				Grid.SetRow(control, row);
-			if (rowSpan > 1)
-				Grid.SetRowSpan(control, rowSpan);
+			//if (row >= 0)
+			//	TableLayoutPanel.SetRow(control, row);
+			//if (rowSpan > 1)
+			//	TableLayoutPanel.SetRowSpan(control, rowSpan);
 
-			if (column >= 0)
-				Grid.SetColumn(control, column);
-			if (colSpan > 1)
-				Grid.SetColumnSpan(control, colSpan);
+			//if (column >= 0)
+			//	TableLayoutPanel.SetColumn(control, column);
+			//if (colSpan > 1)
+			//	TableLayoutPanel.SetColumnSpan(control, colSpan);
 
-			grid.Children.Add(control);
+			//grid.Children.Add(control);
 		}
 		#endregion
 
-		#region AddRowDefinition
-		private void AddRowDefinition(Grid grid, int pixels = Int32.MaxValue)
+		#region Removed - AddRowDefinition
+		private void AddRowDefinition(TableLayoutPanel grid, int pixels = Int32.MaxValue)
 		{
-			RowDefinition rowDef = new RowDefinition();
-			if (pixels == Int32.MaxValue)
-				rowDef.Height = GridLength.Auto;
-			else
-				rowDef.Height = new GridLength(pixels, GridUnitType.Pixel);
-			grid.RowDefinitions.Add(rowDef);
+			//RowDefinition rowDef = new RowDefinition();
+			//if (pixels == Int32.MaxValue)
+			//	rowDef.Height = TableLayoutPanelLength.Auto;
+			//else
+			//	rowDef.Height = new TableLayoutPanelLength(pixels, TableLayoutPanelUnitType.Pixel);
+			//grid.RowDefinitions.Add(rowDef);
 
-			if (pixels != Int32.MaxValue)
-			{
-				grid.MinHeight += pixels + 2;
-				grid.Height = grid.MinHeight;
-			}
-			else
-				grid.Height = double.NaN;
+			//if (pixels != Int32.MaxValue)
+			//{
+			//	grid.MinHeight += pixels + 2;
+			//	grid.Height = grid.MinHeight;
+			//}
+			//else
+			//	grid.Height = double.NaN;
 		}
 		#endregion
 
-		#region AddColumnDefinition
-		private void AddColumnDefinition(Grid grid, int pixels = Int32.MaxValue)
+		#region Removed - AddColumnDefinition
+		private void AddColumnDefinition(TableLayoutPanel grid, int pixels = Int32.MaxValue)
 		{
-			ColumnDefinition colDef = new ColumnDefinition();
-			if (pixels != Int32.MaxValue)
-				colDef.Width = new GridLength(pixels, GridUnitType.Pixel);
+			//ColumnDefinition colDef = new ColumnDefinition();
+			//if (pixels != Int32.MaxValue)
+			//	colDef.Width = new TableLayoutPanelLength(pixels, TableLayoutPanelUnitType.Pixel);
 
-			grid.ColumnDefinitions.Add(colDef);
+			//grid.ColumnDefinitions.Add(colDef);
 		}
 		#endregion
 
 		#region loginButton_Click
-		void loginButton_Click(object sender, RoutedEventArgs e)
+
+		void loginButton_Click(object sender, EventArgs e)
 		{
 			WebProxy proxy = null;
 			string proxyServer = GetEditorValue(EditorControlType.ProxyServer);
@@ -538,7 +528,7 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region logoutButton_Click
-		void logoutButton_Click(object sender, RoutedEventArgs e)
+		void logoutButton_Click(object sender, EventArgs e)
 		{
 			AuthMgr.Api.Logout();
 			AuthenticationComplete.Invoke(AuthMgr.Api.AuthenticationState, null);
@@ -546,7 +536,7 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region cancelButton_Click
-		void cancelButton_Click(object sender, RoutedEventArgs e)
+		void cancelButton_Click(object sender, EventArgs e)
 		{
 			Close();
 		}

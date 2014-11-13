@@ -8,7 +8,7 @@ using System.Collections;
 using System.Reflection;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
-using Rally.RestApi.Sso;
+using Rally.RestApi.Auth;
 
 namespace Rally.RestApi.Web
 {
@@ -20,27 +20,23 @@ namespace Rally.RestApi.Web
 		readonly ConnectionInfo connectionInfo;
 
 		internal Uri Server { get; set; }
-		/// <summary>
-		/// An event that indicates changes to SSO authentication.
-		/// </summary>
-		internal event SsoResults SsoResults;
-		private ISsoDriver ssoDriver;
+		private ApiAuthBaseManager authManager;
 
 		#region HttpService
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="ssoDriver">The SSO driver to use.</param>
+		/// <param name="authManager">The authorization manager to use.</param>
 		/// <param name="connectionInfo">Connection Information</param>
-		internal HttpService(ISsoDriver ssoDriver, ConnectionInfo connectionInfo)
+		internal HttpService(ApiAuthBaseManager authManager, ConnectionInfo connectionInfo)
 		{
-			if (ssoDriver == null)
-				throw new ArgumentNullException("ssoDriver");
+			if (authManager == null)
+				throw new ArgumentNullException("authManager");
 
 			if (connectionInfo == null)
 				throw new ArgumentNullException("connectionInfo");
 
-			this.ssoDriver = ssoDriver;
+			this.authManager = authManager;
 			this.connectionInfo = connectionInfo;
 
 			if (connectionInfo.AuthType == AuthorizationType.Basic)
@@ -382,7 +378,7 @@ namespace Rally.RestApi.Web
 		/// <returns></returns>
 		internal bool PerformSsoAuthentication()
 		{
-			if ((ssoDriver == null) || (!ssoDriver.IsSsoAuthorized))
+			if ((authManager == null) || (!authManager.IsUiSupported))
 				return false;
 
 			ConnectionInfo ssoConnection = new ConnectionInfo();
@@ -392,25 +388,16 @@ namespace Rally.RestApi.Web
 			ssoConnection.Proxy = connectionInfo.Proxy;
 			ssoConnection.UserName = connectionInfo.UserName;
 
-			HttpService ssoService = new HttpService(ssoDriver, ssoConnection);
+			HttpService ssoService = new HttpService(authManager, ssoConnection);
 			Uri ssoRedirectUri = ssoConnection.Server;
 			if (ssoService.PerformSsoCheck(out ssoRedirectUri))
 			{
-				ssoDriver.SsoResults += SsoCompleted;
-				ssoDriver.ShowSsoPage(ssoRedirectUri);
+				authManager.OpenSsoPage(ssoRedirectUri);
 
 				return true;
 			}
 
 			return false;
-		}
-		#endregion
-
-		#region SsoCompleted
-		private void SsoCompleted(bool success, string zSessionID)
-		{
-			if (SsoResults != null)
-				SsoResults.Invoke(success, zSessionID);
 		}
 		#endregion
 

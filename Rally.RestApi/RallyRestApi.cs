@@ -11,8 +11,8 @@ using System.Text.RegularExpressions;
 using Rally.RestApi.Web;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
-using Rally.RestApi.Sso;
 using System.Threading;
+using Rally.RestApi.Auth;
 
 namespace Rally.RestApi
 {
@@ -33,17 +33,17 @@ namespace Rally.RestApi
 		public enum AuthenticationResult
 		{
 			/// <summary>
-			/// The user is authenticated.
+			/// The user is not authorized.
 			/// </summary>
-			Authenticated,
+			NotAuthorized = 1, // Must be default entry as a protection for code checking the authenticated property.
 			/// <summary>
 			/// The user needs to perform SSO authentication.
 			/// </summary>
-			PendingSSO,
+			PendingSSO = 2,
 			/// <summary>
-			/// The user is not authorized.
+			/// The user is authenticated.
 			/// </summary>
-			NotAuthorized,
+			Authenticated = 3,
 		}
 		#endregion
 
@@ -118,13 +118,17 @@ namespace Rally.RestApi
 		#endregion
 
 		#region Properties and Fields
-		private ISsoDriver ssoDriver;
+		private ApiAuthBaseManager authManger;
 		private HttpService httpService;
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
 		/// The HTTP headers to be included on all REST requests
 		/// </summary>
 		public Dictionary<HeaderType, string> Headers { get; private set; }
+		/// <summary>
+		/// The state of authentication for this API instance.
+		/// </summary>
+		public AuthenticationResult AuthenticationState { get; private set; }
 		/// <summary>
 		/// The connection info thsi API is using.
 		/// </summary>
@@ -138,11 +142,6 @@ namespace Rally.RestApi
 		/// </summary>
 		internal bool IsWsapi2 { get { return !new Regex("^1[.]\\d+").IsMatch(WsapiVersion); } }
 		#endregion
-
-		/// <summary>
-		/// An event that indicates changes to SSO authentication.
-		/// </summary>
-		public event SsoResults SsoResults;
 
 		#region Calculated Properties
 
@@ -162,18 +161,21 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Construct a new RallyRestApi configured to work with the specified WSAPI version
 		/// </summary>
-		/// <param name="ssoDriver">The SSO Driver to use when authentication requires it. If no driver is provided, SSO will not be enabled.</param>
+		/// <param name="authManger">The authorization manager to use when authentication requires it. If no driver is 
+		/// provided a console authentication manager will be used which does not allow SSO authentication.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		public RallyRestApi(ISsoDriver ssoDriver = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
+		public RallyRestApi(ApiAuthBaseManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
 		{
-			if (ssoDriver == null)
-				ssoDriver = new SsoNotAllowedDriver();
+			if (authManger == null)
+				authManger = new ApiAuthManager();
 
-			this.ssoDriver = ssoDriver;
+			this.authManger = authManger;
 
 			WsapiVersion = webServiceVersion;
 			if (String.IsNullOrWhiteSpace(WsapiVersion))
 				WsapiVersion = DEFAULT_WSAPI_VERSION;
+
+			AuthenticationState = AuthenticationResult.NotAuthorized;
 		}
 		#endregion
 
@@ -192,7 +194,7 @@ namespace Rally.RestApi
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
 
-			if (!ssoDriver.IsSsoAuthorized)
+			if (!authManger.IsUiSupported)
 				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
@@ -290,8 +292,7 @@ namespace Rally.RestApi
 		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo, bool allowSSO)
 		{
 			this.ConnectionInfo = connectionInfo;
-			httpService = new HttpService(ssoDriver, connectionInfo);
-			httpService.SsoResults += SsoCompleted;
+			httpService = new HttpService(authManger, connectionInfo);
 
 			Headers = new Dictionary<HeaderType, string>();
 			Assembly assembly = typeof(RallyRestApi).Assembly;
@@ -308,33 +309,32 @@ namespace Rally.RestApi
 			try
 			{
 				GetCurrentUser("Name");
-				return AuthenticationResult.Authenticated;
+				AuthenticationState = AuthenticationResult.Authenticated;
 			}
 			catch
 			{
 				if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
 				{
-					connectionInfo = null;
-					httpService = null;
+					Logout();
 					throw;
 				}
 
-				return AuthenticationResult.PendingSSO;
+				AuthenticationState = AuthenticationResult.PendingSSO;
 			}
+
+			return AuthenticationState;
 		}
 		#endregion
 
-		#region SsoCompleted
-		private void SsoCompleted(bool success, string zSessionID)
+		#region Logout
+		/// <summary>
+		/// Logs this API out from any connection to Rally and clears the authentication configuration.
+		/// </summary>
+		public void Logout()
 		{
-			if (success)
-			{
-				ConnectionInfo.AuthType = AuthorizationType.ZSessionID;
-				ConnectionInfo.ZSessionID = zSessionID;
-			}
-
-			if (SsoResults != null)
-				SsoResults.Invoke(success, zSessionID);
+			AuthenticationState = AuthenticationResult.NotAuthorized;
+			ConnectionInfo = null;
+			httpService = null;
 		}
 		#endregion
 

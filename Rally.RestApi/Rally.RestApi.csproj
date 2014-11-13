@@ -56,12 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\IAuthorizationManager.cs" />
-    <Compile Include="Auth\ConsoleAuthenticationManager.cs" />
+    <Compile Include="Auth\ApiAuthBaseManager.cs" />
+    <Compile Include="Auth\ApiAuthManager.cs" />
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
-    <Compile Include="Sso\ISsoDriver.cs" />
-    <Compile Include="Sso\SsoNotAllowedDriver.cs" />
     <Compile Include="Web\SsoWebClient.cs" />
     <Compile Include="Web\CookieAwareCacheableWebClient.cs" />
     <Compile Include="Web\CookieAwareWebClient.cs" />

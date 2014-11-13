@@ -38,9 +38,17 @@ namespace Test.Rally.RestApi.UiForWpf
 		#region Configure
 		private void Configure()
 		{
-			RestApiAuthMgrWpf.Configure(true, null, headerLabel.Text, credentialsTabLabel.Text,
-				usernameLabel.Text, passwordLabel.Text, serverTabLabel.Text, serverLabel.Text,
-				proxyServerLabel.Text, proxyUsernameLabel.Text, proxyPasswordLabel.Text,
+			defaultServerUri.Text = RallyRestApi.DEFAULT_SERVER;
+			Uri defaultProxyServer = null;
+			if (!String.IsNullOrWhiteSpace(defaultProxyServerUri.Text))
+				defaultProxyServer = new Uri(defaultProxyServerUri.Text);
+
+			RestApiAuthMgrWpf.ConfigureUserInterface(true, null, headerLabel.Text,
+				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
+				serverTabLabel.Text, serverLabel.Text, new Uri(defaultServerUri.Text),
+				proxyTabLabel.Text, proxyServerLabel.Text, proxyUsernameLabel.Text,
+				proxyPasswordLabel.Text, defaultProxyServer,
+				loginWindowSsoInProgressLabel.Text,
 				loginButtonLabel.Text, logoutButtonLabel.Text, cancelButtonLabel.Text);
 			authMgr = new RestApiAuthMgrWpf();
 		}

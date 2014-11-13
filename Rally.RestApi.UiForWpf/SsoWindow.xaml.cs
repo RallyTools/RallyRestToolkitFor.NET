@@ -1,5 +1,5 @@
 ﻿using mshtml;
-using Rally.RestApi.Sso;
+using Rally.RestApi.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +23,8 @@ namespace Rally.RestApi.UiForWpf
 	/// </summary>
 	public partial class SsoWindow : Window
 	{
-		/// <summary>
-		/// The event that is triggered when SSO is completed.
-		/// </summary>
-		public event SsoResults SsoResults;
+		bool ssoReported = false;
+		RestApiAuthMgrWpf authMgr;
 
 		#region Constructor
 		/// <summary>
@@ -43,12 +41,15 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Shows the specified SSO URL to the user.
 		/// </summary>
-		/// <param name="ssoUrl">The URL that the user was redirected to in order to perform their SSO authentication.</param>
-		internal void ShowSsoPage(Uri ssoUrl)
+		internal void ShowSsoPage(RestApiAuthMgrWpf authMgr, Uri ssoUrl)
 		{
+			if (authMgr == null)
+				throw new ArgumentNullException("authMgr", "You must provide an authorization manager.");
+
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");
 
+			this.authMgr = authMgr;
 			browser.Source = ssoUrl;
 			Show();
 		}
@@ -74,13 +75,10 @@ namespace Rally.RestApi.UiForWpf
 					{
 						if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))
 						{
-							if (SsoResults != null)
-							{
-								WindowState = WindowState.Minimized;
-								SsoResults.Invoke(true, currentCookie.Value);
-								SsoResults = null;
-								Close();
-							}
+							WindowState = WindowState.Minimized;
+							authMgr.ReportSsoResults(true, currentCookie.Value);
+							ssoReported = true;
+							Close();
 						}
 					}
 				}
@@ -144,11 +142,8 @@ namespace Rally.RestApi.UiForWpf
 		/// </summary>
 		protected override void OnClosed(EventArgs e)
 		{
-			if (SsoResults != null)
-			{
-				SsoResults.Invoke(false, null);
-				SsoResults = null;
-			}
+			if (!ssoReported)
+				authMgr.ReportSsoResults(false, String.Empty);
 
 			base.OnClosed(e);
 		}
