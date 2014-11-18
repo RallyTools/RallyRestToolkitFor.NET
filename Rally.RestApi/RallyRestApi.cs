@@ -118,7 +118,7 @@ namespace Rally.RestApi
 		#endregion
 
 		#region Properties and Fields
-		private ApiAuthBaseManager authManger;
+		private ApiAuthManager authManger;
 		private HttpService httpService;
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
@@ -164,10 +164,10 @@ namespace Rally.RestApi
 		/// <param name="authManger">The authorization manager to use when authentication requires it. If no driver is 
 		/// provided a console authentication manager will be used which does not allow SSO authentication.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
-		public RallyRestApi(ApiAuthBaseManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
+		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
 		{
 			if (authManger == null)
-				authManger = new ApiAuthManager();
+				authManger = new ApiConsoleAuthManager();
 
 			this.authManger = authManger;
 

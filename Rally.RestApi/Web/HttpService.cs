@@ -20,7 +20,7 @@ namespace Rally.RestApi.Web
 		readonly ConnectionInfo connectionInfo;
 
 		internal Uri Server { get; set; }
-		private ApiAuthBaseManager authManager;
+		private ApiAuthManager authManager;
 
 		#region HttpService
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Rally.RestApi.Web
 		/// </summary>
 		/// <param name="authManager">The authorization manager to use.</param>
 		/// <param name="connectionInfo">Connection Information</param>
-		internal HttpService(ApiAuthBaseManager authManager, ConnectionInfo connectionInfo)
+		internal HttpService(ApiAuthManager authManager, ConnectionInfo connectionInfo)
 		{
 			if (authManager == null)
 				throw new ArgumentNullException("authManager");

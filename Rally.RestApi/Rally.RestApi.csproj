@@ -56,8 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\ApiAuthBaseManager.cs" />
     <Compile Include="Auth\ApiAuthManager.cs" />
+    <Compile Include="Auth\ApiConsoleAuthManager.cs" />
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="Web\SsoWebClient.cs" />

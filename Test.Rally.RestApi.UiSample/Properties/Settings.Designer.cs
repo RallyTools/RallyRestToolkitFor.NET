@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Test.Rally.RestApi.UiForWinForms.Properties
+namespace Test.Rally.RestApi.UiSample.Properties
 {
 
 

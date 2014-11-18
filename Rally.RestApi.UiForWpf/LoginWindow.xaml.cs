@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -42,36 +43,10 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
-		#region Static Values
-		private static ImageSource LogoImage;
-		private static string HeaderLabelText;
-		private static string CredentialsTabText;
-		private static string RallyServerTabText;
-		private static string ProxyServerTabText;
-
-		private static string UserNameLabelText;
-		private static string PwdLabelText;
-
-		private static string ServerLabelText;
-		private static string ProxyServerLabelText;
-		private static string ProxyUserNameLabelText;
-		private static string ProxyPwdLabelText;
-
-		private static string SsoInProgressText;
-		private static string LoginText;
-		private static string LogoutText;
-		private static string CancelText;
-
-		private static Uri DefaultServer;
-		private static Uri DefaultProxyServer;
-		#endregion
-
 		Dictionary<EditorControlType, Control> controls;
 		Dictionary<Control, Label> controlReadOnlyLabels;
 
 		internal RestApiAuthMgrWpf AuthMgr { get; set; }
-		internal event AuthenticationComplete AuthenticationComplete;
-		Label ssoInProgressLabel;
 		Button loginButton;
 		Button logoutButton;
 		Button cancelButton;
@@ -84,96 +59,16 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 
-			Logo.Source = LogoImage;
-			headerLabel.Content = HeaderLabelText;
+			headerLabel.Content = ApiAuthManager.LoginWindowHeaderLabelText;
 			controls = new Dictionary<EditorControlType, Control>();
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
 		}
 		#endregion
 
-		#region Configure
-		/// <summary>
-		/// <para>Configure this control with the items that it needs to work.</para>
-		/// <para>Nullable parameters have defaults that will be used if not provided.</para>
-		/// </summary>
-		internal static void Configure(ImageSource logo, string headerLabelText,
-			Uri defaultServer, Uri defaultProxyServer,
-			string credentialsTabText, string userNameLabelText, string pwdLabelText,
-			string serverTabText, string serverLabelText,
-			string proxyServerTabText, string proxyServerLabelText,
-			string proxyUserNameLabelText, string proxyPwdLabelText, string ssoInProgressText,
-			string loginText, string logoutText, string cancelText)
+		internal void SetLogo(ImageSource logo)
 		{
-			LogoImage = logo;
-			HeaderLabelText = headerLabelText;
-			CredentialsTabText = credentialsTabText;
-			UserNameLabelText = userNameLabelText;
-			PwdLabelText = pwdLabelText;
-
-			DefaultServer = defaultServer;
-			DefaultProxyServer = defaultProxyServer;
-
-			RallyServerTabText = serverTabText;
-			ServerLabelText = serverLabelText;
-
-			ProxyServerTabText = proxyServerTabText;
-			ProxyServerLabelText = proxyServerLabelText;
-			ProxyUserNameLabelText = proxyUserNameLabelText;
-			ProxyPwdLabelText = proxyPwdLabelText;
-
-			SsoInProgressText = ssoInProgressText;
-			LoginText = loginText;
-			LogoutText = logoutText;
-			CancelText = cancelText;
-
-			#region Default Strings: Credentials
-			if (String.IsNullOrWhiteSpace(CredentialsTabText))
-				CredentialsTabText = "Credentials";
-
-			if (String.IsNullOrWhiteSpace(UserNameLabelText))
-				UserNameLabelText = "User Name";
-
-			if (String.IsNullOrWhiteSpace(PwdLabelText))
-				PwdLabelText = "Password";
-			#endregion
-
-			#region Default Strings: Rally
-			if (String.IsNullOrWhiteSpace(RallyServerTabText))
-				RallyServerTabText = "Rally";
-
-			if (String.IsNullOrWhiteSpace(ServerLabelText))
-				ServerLabelText = "Server";
-			#endregion
-
-			#region Default Strings: Proxy
-			if (String.IsNullOrWhiteSpace(ProxyServerTabText))
-				ProxyServerTabText = "Proxy";
-
-			if (String.IsNullOrWhiteSpace(ProxyServerLabelText))
-				ProxyServerLabelText = "Server";
-
-			if (String.IsNullOrWhiteSpace(ProxyUserNameLabelText))
-				ProxyUserNameLabelText = "User Name";
-
-			if (String.IsNullOrWhiteSpace(ProxyPwdLabelText))
-				ProxyPwdLabelText = "Password";
-			#endregion
-
-			#region Default Strings: Buttons
-			if (String.IsNullOrWhiteSpace(SsoInProgressText))
-				SsoInProgressText = "SSO in Progress";
-
-			if (String.IsNullOrWhiteSpace(LoginText))
-				LoginText = "Login";
-
-			if (String.IsNullOrWhiteSpace(LogoutText))
-				LogoutText = "Logout";
-
-			if (String.IsNullOrWhiteSpace(CancelText))
-				CancelText = "Cancel";
-			#endregion
+			Logo.Source = logo;
 		}
-		#endregion
 
 		#region UpdateLoginState
 		/// <summary>
@@ -187,17 +82,16 @@ namespace Rally.RestApi.UiForWpf
 				case RallyRestApi.AuthenticationResult.Authenticated:
 					loginButton.Visibility = Visibility.Hidden;
 					logoutButton.Visibility = Visibility.Visible;
-					ssoInProgressLabel.Visibility = Visibility.Hidden;
+					ShowMessage();
 					break;
 				case RallyRestApi.AuthenticationResult.PendingSSO:
 					loginButton.Visibility = Visibility.Hidden;
 					logoutButton.Visibility = Visibility.Hidden;
-					ssoInProgressLabel.Visibility = Visibility.Visible;
+					ShowMessage(ApiAuthManager.LoginWindowSsoInProgressText);
 					break;
 				case RallyRestApi.AuthenticationResult.NotAuthorized:
 					loginButton.Visibility = Visibility.Visible;
 					logoutButton.Visibility = Visibility.Hidden;
-					ssoInProgressLabel.Visibility = Visibility.Hidden;
 					isReadOnly = false;
 					break;
 				default:
@@ -212,10 +106,10 @@ namespace Rally.RestApi.UiForWpf
 		internal void BuildLayout(RestApiAuthMgrWpf authMgr)
 		{
 			AuthMgr = authMgr;
-			TabControl tabControl = new TabControl();
-			tabControl.Margin = new Thickness(10);
+			Selector tabControl = GetTabControl();
+			tabControl.Margin = new Thickness(10, 10, 10, 5);
 			Grid.SetColumn(tabControl, 0);
-			Grid.SetColumnSpan(tabControl, 2);
+			Grid.SetColumnSpan(tabControl, 3);
 			Grid.SetRow(tabControl, 1);
 			layoutGrid.Children.Add(tabControl);
 
@@ -223,14 +117,29 @@ namespace Rally.RestApi.UiForWpf
 			AddTab(tabControl, TabType.Rally);
 			AddTab(tabControl, TabType.Proxy);
 
-			inputRow.Height = new GridLength(tabControl.Height + 35, GridUnitType.Pixel);
+			AddButtons();
+
+			inputRow.Height = new GridLength(tabControl.Height + 20, GridUnitType.Pixel);
 			inputRow.MinHeight = inputRow.Height.Value;
 
-			this.Height = inputRow.Height.Value + (28 * 2) + 50 + 50;
+			this.Height = inputRow.Height.Value + (28 * 2) + 100;
 			this.MinHeight = this.Height;
 			this.MaxHeight = this.Height;
+		}
+		#endregion
 
-			AddButtons();
+		#region GetTabControl
+		private Selector GetTabControl()
+		{
+			Selector selector;
+
+			Type tabControlType = RestApiAuthMgrWpf.GetCustomControlType(CustomWpfControlType.TabControl);
+			if (tabControlType == null)
+				selector = new TabControl();
+			else
+				selector = (Selector)Activator.CreateInstance(tabControlType);
+
+			return selector;
 		}
 		#endregion
 
@@ -263,9 +172,9 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region AddTab
-		private void AddTab(TabControl tabControl, TabType tabType)
+		private void AddTab(Selector tabControl, TabType tabType)
 		{
-			TabItem tab = new TabItem();
+			HeaderedContentControl tab = GetTabItem();
 			tabControl.Items.Add(tab);
 
 			Grid tabGrid = new Grid();
@@ -277,21 +186,21 @@ namespace Rally.RestApi.UiForWpf
 
 			if (tabType == TabType.Credentials)
 			{
-				tab.Header = CredentialsTabText;
-				AddInputToTabGrid(tabGrid, UserNameLabelText, GetEditor(EditorControlType.Username));
-				AddInputToTabGrid(tabGrid, PwdLabelText, GetEditor(EditorControlType.Password), true);
+				tab.Header = ApiAuthManager.LoginWindowCredentialsTabText;
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowUserNameLabelText, GetEditor(EditorControlType.Username));
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowPwdLabelText, GetEditor(EditorControlType.Password), true);
 			}
 			else if (tabType == TabType.Rally)
 			{
-				tab.Header = RallyServerTabText;
-				AddInputToTabGrid(tabGrid, ServerLabelText, GetEditor(EditorControlType.RallyServer));
+				tab.Header = ApiAuthManager.LoginWindowRallyServerTabText;
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, GetEditor(EditorControlType.RallyServer));
 			}
 			else if (tabType == TabType.Proxy)
 			{
-				tab.Header = ProxyServerTabText;
-				AddInputToTabGrid(tabGrid, ProxyServerLabelText, GetEditor(EditorControlType.ProxyServer));
-				AddInputToTabGrid(tabGrid, ProxyUserNameLabelText, GetEditor(EditorControlType.ProxyUsername));
-				AddInputToTabGrid(tabGrid, ProxyPwdLabelText, GetEditor(EditorControlType.ProxyPassword), true);
+				tab.Header = ApiAuthManager.LoginWindowProxyServerTabText;
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyServerLabelText, GetEditor(EditorControlType.ProxyServer));
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyUserNameLabelText, GetEditor(EditorControlType.ProxyUsername));
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyPwdLabelText, GetEditor(EditorControlType.ProxyPassword), true);
 			}
 			else
 				throw new NotImplementedException();
@@ -302,6 +211,21 @@ namespace Rally.RestApi.UiForWpf
 				tabControl.Height = tabGrid.Height + 20;
 				tabControl.MinHeight = tabControl.Height;
 			}
+		}
+		#endregion
+
+		#region GetTabItem
+		private HeaderedContentControl GetTabItem()
+		{
+			HeaderedContentControl tabItem;
+
+			Type tabItemType = RestApiAuthMgrWpf.GetCustomControlType(CustomWpfControlType.TabItem);
+			if (tabItemType == null)
+				tabItem = new TabItem();
+			else
+				tabItem = (HeaderedContentControl)Activator.CreateInstance(tabItemType);
+
+			return tabItem;
 		}
 		#endregion
 
@@ -355,8 +279,10 @@ namespace Rally.RestApi.UiForWpf
 								{
 									textBox.Text = AuthMgr.Api.ConnectionInfo.Server.ToString();
 								}
+								else if (ApiAuthManager.LoginWindowDefaultServer != null)
+									textBox.Text = ApiAuthManager.LoginWindowDefaultServer.ToString();
 								else
-									textBox.Text = DefaultServer.ToString();
+									textBox.Text = RallyRestApi.DEFAULT_SERVER;
 								break;
 							case EditorControlType.ProxyServer:
 								if ((AuthMgr.Api.ConnectionInfo != null) &&
@@ -364,8 +290,8 @@ namespace Rally.RestApi.UiForWpf
 								{
 									textBox.Text = AuthMgr.Api.ConnectionInfo.Proxy.Address.ToString();
 								}
-								else if (DefaultProxyServer != null)
-									textBox.Text = DefaultProxyServer.ToString();
+								else if (ApiAuthManager.LoginWindowDefaultProxyServer != null)
+									textBox.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
 								break;
 							default:
 								break;
@@ -416,38 +342,51 @@ namespace Rally.RestApi.UiForWpf
 		private void AddButtons()
 		{
 			Grid buttonGrid = new Grid();
-			Grid.SetColumn(buttonGrid, 1);
-			Grid.SetRow(buttonGrid, 4);
+			Grid.SetColumn(buttonGrid, 2);
+			Grid.SetRow(buttonGrid, 3);
 			layoutGrid.Children.Add(buttonGrid);
+			AddRowDefinition(buttonGrid, 30);
 
+			buttonGrid.Height = 100;
 			AddColumnDefinition(buttonGrid, 70);
 			AddColumnDefinition(buttonGrid, 70);
 			AddColumnDefinition(buttonGrid);
 
-			Thickness margin = new Thickness(5, 0, 5, 0);
 
-			ssoInProgressLabel = new Label();
-			ssoInProgressLabel.Content = SsoInProgressText;
-			AddControlToGrid(buttonGrid, ssoInProgressLabel, 0, 0);
 
-			loginButton = new Button();
-			loginButton.Margin = margin;
+			loginButton = GetButton();
 			loginButton.IsDefault = true;
-			loginButton.Content = LoginText;
+			loginButton.Content = ApiAuthManager.LoginWindowLoginText;
 			loginButton.Click += loginButton_Click;
-			AddControlToGrid(buttonGrid, loginButton, 0, 0);
+			AddControlToGrid(buttonGrid, loginButton, 1, 0);
 
-			logoutButton = new Button();
-			logoutButton.Margin = margin;
-			logoutButton.Content = LogoutText;
+			logoutButton = GetButton();
+			logoutButton.Content = ApiAuthManager.LoginWindowLogoutText;
 			logoutButton.Click += logoutButton_Click;
-			AddControlToGrid(buttonGrid, logoutButton, 0, 0);
+			AddControlToGrid(buttonGrid, logoutButton, 1, 0);
 
-			cancelButton = new Button();
-			cancelButton.Margin = margin;
-			cancelButton.Content = CancelText;
+			cancelButton = GetButton();
+			cancelButton.Content = ApiAuthManager.LoginWindowCancelText;
 			cancelButton.Click += cancelButton_Click;
-			AddControlToGrid(buttonGrid, cancelButton, 0, 1);
+			AddControlToGrid(buttonGrid, cancelButton, 1, 1);
+		}
+		#endregion
+
+		#region GetButton
+		private Button GetButton()
+		{
+			Button button;
+
+			Type buttonType = RestApiAuthMgrWpf.GetCustomControlType(CustomWpfControlType.Buttons);
+			if (buttonType == null)
+				button = new Button();
+			else
+				button = (Button)Activator.CreateInstance(buttonType);
+
+			button.Margin = new Thickness(5, 0, 5, 0);
+			button.Height = 25;
+
+			return button;
 		}
 		#endregion
 
@@ -502,46 +441,27 @@ namespace Rally.RestApi.UiForWpf
 		#region loginButton_Click
 		void loginButton_Click(object sender, RoutedEventArgs e)
 		{
-			WebProxy proxy = null;
-			string proxyServer = GetEditorValue(EditorControlType.ProxyServer);
-			if (!String.IsNullOrWhiteSpace(proxyServer))
-			{
-				proxy = new WebProxy(new Uri(proxyServer));
-				string proxyUser = GetEditorValue(EditorControlType.ProxyUsername);
-				string proxyPassword = GetEditorValue(EditorControlType.ProxyUsername);
-				if (!String.IsNullOrWhiteSpace(proxyUser))
-					proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
-				else
-					proxy.UseDefaultCredentials = true;
-			}
+			string errorMessage;
+			AuthMgr.PerformAuthenticationCheck(GetEditorValue(EditorControlType.Username),
+				GetEditorValue(EditorControlType.Password),
+				GetEditorValue(EditorControlType.RallyServer),
+				GetEditorValue(EditorControlType.ProxyServer),
+				GetEditorValue(EditorControlType.ProxyUsername),
+				GetEditorValue(EditorControlType.ProxyUsername),
+				out errorMessage);
+			ShowMessage(errorMessage);
 
-			AuthMgr.Api.Authenticate(GetEditorValue(EditorControlType.Username), GetEditorValue(EditorControlType.Password),
-				GetEditorValue(EditorControlType.RallyServer), proxy);
-
-			if (AuthenticationComplete != null)
-			{
-				switch (AuthMgr.Api.AuthenticationState)
-				{
-					case RallyRestApi.AuthenticationResult.Authenticated:
-						AuthenticationComplete.Invoke(AuthMgr.Api.AuthenticationState, AuthMgr.Api);
-						Close();
-						break;
-					case RallyRestApi.AuthenticationResult.PendingSSO:
-					case RallyRestApi.AuthenticationResult.NotAuthorized:
-						AuthenticationComplete.Invoke(AuthMgr.Api.AuthenticationState, null);
-						break;
-					default:
-						throw new NotImplementedException();
-				}
-			}
+			UpdateLoginState();
+			if (AuthMgr.Api.AuthenticationState == RallyRestApi.AuthenticationResult.Authenticated)
+				Close();
 		}
 		#endregion
 
 		#region logoutButton_Click
 		void logoutButton_Click(object sender, RoutedEventArgs e)
 		{
-			AuthMgr.Api.Logout();
-			AuthenticationComplete.Invoke(AuthMgr.Api.AuthenticationState, null);
+			AuthMgr.PerformLogout();
+			UpdateLoginState();
 		}
 		#endregion
 
@@ -561,6 +481,13 @@ namespace Rally.RestApi.UiForWpf
 			{
 				UpdateLoginState();
 			}
+		}
+		#endregion
+
+		#region ShowMessage
+		private void ShowMessage(string message = "")
+		{
+			userMessages.Content = message;
 		}
 		#endregion
 

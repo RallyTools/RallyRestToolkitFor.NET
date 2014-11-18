@@ -5,7 +5,8 @@
 				Width="450" MinWidth="350" WindowStartupLocation="CenterOwner">
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="layoutGrid">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="120" />
+			<ColumnDefinition Width="50" />
+			<ColumnDefinition Width="80" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
@@ -16,7 +17,7 @@
 		</Grid.RowDefinitions>
 		<Image x:Name="Logo" Grid.Column="0" Grid.Row="0" 
                VerticalAlignment="Stretch" HorizontalAlignment="Center" />
-		<Label Grid.Column="1" Grid.Row="0" FontSize="18" FontFamily="Arial" x:Name="headerLabel" VerticalAlignment="Center" />
-		<Label Grid.Column="1" Grid.Row="2" x:Name="loginFailureMessage" Foreground="Red" />
+		<Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="18" FontFamily="Arial" x:Name="headerLabel" VerticalAlignment="Center" />
+		<Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" x:Name="userMessages" Foreground="Red" FontSize="12" />
 	</Grid>
 </Window>

@@ -13,11 +13,12 @@ namespace Rally.RestApi.UiForWpf
 	/// <summary>
 	/// A WPF based authentication manager.
 	/// </summary>
-	public class RestApiAuthMgrWpf : ApiAuthBaseManager
+	public class RestApiAuthMgrWpf : ApiAuthManager
 	{
+		static Dictionary<CustomWpfControlType, Type> customControlTypes = new Dictionary<CustomWpfControlType, Type>();
+		static ImageSource logoForUi = null;
 		LoginWindow loginControl = null;
 		internal SsoAuthenticationComplete LoginWindowSsoAuthenticationComplete;
-		private static bool isConfigured = false;
 
 		#region Constructor
 		/// <summary>
@@ -29,45 +30,13 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
-		#region ConfigureUserInterface
+		#region SetLogo
 		/// <summary>
-		/// Configures the authorization manger. This must be called before any other method.
+		/// Sets the logo used in the user controls.
 		/// </summary>
-		public static void ConfigureUserInterface(bool trustAllSslCertificates, ImageSource loginWindowLogo,
-			string loginWindowHeaderLabelText,
-			string loginWindowCredentialsTabText = null,
-			string loginWindowUserNameLabelText = null, string loginWindowPwdLabelText = null,
-			string loginWindowServerTabText = null, string loginWindowServerLabelText = null,
-			Uri loginWindowDefaultServer = null,
-			string loginWindowProxyServerTabText = null,
-			string loginWindowProxyServerLabelText = null, string loginWindowProxyUserNameLabelText = null,
-			string loginWindowProxyPwdLabelText = null, Uri loginWindowDefaultProxyServer = null,
-			string loginWindowSsoInProgressText = null,
-			string loginWindowLoginButtonText = null, string loginWindowLogoutButtonText = null,
-			string loginWindowCancelButtonText = null)
+		public static void SetLogo(ImageSource logo)
 		{
-			if (trustAllSslCertificates)
-				ApiAuthBaseManager.TrustAllCertificates();
-
-			LoginWindow.Configure(loginWindowLogo,
-				loginWindowHeaderLabelText,
-				loginWindowDefaultServer,
-				loginWindowDefaultProxyServer,
-				loginWindowCredentialsTabText,
-				loginWindowUserNameLabelText,
-				loginWindowPwdLabelText,
-				loginWindowServerTabText,
-				loginWindowServerLabelText,
-				loginWindowProxyServerTabText,
-				loginWindowProxyServerLabelText,
-				loginWindowProxyUserNameLabelText,
-				loginWindowProxyPwdLabelText,
-				loginWindowSsoInProgressText,
-				loginWindowLoginButtonText,
-				loginWindowLogoutButtonText,
-				loginWindowCancelButtonText);
-
-			isConfigured = true;
+			logoForUi = logo;
 		}
 		#endregion
 
@@ -75,21 +44,18 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Opens the window that displays the SSO URL to the user.
 		/// </summary>
-		protected override void ShowUserLoginWindowInternal(AuthenticationComplete authenticationComplete)
+		protected override void ShowUserLoginWindowInternal()
 		{
-			if (!isConfigured)
-				throw new InvalidOperationException("You must call Configure prior to calling this method.");
-
 			// If the login control exists, don't open a new one.
 			if (loginControl == null)
 			{
 				loginControl = new LoginWindow();
 				loginControl.BuildLayout(this);
-				loginControl.AuthenticationComplete += authenticationComplete;
 				loginControl.Closed += loginControl_Closed;
 				LoginWindowSsoAuthenticationComplete += loginControl.SsoAuthenticationComplete;
 			}
 
+			loginControl.SetLogo(logoForUi);
 			loginControl.UpdateLoginState();
 			loginControl.Show();
 			loginControl.Focus();
@@ -103,9 +69,6 @@ namespace Rally.RestApi.UiForWpf
 		/// <param name="ssoUrl">The Uri that the user was redirected to in order to perform their SSO authentication.</param>
 		protected override void OpenSsoPageInternal(Uri ssoUrl)
 		{
-			if (!isConfigured)
-				throw new InvalidOperationException("You must call Configure prior to calling this method.");
-
 			SsoWindow window = new SsoWindow();
 			window.ShowSsoPage(this, ssoUrl);
 		}
@@ -128,6 +91,55 @@ namespace Rally.RestApi.UiForWpf
 		{
 			LoginWindowSsoAuthenticationComplete = null;
 			loginControl = null;
+		}
+		#endregion
+
+		#region PerformAuthenticationCheck
+		/// <summary>
+		/// Performs an authentication check against Rally with the specified credentials
+		/// </summary>
+		internal RallyRestApi.AuthenticationResult PerformAuthenticationCheck(string username, string password, string rallyServer,
+			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		{
+			return PerformAuthenticationCheckAgainstRally(username, password, rallyServer,
+				proxyServer, proxyUser, proxyPassword, out errorMessage);
+		}
+		#endregion
+
+		#region PerformLogout
+		/// <summary>
+		/// Performs an logout from Rally.
+		/// </summary>
+		internal void PerformLogout()
+		{
+			base.PerformLogoutFromRally();
+		}
+		#endregion
+
+		#region SetCustomControlType
+		/// <summary>
+		/// Sets a custom control for the specified control type. Please see the
+		/// enumeration help for what the types must extend from in order to work.
+		/// </summary>
+		public static void SetCustomControlType(CustomWpfControlType customWpfControlType, Type type)
+		{
+			if (customControlTypes.ContainsKey(customWpfControlType))
+				customControlTypes[customWpfControlType] = type;
+			else
+				customControlTypes.Add(customWpfControlType, type);
+		}
+		#endregion
+
+		#region GetCustomControlType
+		/// <summary>
+		/// Gets a custom control for the specified control type. 
+		/// </summary>
+		internal static Type GetCustomControlType(CustomWpfControlType customWpfControlType)
+		{
+			if (customControlTypes.ContainsKey(customWpfControlType))
+				return customControlTypes[customWpfControlType];
+
+			return null;
 		}
 		#endregion
 	}

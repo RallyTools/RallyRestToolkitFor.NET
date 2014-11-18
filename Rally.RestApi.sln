@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rally.RestApi", "Rally.RestApi\Rally.RestApi.csproj", "{D8B8D5EC-7482-4742-9516-876CEE07C8AF}"
 EndProject
@@ -11,15 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rally Rest API Libraries", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rally Rest API UI Projects", "Rally Rest API UI Projects", "{D0479AB9-3F1D-43B3-A66F-70894B10B17D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample UI Applications Using SSO", "Sample UI Applications Using SSO", "{1E7F549B-981F-4B88-80E4-660F60298137}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample UI Application Using Common Controls", "Sample UI Application Using Common Controls", "{1E7F549B-981F-4B88-80E4-660F60298137}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rally.RestApi.UiForWpf", "Rally.RestApi.UiForWpf\Rally.RestApi.UiForWpf.csproj", "{38976ADE-37E2-4700-A9D6-25BB93F3FA2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Rally.RestApi.UiForWpf", "Test.Rally.RestApi.UiForWpf\Test.Rally.RestApi.UiForWpf.csproj", "{BBF5A797-5F5F-4222-9D33-91155F2821D2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rally.RestApi.UiForWinforms", "Rally.RestApi.UiForWinforms\Rally.RestApi.UiForWinforms.csproj", "{518BA2D3-806D-4435-A399-E032F62A1DAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Rally.RestApi.UiForWinForms", "Test.Rally.RestApi.UiForWinForms\Test.Rally.RestApi.UiForWinForms.csproj", "{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Rally.RestApi.UiSample", "Test.Rally.RestApi.UiSample\Test.Rally.RestApi.UiSample.csproj", "{E71E87D0-64D4-4843-A426-3BA9B92E1641}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,18 +37,14 @@ Global
 		{38976ADE-37E2-4700-A9D6-25BB93F3FA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38976ADE-37E2-4700-A9D6-25BB93F3FA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38976ADE-37E2-4700-A9D6-25BB93F3FA2D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBF5A797-5F5F-4222-9D33-91155F2821D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBF5A797-5F5F-4222-9D33-91155F2821D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBF5A797-5F5F-4222-9D33-91155F2821D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBF5A797-5F5F-4222-9D33-91155F2821D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{518BA2D3-806D-4435-A399-E032F62A1DAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{518BA2D3-806D-4435-A399-E032F62A1DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{518BA2D3-806D-4435-A399-E032F62A1DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{518BA2D3-806D-4435-A399-E032F62A1DAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E71E87D0-64D4-4843-A426-3BA9B92E1641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E71E87D0-64D4-4843-A426-3BA9B92E1641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E71E87D0-64D4-4843-A426-3BA9B92E1641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E71E87D0-64D4-4843-A426-3BA9B92E1641}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,8 +53,7 @@ Global
 		{D8B8D5EC-7482-4742-9516-876CEE07C8AF} = {70EA8426-B081-4CFD-B58D-A0A6D53B7AD1}
 		{89150ACC-C148-47A3-99DA-B97EC0A1E7E5} = {70EA8426-B081-4CFD-B58D-A0A6D53B7AD1}
 		{38976ADE-37E2-4700-A9D6-25BB93F3FA2D} = {D0479AB9-3F1D-43B3-A66F-70894B10B17D}
-		{BBF5A797-5F5F-4222-9D33-91155F2821D2} = {1E7F549B-981F-4B88-80E4-660F60298137}
 		{518BA2D3-806D-4435-A399-E032F62A1DAC} = {D0479AB9-3F1D-43B3-A66F-70894B10B17D}
-		{ADA1B527-CAB7-49FC-ADC2-C58EF1E1877E} = {1E7F549B-981F-4B88-80E4-660F60298137}
+		{E71E87D0-64D4-4843-A426-3BA9B92E1641} = {1E7F549B-981F-4B88-80E4-660F60298137}
 	EndGlobalSection
 EndGlobal

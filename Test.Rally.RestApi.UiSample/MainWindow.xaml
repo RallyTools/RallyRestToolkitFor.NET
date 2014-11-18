@@ -1,0 +1,104 @@
+﻿<Window  x:Class="Test.Rally.RestApi.UiSample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:UiForWpf="clr-namespace:Rally.RestApi.UiForWpf;assembly=Rally.RestApi.UiForWpf" 				
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Test Application for Rally Rest API - WPF" Height="540" Width="550">
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="150" />
+		</Grid.RowDefinitions>
+		<GroupBox Grid.Row="0" Header="Configuration / Custom Labels" Margin="10,10,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid >
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="125" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="125" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+				</Grid.RowDefinitions>
+
+				<Label Grid.Column="2" Grid.Row="0" Content="Header Label" />
+				<TextBox x:Name="headerLabel" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+				<Label Grid.Column="0" Grid.Row="1" Content="Credentials Tab" />
+				<TextBox x:Name="credentialsTabLabel" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="0" Grid.Row="2" Content="Username" />
+				<TextBox x:Name="usernameLabel" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="0" Grid.Row="3" Content="Password" />
+				<TextBox x:Name="passwordLabel" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+
+				<Label Grid.Column="2" Grid.Row="1" Content="Server Tab" />
+				<TextBox x:Name="serverTabLabel" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+				<Label Grid.Column="2" Grid.Row="2" Content="Server" />
+				<TextBox x:Name="serverLabel" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="2" Grid.Row="3" Content="Default Server" />
+				<TextBox x:Name="defaultServerUri" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+				<Label Grid.Column="0" Grid.Row="5" Content="SSO In Progress" />
+				<TextBox x:Name="loginWindowSsoInProgressLabel" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="0" Grid.Row="6" Content="Login Button" />
+				<TextBox x:Name="loginButtonLabel" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="0" Grid.Row="7" Content="Logout Button" />
+				<TextBox x:Name="logoutButtonLabel" Grid.Column="1" Grid.Row="7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="0" Grid.Row="8" Content="Cancel Button" />
+				<TextBox x:Name="cancelButtonLabel" Grid.Column="1" Grid.Row="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+				<Label Grid.Column="2" Grid.Row="5" Content="Proxy Tab" />
+				<TextBox x:Name="proxyTabLabel" Grid.Column="3" Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="2" Grid.Row="6" Content="Proxy Server" />
+				<TextBox x:Name="proxyServerLabel" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="2" Grid.Row="7" Content="Proxy Username" />
+				<TextBox x:Name="proxyUsernameLabel" Grid.Column="3" Grid.Row="7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="2" Grid.Row="8" Content="ProxyPassword" />
+				<TextBox x:Name="proxyPasswordLabel" Grid.Column="3" Grid.Row="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Label Grid.Column="2" Grid.Row="9" Content="Default Proxy Server" />
+				<TextBox x:Name="defaultProxyServerUri" Grid.Column="3" Grid.Row="9" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+				<Button Grid.Column="2" Grid.Row="10" Width="100" HorizontalAlignment="Left" Content="Reconfigure" 
+						x:Name="reconfigure" Click="reconfigure_Click" />
+				<CheckBox Content="Use Custom Controls (WPF Only)" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="10" VerticalAlignment="Top"
+									x:Name="useCustomControls"/>
+			</Grid>
+		</GroupBox>
+		<GroupBox Grid.Row="1" Header="Authentication" Margin="10,5,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="130" />
+					<ColumnDefinition Width="180" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="28" />
+				</Grid.RowDefinitions>
+				<Button Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" Content="Open WPF Login Window" 
+						x:Name="openWpfLogin" Click="openWpfLogin_Click" Margin="10,0,10,0" />
+				<Button Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" Content="Open WinForms Login Window" 
+						x:Name="openWinFormsLogin" Click="openWinFormsLogin_Click"  Margin="10,0,10,0" />
+				<Label Grid.Column="0" Grid.Row="1" Content="Authentication Result" />
+				<Label Grid.Column="1" Grid.Row="1" x:Name="authResultLabel" Grid.ColumnSpan="2" />
+				<Label Grid.Column="0" Grid.Row="2" Content="Authentication Type" />
+				<Label Grid.Column="1" Grid.Row="2" x:Name="authTypeLabel" Grid.ColumnSpan="2" />
+				<Label Grid.Column="0" Grid.Row="3" Content="ZSessionID" />
+				<Label Grid.Column="1" Grid.Row="3" x:Name="zSessionIDLabel" Grid.ColumnSpan="2" />
+			</Grid>
+		</GroupBox>
+	</Grid>
+</Window>
