@@ -283,7 +283,7 @@ namespace Rally.RestApi.Auth
 
 			LoginFailureUnknown = loginFailureUnknown;
 			if (String.IsNullOrWhiteSpace(LoginFailureUnknown))
-				LoginFailureUnknown = "An unknown error occurred while attempting to login. Please try again.";
+				LoginFailureUnknown = "An unknown error occurred while attempting to log in. Please try again.";
 			#endregion
 		}
 		#endregion
