@@ -104,6 +104,10 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		public static String LoginFailureCredentials { get; private set; }
 		/// <summary>
+		/// The error message to show when a login failure occured due to bad proxy credentials.
+		/// </summary>
+		public static String LoginFailureProxyCredentials { get; private set; }
+		/// <summary>
 		/// The error message to show when an unknown login failure occured.
 		/// </summary>
 		public static String LoginFailureUnknown { get; private set; }
@@ -189,6 +193,7 @@ namespace Rally.RestApi.Auth
 			string loginFailureCredentials = null,
 			string loginFailureLoginEmpty = null,
 			string loginFailureServerEmpty = null,
+			string loginFailureProxyCredentials = null,
 			string loginFailureUnknown = null)
 		{
 			LoginWindowTitle = loginWindowTitle;
@@ -268,6 +273,10 @@ namespace Rally.RestApi.Auth
 			LoginFailureBadServer = loginFailureBadServer;
 			if (String.IsNullOrWhiteSpace(LoginFailureBadServer))
 				LoginFailureBadServer = "Bad Server or Network Issues";
+
+			LoginFailureProxyCredentials = loginFailureProxyCredentials;
+			if (String.IsNullOrWhiteSpace(LoginFailureCredentials))
+				LoginFailureCredentials = "Bad Proxy Credentials";
 
 			LoginFailureCredentials = loginFailureCredentials;
 			if (String.IsNullOrWhiteSpace(LoginFailureCredentials))
@@ -419,6 +428,10 @@ namespace Rally.RestApi.Auth
 						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
 					{
 						errorMessage = LoginFailureBadServer;
+					}
+					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.ProxyAuthenticationRequired)
+					{
+						errorMessage = LoginFailureProxyCredentials;
 					}
 					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
 					{

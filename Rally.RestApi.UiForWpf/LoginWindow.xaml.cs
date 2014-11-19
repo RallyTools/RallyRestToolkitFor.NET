@@ -448,7 +448,7 @@ namespace Rally.RestApi.UiForWpf
 				GetEditorValue(EditorControlType.RallyServer),
 				GetEditorValue(EditorControlType.ProxyServer),
 				GetEditorValue(EditorControlType.ProxyUsername),
-				GetEditorValue(EditorControlType.ProxyUsername),
+				GetEditorValue(EditorControlType.ProxyPassword),
 				out errorMessage);
 			ShowMessage(errorMessage);
 
