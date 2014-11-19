@@ -27,10 +27,12 @@ using Test.Rally.RestApi.UiSample.CustomControls;
 namespace Test.Rally.RestApi.UiSample
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	/// A sample application that shows how the UI authentication mangagers can be used. 
+	/// Look for // HELP: tags in code for assistance on how to use.
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		// HELP: Declare an authentication manager.
 		RestApiAuthMgrWinforms winFormsAuthMgr;
 		RestApiAuthMgrWpf wpfAuthMgr;
 
@@ -40,7 +42,7 @@ namespace Test.Rally.RestApi.UiSample
 			InitializeComponent();
 			headerLabel.Text = "Login Window Example";
 
-			// Initiate authorization managers
+			// HELP: Instantiate authorization managers
 			winFormsAuthMgr = new RestApiAuthMgrWinforms();
 			wpfAuthMgr = new RestApiAuthMgrWpf();
 
@@ -49,6 +51,7 @@ namespace Test.Rally.RestApi.UiSample
 		}
 		#endregion
 
+		// HELP: This method has some setup code that may interest you.
 		#region reconfigure_Click
 		private void reconfigure_Click(object sender, RoutedEventArgs e)
 		{
@@ -56,13 +59,14 @@ namespace Test.Rally.RestApi.UiSample
 			if (!String.IsNullOrWhiteSpace(defaultProxyServerUri.Text))
 				defaultProxyServer = new Uri(defaultProxyServerUri.Text);
 
-			// Initiate new authorization managers
+			// HELP: This is for demo purposes only. We are clearing all known data in the authentication managers by doing this.
 			winFormsAuthMgr = new RestApiAuthMgrWinforms();
 			wpfAuthMgr = new RestApiAuthMgrWpf();
 
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 
-			// Configure labels for UI
+			// HELP: Configure labels for UI. These are global and used by both authentication managers to build their UI.
+			// If this is not called, the default labels will be used.
 			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
 				serverTabLabel.Text, serverLabel.Text, new Uri(defaultServerUri.Text),
@@ -74,6 +78,8 @@ namespace Test.Rally.RestApi.UiSample
 			RestApiAuthMgrWinforms.SetLogo(ImageResources.RallyLogo40x40);
 			RestApiAuthMgrWpf.SetLogo(GetImageSource(ImageResources.RallyLogo40x40));
 
+			// HELP: If you need to use custom controls (Ex: from a third party vendor), you can set them using this code snippet.
+			// This triggers a global change for the next time a window is created.
 			if ((useCustomControls.IsChecked.HasValue) && (useCustomControls.IsChecked.Value))
 			{
 				RestApiAuthMgrWpf.SetCustomControlType(CustomWpfControlType.Buttons, typeof(CustomButton));
@@ -97,20 +103,25 @@ namespace Test.Rally.RestApi.UiSample
 		}
 		#endregion
 
+		// HELP: This method shows you how to open a login window.
 		#region openWpfLogin_Click
 		private void openWpfLogin_Click(object sender, RoutedEventArgs e)
 		{
+			// HELP: Delegates are provided so we can be notified that authentication or SSO authentication has completed.
 			wpfAuthMgr.ShowUserLoginWindow(AuthenticationComplete, SsoAuthenticationComplete);
 		}
 		#endregion
 
+		// HELP: This method shows you how to open a login window.
 		#region openWinFormsLogin_Click
 		private void openWinFormsLogin_Click(object sender, RoutedEventArgs e)
 		{
+			// HELP: Delegates are provided so we can be notified that authentication or SSO authentication has completed.
 			winFormsAuthMgr.ShowUserLoginWindow(AuthenticationComplete, SsoAuthenticationComplete);
 		}
 		#endregion
 
+		// HELP: This delegate notifies us that authentication has completed.
 		#region AuthenticationComplete
 		private void AuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
 		{
@@ -118,6 +129,7 @@ namespace Test.Rally.RestApi.UiSample
 		}
 		#endregion
 
+		// HELP: This delegate notifies us that SSO authentication has completed.
 		#region SsoAuthenticationComplete
 		private void SsoAuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
 		{
@@ -125,6 +137,8 @@ namespace Test.Rally.RestApi.UiSample
 		}
 		#endregion
 
+		// HELP: This method handles the passthrough from the delegates.
+		// This is where you would need to update your application to show the logged in state.
 		#region UpdateAuthenticationResults
 		private void UpdateAuthenticationResults(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
 		{
