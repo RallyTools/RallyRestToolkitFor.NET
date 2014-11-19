@@ -105,6 +105,7 @@ namespace Rally.RestApi.UiForWpf
 		#region BuildLayout
 		internal void BuildLayout(RestApiAuthMgrWpf authMgr)
 		{
+			Title = ApiAuthManager.LoginWindowTitle;
 			AuthMgr = authMgr;
 			Selector tabControl = GetTabControl();
 			tabControl.Margin = new Thickness(10, 10, 10, 5);

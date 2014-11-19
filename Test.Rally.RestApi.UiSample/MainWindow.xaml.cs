@@ -63,7 +63,7 @@ namespace Test.Rally.RestApi.UiSample
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 
 			// Configure labels for UI
-			ApiAuthManager.Configure(headerLabel.Text,
+			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
 				serverTabLabel.Text, serverLabel.Text, new Uri(defaultServerUri.Text),
 				proxyTabLabel.Text, proxyServerLabel.Text, proxyUsernameLabel.Text,

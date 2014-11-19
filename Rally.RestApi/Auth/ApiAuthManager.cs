@@ -15,6 +15,10 @@ namespace Rally.RestApi.Auth
 	{
 		#region Static Values
 		/// <summary>
+		/// The text for the login window title.
+		/// </summary>
+		public static string LoginWindowTitle { get; private set; }
+		/// <summary>
 		/// The text for the header label in the login window.
 		/// </summary>
 		public static string LoginWindowHeaderLabelText { get; private set; }
@@ -169,7 +173,8 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Configures the authorization manger. This must be called before any other method.
 		/// </summary>
-		public static void Configure(string loginWindowHeaderLabelText,
+		public static void Configure(string loginWindowTitle = null,
+			string loginWindowHeaderLabelText = null,
 			string loginWindowCredentialsTabText = null,
 			string loginWindowUserNameLabelText = null, string loginWindowPwdLabelText = null,
 			string loginWindowServerTabText = null, string loginWindowServerLabelText = null,
@@ -186,6 +191,10 @@ namespace Rally.RestApi.Auth
 			string loginFailureServerEmpty = null,
 			string loginFailureUnknown = null)
 		{
+			LoginWindowTitle = loginWindowTitle;
+			if (String.IsNullOrWhiteSpace(LoginWindowTitle))
+				LoginWindowTitle = "Login to Rally";
+
 			LoginWindowHeaderLabelText = loginWindowHeaderLabelText;
 			if (String.IsNullOrWhiteSpace(LoginWindowHeaderLabelText))
 				LoginWindowHeaderLabelText = "Login to Rally";
@@ -404,14 +413,19 @@ namespace Rally.RestApi.Auth
 			}
 			catch (WebException e)
 			{
-				if ((((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadGateway) ||
-					(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
+				if (e.Response is HttpWebResponse)
 				{
-					errorMessage = LoginFailureBadServer;
-				}
-				else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
-				{
-					errorMessage = LoginFailureCredentials;
+					if ((((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadGateway) ||
+						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
+					{
+						errorMessage = LoginFailureBadServer;
+					}
+					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
+					{
+						errorMessage = LoginFailureCredentials;
+					}
+					else
+						errorMessage = LoginFailureUnknown;
 				}
 				else
 					errorMessage = LoginFailureUnknown;

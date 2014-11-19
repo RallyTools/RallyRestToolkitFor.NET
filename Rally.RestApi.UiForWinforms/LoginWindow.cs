@@ -79,6 +79,7 @@ namespace Rally.RestApi.UiForWinforms
 		#region BuildLayout
 		internal void BuildLayout(RestApiAuthMgrWinforms authMgr)
 		{
+			Text = ApiAuthManager.LoginWindowTitle;
 			AuthMgr = authMgr;
 
 			tabCredentials.Text = ApiAuthManager.LoginWindowCredentialsTabText;

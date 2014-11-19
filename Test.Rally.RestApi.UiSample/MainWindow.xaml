@@ -30,6 +30,9 @@
 					<RowDefinition Height="28" />
 				</Grid.RowDefinitions>
 
+				<Label Grid.Column="0" Grid.Row="0" Content="Window Title" />
+				<TextBox x:Name="windowTitleLabel" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
 				<Label Grid.Column="2" Grid.Row="0" Content="Header Label" />
 				<TextBox x:Name="headerLabel" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
