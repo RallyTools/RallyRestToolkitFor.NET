@@ -9,6 +9,7 @@ using System.Reflection;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
 using Rally.RestApi.Sso;
+using System.Collections.Specialized;
 
 namespace Rally.RestApi.Web
 {
@@ -193,6 +194,58 @@ namespace Rally.RestApi.Web
 															 response);
 			}
 			//} while (true);
+		}
+		#endregion
+
+		#region GetAsPost
+		internal string GetAsPost(Uri target, IDictionary<string, string> data, IDictionary<string, string> headers = null)
+		{
+			String response = "<No response>";
+			DateTime startTime = DateTime.Now;
+			String requestHeaders = "";
+			String responseHeaders = "";
+			String cookiesBefore = "";
+			String cookiesAfter = "";
+			try
+			{
+				using (var webClient = GetWebClient(headers))
+				{
+					if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
+						(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
+					{
+						// Sending blank username
+						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
+						string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+						string cred = string.Format("{0} {1}", "Basic", enc);
+						webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
+					}
+
+					NameValueCollection requestParams = new NameValueCollection();
+					requestParams.Add("_method", "GET");
+					foreach (string key in data.Keys)
+						requestParams.Add(key, data[key]);
+
+					cookiesBefore = MakeDisplayableCookieString(cookies);
+					requestHeaders = webClient.Headers.ToString();
+					byte[] responsebytes = webClient.UploadValues(target, "POST", requestParams);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
+					responseHeaders = webClient.ResponseHeaders.ToString();
+					response = Encoding.UTF8.GetString(responsebytes);
+					return response;
+				}
+			}
+			finally
+			{
+				Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 data,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
 		}
 		#endregion
 
