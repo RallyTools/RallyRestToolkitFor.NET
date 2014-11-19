@@ -51,6 +51,19 @@ namespace Rally.RestApi.UiForWinforms
 		internal void UpdateLoginState()
 		{
 			bool isReadOnly = true;
+
+			if (AuthMgr.Api.AuthenticationState == RallyRestApi.AuthenticationResult.NotAuthorized)
+			{
+				usernameInput.Text = String.Empty;
+				passwordInput.Text = String.Empty;
+				rallyServerInput.Text = ApiAuthManager.LoginWindowDefaultServer.ToString();
+				if (ApiAuthManager.LoginWindowDefaultProxyServer != null)
+					proxyServerInput.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
+
+				proxyUserNameInput.Text = String.Empty;
+				proxyPasswordInput.Text = String.Empty;
+			}
+
 			switch (AuthMgr.Api.AuthenticationState)
 			{
 				case RallyRestApi.AuthenticationResult.Authenticated:
@@ -120,6 +133,15 @@ namespace Rally.RestApi.UiForWinforms
 				proxyServerInput.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
 			else
 				proxyServerInput.Text = String.Empty;
+
+			if (authMgr.Api.AuthenticationState != RallyRestApi.AuthenticationResult.NotAuthorized)
+			{
+				usernameInput.Text = AuthMgr.Api.ConnectionInfo.UserName;
+				passwordInput.Text = String.Empty;
+				rallyServerInput.Text = AuthMgr.Api.ConnectionInfo.Server.ToString();
+				if (AuthMgr.Api.ConnectionInfo.Proxy != null)
+					proxyServerInput.Text = AuthMgr.Api.ConnectionInfo.Proxy.Address.ToString();
+			}
 		}
 		#endregion
 
@@ -157,6 +179,7 @@ namespace Rally.RestApi.UiForWinforms
 		private void logoutBtn_Click(object sender, EventArgs e)
 		{
 			AuthMgr.PerformLogout();
+			UpdateLoginState();
 		}
 		#endregion
 
