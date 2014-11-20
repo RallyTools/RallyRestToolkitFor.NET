@@ -104,6 +104,10 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		public static String LoginFailureCredentials { get; private set; }
 		/// <summary>
+		/// The error message to show when we failed to connect to a server or proxy.
+		/// </summary>
+		public static String LoginFailureBadConnection { get; private set; }
+		/// <summary>
 		/// The error message to show when a login failure occured due to bad proxy credentials.
 		/// </summary>
 		public static String LoginFailureProxyCredentials { get; private set; }
@@ -194,6 +198,7 @@ namespace Rally.RestApi.Auth
 			string loginFailureLoginEmpty = null,
 			string loginFailureServerEmpty = null,
 			string loginFailureProxyCredentials = null,
+			string loginFailureBadConnection = null,
 			string loginFailureUnknown = null)
 		{
 			LoginWindowTitle = loginWindowTitle;
@@ -275,8 +280,8 @@ namespace Rally.RestApi.Auth
 				LoginFailureBadServer = "Bad Server or Network Issues";
 
 			LoginFailureProxyCredentials = loginFailureProxyCredentials;
-			if (String.IsNullOrWhiteSpace(LoginFailureCredentials))
-				LoginFailureCredentials = "Bad Proxy Credentials";
+			if (String.IsNullOrWhiteSpace(LoginFailureProxyCredentials))
+				LoginFailureProxyCredentials = "Bad Proxy Credentials";
 
 			LoginFailureCredentials = loginFailureCredentials;
 			if (String.IsNullOrWhiteSpace(LoginFailureCredentials))
@@ -289,6 +294,10 @@ namespace Rally.RestApi.Auth
 			LoginFailureServerEmpty = loginFailureServerEmpty;
 			if (String.IsNullOrWhiteSpace(LoginFailureServerEmpty))
 				LoginFailureServerEmpty = "Rally Server is a required field.";
+
+			LoginFailureBadConnection = loginFailureBadConnection;
+			if (String.IsNullOrWhiteSpace(LoginFailureBadConnection))
+				LoginFailureBadConnection = "Failed to connect to the Rally server or proxy.";
 
 			LoginFailureUnknown = loginFailureUnknown;
 			if (String.IsNullOrWhiteSpace(LoginFailureUnknown))
@@ -439,6 +448,11 @@ namespace Rally.RestApi.Auth
 					}
 					else
 						errorMessage = LoginFailureUnknown;
+				}
+				else if ((e is WebException) &&
+					(((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+				{
+					errorMessage = LoginFailureBadConnection;
 				}
 				else
 					errorMessage = LoginFailureUnknown;

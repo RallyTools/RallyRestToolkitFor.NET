@@ -44,14 +44,11 @@ namespace Rally.RestApi.UiForWinforms
 		}
 		#endregion
 
-		#region UpdateLoginState
 		/// <summary>
-		/// Updates the login state to show the correct buttons.
+		/// Updates the fields to show what is in the API.
 		/// </summary>
-		internal void UpdateLoginState()
+		internal void SetFields()
 		{
-			bool isReadOnly = true;
-
 			if (AuthMgr.Api.AuthenticationState == RallyRestApi.AuthenticationResult.NotAuthorized)
 			{
 				usernameInput.Text = String.Empty;
@@ -63,6 +60,15 @@ namespace Rally.RestApi.UiForWinforms
 				proxyUserNameInput.Text = String.Empty;
 				proxyPasswordInput.Text = String.Empty;
 			}
+		}
+
+		#region UpdateLoginState
+		/// <summary>
+		/// Updates the login state to show the correct buttons and field visibility.
+		/// </summary>
+		internal void UpdateLoginState()
+		{
+			bool isReadOnly = true;
 
 			switch (AuthMgr.Api.AuthenticationState)
 			{
@@ -179,6 +185,7 @@ namespace Rally.RestApi.UiForWinforms
 		private void logoutBtn_Click(object sender, EventArgs e)
 		{
 			AuthMgr.PerformLogout();
+			SetFields();
 			UpdateLoginState();
 		}
 		#endregion

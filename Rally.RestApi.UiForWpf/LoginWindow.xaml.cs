@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -443,6 +444,7 @@ namespace Rally.RestApi.UiForWpf
 		void loginButton_Click(object sender, RoutedEventArgs e)
 		{
 			string errorMessage;
+			ShowMessage("Logging into Rally");
 			AuthMgr.PerformAuthenticationCheck(GetEditorValue(EditorControlType.Username),
 				GetEditorValue(EditorControlType.Password),
 				GetEditorValue(EditorControlType.RallyServer),
@@ -489,6 +491,8 @@ namespace Rally.RestApi.UiForWpf
 		private void ShowMessage(string message = "")
 		{
 			userMessages.Content = message;
+			// Sleep to allow UI to update.
+			Thread.CurrentThread.Join(10);
 		}
 		#endregion
 

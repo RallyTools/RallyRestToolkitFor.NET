@@ -311,8 +311,13 @@ namespace Rally.RestApi
 				GetCurrentUser("Name");
 				AuthenticationState = AuthenticationResult.Authenticated;
 			}
-			catch
+			catch (Exception e)
 			{
+				if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+				{
+					throw;
+				}
+
 				if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
 				{
 					Logout();
