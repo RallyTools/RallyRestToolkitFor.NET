@@ -53,6 +53,7 @@ namespace Rally.RestApi.UiForWinforms
 			}
 
 			loginControl.SetLogo(logoForUi);
+			loginControl.SetFields();
 			loginControl.UpdateLoginState();
 			loginControl.Show();
 			loginControl.Focus();
