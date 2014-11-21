@@ -420,13 +420,13 @@ namespace Rally.RestApi
 
 			var resultDictionary = new Dictionary<int, QueryResult>();
 			Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>
-					{
-						var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
-						lock (resultDictionary)
-						{
-							resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
-						}
-					});
+			{
+				var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
+				lock (resultDictionary)
+				{
+					resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
+				}
+			});
 
 			var allResults = new List<object>(result.Results);
 			foreach (var sortedResult in resultDictionary.ToList()
@@ -764,6 +764,25 @@ namespace Rally.RestApi
 				}
 			}
 
+			return result;
+		}
+		#endregion
+
+		#region DownloadAttachment
+		/// <summary>
+		/// Downloads an attachment from Rally.
+		/// </summary>
+		/// <param name="relativeUrl">The relative URL to the attachment.</param>
+		/// <returns>The result of the request.</returns>
+		public AttachmentResult DownloadAttachment(string relativeUrl)
+		{
+			if (relativeUrl.Length < 5)
+				throw new ArgumentOutOfRangeException("A valid relative URL must be provided.");
+
+			AttachmentResult result = new AttachmentResult();
+			string expectedUrl = String.Format("{0}{1}", httpService.Server.AbsoluteUri, relativeUrl.Substring(1));
+			Uri uri = new Uri(expectedUrl);
+			result.FileContents = httpService.Download(uri, GetProcessedHeaders());
 			return result;
 		}
 		#endregion

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,7 @@ namespace Rally.RestApi.UiForWpf
 	{
 		bool ssoReported = false;
 		RestApiAuthMgrWpf authMgr;
+		private Uri ssoUrl;
 
 		#region Constructor
 		/// <summary>
@@ -49,11 +51,26 @@ namespace Rally.RestApi.UiForWpf
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");
 
-			this.authMgr = authMgr;
+						try
+			{
+this.authMgr = authMgr;
 			browser.Source = ssoUrl;
 			Show();
+}
+			catch
+			{
+				Dispatcher.Invoke(SetUrl);
+				Dispatcher.Invoke(Show);
+				// If current thread is not the dispacher thread, then we can't launch the window.
+				// Fail and consider SSO not available.
+			}
 		}
 		#endregion
+
+		private void SetUrl()
+		{
+			browser.Source = ssoUrl;
+		}
 
 		#region browser_LoadCompleted
 		void browser_LoadCompleted(object sender, NavigationEventArgs e)

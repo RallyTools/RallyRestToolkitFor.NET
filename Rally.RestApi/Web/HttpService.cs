@@ -88,6 +88,51 @@ namespace Rally.RestApi.Web
 		}
 		#endregion
 
+		#region Download
+		internal byte[] Download(Uri target, IDictionary<string, string> headers = null)
+		{
+			byte[] response = null;
+			DateTime startTime = DateTime.Now;
+			String requestHeaders = "";
+			String responseHeaders = "";
+			String cookiesBefore = "";
+			String cookiesAfter = "";
+			try
+			{
+				using (var webClient = GetWebClient(headers))
+				{
+					if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
+						(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
+					{
+						// Sending blank username
+						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
+						string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+						string cred = string.Format("{0} {1}", "Basic", enc);
+						webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
+					}
+
+					cookiesBefore = MakeDisplayableCookieString(cookies);
+					requestHeaders = webClient.Headers.ToString();
+					response = webClient.DownloadData(target);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
+					responseHeaders = webClient.ResponseHeaders.ToString();
+					return response;
+				}
+			}
+			finally
+			{
+				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
+		}
+		#endregion
+
 		#region Post
 		internal string Post(Uri target, string data, IDictionary<string, string> headers = null)
 		{
@@ -97,53 +142,53 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			int retries = 0;
+			//int retries = 0;
 
-			do
+			//do
+			//{
+			try
 			{
-				try
+				using (var webClient = GetWebClient(headers))
 				{
-					using (var webClient = GetWebClient(headers))
-					{
-						cookiesBefore = MakeDisplayableCookieString(cookies);
-						requestHeaders = webClient.Headers.ToString();
-						response = webClient.UploadString(target, data);
-						cookiesAfter = MakeDisplayableCookieString(cookies);
-						responseHeaders = webClient.ResponseHeaders.ToString();
-						return response;
-					}
+					cookiesBefore = MakeDisplayableCookieString(cookies);
+					requestHeaders = webClient.Headers.ToString();
+					response = webClient.UploadString(target, data);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
+					responseHeaders = webClient.ResponseHeaders.ToString();
+					return response;
 				}
-				catch (WebException e)
-				{
-					if ((e.Response != null) &&
-						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
-						(connectionInfo.AuthType == AuthorizationType.ZSessionID))
-					{
-						if (retries > MAX_RETRIES)
-						{
-							Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
-							throw;
-						}
+			}
+			//catch (WebException e)
+			//{
+			//	if ((e.Response != null) &&
+			//		(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
+			//		(connectionInfo.AuthType == AuthorizationType.ZSessionID))
+			//	{
+			//		if (retries > MAX_RETRIES)
+			//		{
+			//			Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+			//			throw;
+			//		}
 
-						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						PerformSsoAuthentication();
-						continue;
-					}
-					throw;
-				}
-				finally
-				{
-					Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
-																 DateTime.Now.Subtract(startTime).ToString(),
-																 target.ToString(),
-																 requestHeaders,
-																 cookiesBefore,
-																 data,
-																 responseHeaders,
-																 cookiesAfter,
-																 response);
-				}
-			} while (true);
+			//		Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
+			//		PerformSsoAuthentication();
+			//		continue;
+			//	}
+			//	throw;
+			//}
+			finally
+			{
+				Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 data,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
+			//} while (true);
 		}
 		#endregion
 
@@ -156,62 +201,62 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			int retries = 0;
+			//int retries = 0;
 
-			do
+			//do
+			//{
+			try
 			{
-				try
+				using (var webClient = GetWebClient(headers))
 				{
-					using (var webClient = GetWebClient(headers))
+					if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
+						(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
 					{
-						if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
-							(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
-						{
-							// Sending blank username
-							string auth = string.Format(":{0}", connectionInfo.ZSessionID);
-							string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
-							string cred = string.Format("{0} {1}", "Basic", enc);
-							webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
-						}
-
-						cookiesBefore = MakeDisplayableCookieString(cookies);
-						requestHeaders = webClient.Headers.ToString();
-						response = webClient.DownloadString(target);
-						cookiesAfter = MakeDisplayableCookieString(cookies);
-						responseHeaders = webClient.ResponseHeaders.ToString();
-						return response;
+						// Sending blank username
+						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
+						string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+						string cred = string.Format("{0} {1}", "Basic", enc);
+						webClient.Headers.Add(HttpRequestHeader.Authorization, cred);
 					}
-				}
-				catch (WebException e)
-				{
-					if ((e.Response != null) &&
-						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
-						(connectionInfo.AuthType == AuthorizationType.ZSessionID))
-					{
-						if (retries > MAX_RETRIES)
-						{
-							Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
-							throw;
-						}
 
-						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						PerformSsoAuthentication();
-						continue;
-					}
-					throw;
+					cookiesBefore = MakeDisplayableCookieString(cookies);
+					requestHeaders = webClient.Headers.ToString();
+					response = webClient.DownloadString(target);
+					cookiesAfter = MakeDisplayableCookieString(cookies);
+					responseHeaders = webClient.ResponseHeaders.ToString();
+					return response;
 				}
-				finally
-				{
-					Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
-																 DateTime.Now.Subtract(startTime).ToString(),
-																 target.ToString(),
-																 requestHeaders,
-																 cookiesBefore,
-																 responseHeaders,
-																 cookiesAfter,
-																 response);
-				}
-			} while (true);
+			}
+			//catch (WebException e)
+			//{
+			//	if ((e.Response != null) &&
+			//		(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
+			//		(connectionInfo.AuthType == AuthorizationType.ZSessionID))
+			//	{
+			//		if (retries > MAX_RETRIES)
+			//		{
+			//			Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+			//			throw;
+			//		}
+
+			//		Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
+			//		PerformSsoAuthentication();
+			//		continue;
+			//	}
+			//	throw;
+			//}
+			finally
+			{
+				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
+			//} while (true);
 		}
 		#endregion
 
@@ -260,58 +305,58 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			int retries = 0;
+			//int retries = 0;
 
-			do
+			//do
+			//{
+			try
 			{
-				try
+				var request = WebRequest.Create(target) as HttpWebRequest;
+				request.Method = "DELETE";
+				request.CookieContainer = cookies;
+				request.Credentials = credentials;
+				if (headers != null)
 				{
-					var request = WebRequest.Create(target) as HttpWebRequest;
-					request.Method = "DELETE";
-					request.CookieContainer = cookies;
-					request.Credentials = credentials;
-					if (headers != null)
+					foreach (var pairs in headers)
 					{
-						foreach (var pairs in headers)
-						{
-							request.Headers.Add(pairs.Key, pairs.Value);
-						}
+						request.Headers.Add(pairs.Key, pairs.Value);
 					}
-					cookiesBefore = MakeDisplayableCookieString(cookies);
-					requestHeaders = request.Headers.ToString();
-					var httpResponse = (HttpWebResponse)request.GetResponse();
-					cookiesAfter = MakeDisplayableCookieString(cookies);
-					responseHeaders = httpResponse.Headers.ToString();
-					if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
-					{
-						if (retries > MAX_RETRIES)
-						{
-							Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
-							throw new WebException("Unauthorized", null, WebExceptionStatus.TrustFailure, httpResponse);
-						}
+				}
+				cookiesBefore = MakeDisplayableCookieString(cookies);
+				requestHeaders = request.Headers.ToString();
+				var httpResponse = (HttpWebResponse)request.GetResponse();
+				cookiesAfter = MakeDisplayableCookieString(cookies);
+				responseHeaders = httpResponse.Headers.ToString();
+				if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+				{
+					//if (retries > MAX_RETRIES)
+					//{
+					//	Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
+					throw new WebException("Unauthorized", null, WebExceptionStatus.TrustFailure, httpResponse);
+					//}
 
-						Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-						PerformSsoAuthentication();
-						continue;
-					}
-					var enc = Encoding.ASCII;
-					var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
-					response = responseStream.ReadToEnd();
-					responseStream.Close();
-					return response;
+					//Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
+					//PerformSsoAuthentication();
+					//continue;
 				}
-				finally
-				{
-					Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
-																 DateTime.Now.Subtract(startTime).ToString(),
-																 target.ToString(),
-																 requestHeaders,
-																 cookiesBefore,
-																 responseHeaders,
-																 cookiesAfter,
-																 response);
-				}
-			} while (true);
+				var enc = Encoding.ASCII;
+				var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
+				response = responseStream.ReadToEnd();
+				responseStream.Close();
+				return response;
+			}
+			finally
+			{
+				Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
+															 DateTime.Now.Subtract(startTime).ToString(),
+															 target.ToString(),
+															 requestHeaders,
+															 cookiesBefore,
+															 responseHeaders,
+															 cookiesAfter,
+															 response);
+			}
+			//} while (true);
 		}
 		#endregion
 
