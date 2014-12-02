@@ -10,6 +10,7 @@ namespace Rally.RestApi.Json
 	/// <summary>
 	/// Representation of a Rally object
 	/// </summary>
+	[Serializable]
 	public class DynamicJsonObject : DynamicObject
 	{
 		[ScriptIgnore]
