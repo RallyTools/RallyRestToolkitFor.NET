@@ -122,7 +122,7 @@ namespace Test.Rally.RestApi.UiSample
 		#endregion
 
 		// HELP: This delegate notifies us that authentication has completed.
-		#region AuthenticationComplete
+		#region AuthenticationStateChange
 		private void AuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
 		{
 			UpdateAuthenticationResults(authenticationResult, api);

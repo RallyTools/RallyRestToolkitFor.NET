@@ -147,7 +147,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Notifies that SSO authentication has completed.
 		/// </summary>
-		protected AuthenticationComplete AuthenticationComplete { get; private set; }
+		protected AuthenticationStateChange AuthenticationStateChange { get; private set; }
 		/// <summary>
 		/// Notifies that SSO authentication has completed.
 		/// </summary>
@@ -310,10 +310,10 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Authenticates the user against Rally.
 		/// </summary>
-		public virtual void ShowUserLoginWindow(AuthenticationComplete authenticationComplete,
+		public virtual void ShowUserLoginWindow(AuthenticationStateChange authenticationStateChange,
 			SsoAuthenticationComplete ssoAuthenticationComplete)
 		{
-			AuthenticationComplete = authenticationComplete;
+			AuthenticationStateChange = authenticationStateChange;
 			SsoAuthenticationComplete = ssoAuthenticationComplete;
 			ShowUserLoginWindowInternal();
 		}
@@ -458,16 +458,16 @@ namespace Rally.RestApi.Auth
 					errorMessage = LoginFailureUnknown;
 			}
 
-			if (AuthenticationComplete != null)
+			if (AuthenticationStateChange != null)
 			{
 				switch (Api.AuthenticationState)
 				{
 					case RallyRestApi.AuthenticationResult.Authenticated:
-						AuthenticationComplete.Invoke(Api.AuthenticationState, Api);
+						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
 						break;
 					case RallyRestApi.AuthenticationResult.PendingSSO:
 					case RallyRestApi.AuthenticationResult.NotAuthorized:
-						AuthenticationComplete.Invoke(Api.AuthenticationState, null);
+						AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
 						break;
 					default:
 						throw new NotImplementedException();
@@ -484,17 +484,17 @@ namespace Rally.RestApi.Auth
 		protected void PerformLogoutFromRally()
 		{
 			Api.Logout();
-			AuthenticationComplete.Invoke(Api.AuthenticationState, null);
+			AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
 		}
 		#endregion
 	}
 
 	/// <summary>
-	/// A delegate to indicate that authenication has completed.
+	/// A delegate to indicate that the authenication state (logged in, logged out, pending SSO) has changed.
 	/// </summary>
 	/// <param name="authenticationResult">The status of authentication.</param>
 	/// <param name="api">The authenticated API that can be used for the user who logged in.</param>
-	public delegate void AuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api);
+	public delegate void AuthenticationStateChange(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api);
 
 	/// <summary>
 	/// A delegate to indicate that SSO authentication has completed.
