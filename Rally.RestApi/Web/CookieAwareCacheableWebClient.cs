@@ -1,8 +1,11 @@
 ﻿using Rally.RestApi.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Rally.RestApi.Web
@@ -10,7 +13,13 @@ namespace Rally.RestApi.Web
 	[System.ComponentModel.DesignerCategory("")]
 	internal class CookieAwareCacheableWebClient : CookieAwareWebClient
 	{
+		/// <summary>
+		/// The file location where data is stored.
+		/// </summary>
+		private static DirectoryInfo fileDirectory;
+
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
+		[Serializable]
 		private class CachedResult
 		{
 			public string Url { get; set; }
@@ -29,17 +38,27 @@ namespace Rally.RestApi.Web
 		private CachedResult returnValue = null;
 		private bool isCachedResult = false;
 
+		#region Constructor
 		static CookieAwareCacheableWebClient()
 		{
 			cachedResults = new Dictionary<string, CachedResult>();
 			dataLock = new object();
+
+			fileDirectory = new DirectoryInfo(String.Format(@"{0}\Rally\DotNetRestApi",
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)));
+			if (!fileDirectory.Exists)
+				fileDirectory.Create();
+
+			ClearOldCacheFilesFromDisk();
 		}
 
 		public CookieAwareCacheableWebClient(CookieContainer cookies = null)
 			: base(cookies)
 		{
 		}
+		#endregion
 
+		#region GetWebRequest
 		protected override WebRequest GetWebRequest(Uri address)
 		{
 			WebRequest request = base.GetWebRequest(address);
@@ -54,7 +73,9 @@ namespace Rally.RestApi.Web
 
 			return request;
 		}
+		#endregion
 
+		#region DownloadCacheableResult
 		/// <summary>
 		/// Downloads the requested resource as a System.String. The resource to download is 
 		/// specified as a System.String containing the URI.
@@ -84,7 +105,9 @@ namespace Rally.RestApi.Web
 
 			return serializer.Deserialize(results);
 		}
+		#endregion
 
+		#region GetWebResponse
 		protected override WebResponse GetWebResponse(WebRequest request)
 		{
 			WebResponse response = base.GetWebResponse(request);
@@ -135,7 +158,9 @@ namespace Rally.RestApi.Web
 
 			return response;
 		}
+		#endregion
 
+		#region GetWebClient
 		private CookieAwareWebClient GetWebClient()
 		{
 			CookieAwareWebClient webClient = new CookieAwareWebClient(Cookies);
@@ -153,7 +178,9 @@ namespace Rally.RestApi.Web
 
 			return webClient;
 		}
+		#endregion
 
+		#region CacheResult
 		private CachedResult CacheResult(string userName, string sourceUrl, string redirectUrl, DynamicJsonObject responseData)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
@@ -164,23 +191,42 @@ namespace Rally.RestApi.Web
 					cachedResults[cacheKey] = cachedResult;
 				else
 					cachedResults.Add(cacheKey, cachedResult);
+
+
+				FileInfo fileLoction = GetFileLocation(cacheKey);
+				File.WriteAllBytes(fileLoction.FullName, SerializeData(cachedResult));
 			}
 
 			return cachedResult;
 		}
+		#endregion
 
+		#region GetCachedResult
 		private CachedResult GetCachedResult(string userName, string sourceUrl)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
 			lock (dataLock)
 			{
+				if (!cachedResults.ContainsKey(cacheKey))
+				{
+					// If not in cached results, try loading from disk.
+					FileInfo fileLoction = GetFileLocation(cacheKey);
+					if (fileLoction.Exists)
+					{
+						byte[] fileData = File.ReadAllBytes(fileLoction.FullName);
+						cachedResults.Add(cacheKey, DeserializeData(fileData));
+					}
+				}
+
 				if (cachedResults.ContainsKey(cacheKey))
 					return cachedResults[cacheKey];
 				else
 					return null;
 			}
 		}
+		#endregion
 
+		#region ClearCacheResult
 		private void ClearCacheResult(string userName, string sourceUrl)
 		{
 			string cacheKey = GetCacheKey(userName, sourceUrl);
@@ -190,10 +236,116 @@ namespace Rally.RestApi.Web
 					cachedResults.Remove(cacheKey);
 			}
 		}
+		#endregion
 
+		#region ClearOldCacheFilesFromDisk
+		/// <summary>
+		/// Deletes all cache files older than 14 days.
+		/// </summary>
+		private static void ClearOldCacheFilesFromDisk()
+		{
+			string[] files = Directory.GetFiles(fileDirectory.FullName, "*.*", SearchOption.AllDirectories);
+			foreach (string current in files)
+			{
+				FileInfo currentFile = new FileInfo(current);
+				if (currentFile.CreationTime < DateTime.Now.AddDays(-14))
+				{
+					try
+					{
+						File.Delete(current);
+					}
+					catch { }
+				}
+			}
+		}
+		#endregion
+
+		#region GetCacheKey
 		private string GetCacheKey(string userName, string sourceUrl)
 		{
 			return String.Format("{0}|{1}", userName, sourceUrl);
 		}
+		#endregion
+
+		#region GetFileLocation
+		/// <summary>
+		/// Gets the file location to save to within the data cache.
+		/// </summary>
+		private static FileInfo GetFileLocation(string cacheKey)
+		{
+			string hash = ComputeHash(cacheKey);
+			string fileName = String.Format(@"{0}\{1}.data", fileDirectory.FullName, hash.Replace("/", ""));
+			return new FileInfo(fileName);
+		}
+		#endregion
+
+		#region ComputeHash
+		/// <summary>Generates a hash for the given plain text value and returns a base64-encoded result.</summary>
+		/// <param name="textToHash">Plaintext value to be hashed.</param>
+		private static string ComputeHash(string textToHash)
+		{
+			if (textToHash == null)
+				textToHash = String.Empty;
+
+			byte[] textBytes = Encoding.UTF8.GetBytes(textToHash);
+			HashAlgorithm hash = new SHA512Managed();
+			byte[] hashBytes = hash.ComputeHash(textBytes);
+			return Convert.ToBase64String(hashBytes);
+		}
+		#endregion
+
+		#region Serialize Data
+		/// <summary>
+		/// Serializes data to be sent across the wire.
+		/// <para>Serialization errors of lists may be caused by a missing constructor with the following signature:
+		/// public [CLASS NAME](SerializationInfo info, StreamingContext context)
+		/// </para>
+		/// </summary>
+		/// <param name="obj">The object to serialize.</param>
+		/// <returns>The serialized data.</returns>
+		private static byte[] SerializeData(CachedResult obj)
+		{
+			if (obj == null)
+				return null;
+
+			BinaryFormatter binFor = new BinaryFormatter();
+			byte[] data = null;
+			using (MemoryStream stream = new MemoryStream())
+			{
+				binFor.Serialize(stream, obj);
+				data = stream.ToArray();
+			}
+
+			return data;
+		}
+		#endregion
+
+		#region Deserialize Data
+		/// <summary>
+		/// Deserializes the data from the service back into its original object type.
+		/// <para>Deserialization errors of lists may be caused by a missing constructor with the following signature:
+		/// public [CLASS NAME](SerializationInfo info, StreamingContext context)
+		/// </para>
+		/// </summary>
+		/// <param name="serializedData">The serialized data.</param>
+		/// <returns>The deserialized object.</returns>
+		private static CachedResult DeserializeData(byte[] serializedData)
+		{
+			if (serializedData == null)
+				return null;
+
+			CachedResult typedObj;
+			BinaryFormatter binFor = new BinaryFormatter();
+			using (MemoryStream stream = new MemoryStream(serializedData))
+			{
+				object obj = binFor.Deserialize(stream);
+				if (obj is CachedResult)
+					typedObj = (CachedResult)obj;
+				else
+					throw new InvalidDataException("Data sent to deserialization is not of type DynamicJsonObject.");
+			}
+			return typedObj;
+		}
+		#endregion
 	}
 }
