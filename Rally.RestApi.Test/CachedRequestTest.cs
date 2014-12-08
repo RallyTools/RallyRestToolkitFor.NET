@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rally.RestApi.Response;
+using Rally.RestApi.Web;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -21,6 +22,7 @@ namespace Rally.RestApi.Test
 		public void QuerySchemaEndpointForWorkspaceTest()
 		{
 			RallyRestApi restApi = RallyRestApiTest.GetRallyRestApi(wsapiVersion: "v2.0");
+			CookieAwareCacheableWebClient.ClearOldCacheFilesFromDisk(true);
 			long oid = 14949797488;
 
 			CacheableQueryResult results = restApi.GetTypes(String.Format("/workspace/{0}", oid));
@@ -36,6 +38,7 @@ namespace Rally.RestApi.Test
 		public void QuerySchemaEndpointForSchemaTest()
 		{
 			RallyRestApi restApi = RallyRestApiTest.GetRallyRestApi(wsapiVersion: "v2.0");
+			CookieAwareCacheableWebClient.ClearOldCacheFilesFromDisk(true);
 			long oid = 1155237251;
 
 			CacheableQueryResult results = restApi.GetTypes(String.Format("/schema/{0}", oid));

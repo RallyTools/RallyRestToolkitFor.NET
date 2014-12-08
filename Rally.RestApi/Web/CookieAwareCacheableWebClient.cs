@@ -242,13 +242,13 @@ namespace Rally.RestApi.Web
 		/// <summary>
 		/// Deletes all cache files older than 14 days.
 		/// </summary>
-		private static void ClearOldCacheFilesFromDisk()
+		internal static void ClearOldCacheFilesFromDisk(bool force = false)
 		{
 			string[] files = Directory.GetFiles(fileDirectory.FullName, "*.*", SearchOption.AllDirectories);
 			foreach (string current in files)
 			{
 				FileInfo currentFile = new FileInfo(current);
-				if (currentFile.CreationTime < DateTime.Now.AddDays(-14))
+				if ((force) || (currentFile.CreationTime < DateTime.Now.AddDays(-14)))
 				{
 					try
 					{
