@@ -72,6 +72,18 @@ namespace Rally.RestApi.UiForWinforms
 		}
 		#endregion
 
+		#region OpenIdpBasedSsoPage
+		/// <summary>
+		/// Opens the specified SSO URL to the user.
+		/// </summary>
+		/// <param name="idpBasedSsoUrl">The Uri that the user was redirected to in order to perform their SSO authentication.</param>
+		protected override void OpenIdpBasedSsoPageInternal(Uri idpBasedSsoUrl)
+		{
+			SsoWindow window = new SsoWindow();
+			window.ShowSsoPage(this, idpBasedSsoUrl);
+		}
+		#endregion
+
 		#region NotifyLoginWindowSsoComplete
 		/// <summary>
 		/// Notifies the login window that SSO has been completed.

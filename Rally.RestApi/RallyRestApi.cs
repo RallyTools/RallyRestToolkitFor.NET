@@ -118,7 +118,10 @@ namespace Rally.RestApi
 		#endregion
 
 		#region Properties and Fields
-		private ApiAuthManager authManger;
+		/// <summary>
+		/// The auth manager that is used by this API.
+		/// </summary>
+		public ApiAuthManager AuthManger { get; private set; }
 		private HttpService httpService;
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
@@ -169,7 +172,7 @@ namespace Rally.RestApi
 			if (authManger == null)
 				authManger = new ApiConsoleAuthManager();
 
-			this.authManger = authManger;
+			AuthManger = authManger;
 
 			WsapiVersion = webServiceVersion;
 			if (String.IsNullOrWhiteSpace(WsapiVersion))
@@ -194,7 +197,7 @@ namespace Rally.RestApi
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
 
-			if (!authManger.IsUiSupported)
+			if (!AuthManger.IsUiSupported)
 				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
@@ -292,7 +295,7 @@ namespace Rally.RestApi
 		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo, bool allowSSO)
 		{
 			this.ConnectionInfo = connectionInfo;
-			httpService = new HttpService(authManger, connectionInfo);
+			httpService = new HttpService(AuthManger, connectionInfo);
 
 			Headers = new Dictionary<HeaderType, string>();
 			Assembly assembly = typeof(RallyRestApi).Assembly;

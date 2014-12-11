@@ -51,12 +51,12 @@ namespace Rally.RestApi.UiForWpf
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");
 
-						try
+			try
 			{
-this.authMgr = authMgr;
-			browser.Source = ssoUrl;
-			Show();
-}
+				this.authMgr = authMgr;
+				browser.Source = ssoUrl;
+				Show();
+			}
 			catch
 			{
 				Dispatcher.Invoke(SetUrl);

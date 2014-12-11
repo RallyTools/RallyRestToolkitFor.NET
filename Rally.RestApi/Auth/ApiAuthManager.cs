@@ -1,4 +1,5 @@
-﻿using Rally.RestApi.Exceptions;
+﻿using System.Runtime.Remoting.Messaging;
+using Rally.RestApi.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -341,6 +342,25 @@ namespace Rally.RestApi.Auth
 		protected abstract void OpenSsoPageInternal(Uri ssoUrl);
 		#endregion
 
+		#region OpenIdpBasedSsoPage
+		/// <summary>
+		/// Opens the specified SSO URL to the user.
+		/// </summary>
+		/// <param name="idpBasedSsoUrl">The Uri that the user was redirected to in order to perform their IDP based SSO authentication.</param>
+		public void OpenIdpBasedSsoPage(Uri idpBasedSsoUrl)
+		{
+			if (idpBasedSsoUrl == null)
+				throw new ArgumentNullException("idpBasedSsoUrl", "You must provide a URL for completing IDP based SSO authentication.");
+
+			OpenIdpBasedSsoPageInternal(idpBasedSsoUrl);
+		}
+		/// <summary>
+		/// Opens the specified SSO URL to the user.
+		/// </summary>
+		/// <param name="idpBasedSsoUrl">The Uri that the user was redirected to in order to perform their SSO authentication.</param>
+		protected abstract void OpenIdpBasedSsoPageInternal(Uri idpBasedSsoUrl);
+		#endregion
+
 		#region ReportSsoResults
 		/// <summary>
 		/// Reports the results of an SSO action.
@@ -353,8 +373,12 @@ namespace Rally.RestApi.Auth
 			{
 				if (success)
 				{
+					string userName = String.Empty;
+					if (Api.ConnectionInfo != null)
+						userName = Api.ConnectionInfo.UserName;
+
 					RallyRestApi.AuthenticationResult authResult =
-						Api.AuthenticateWithZSessionID(Api.ConnectionInfo.UserName, zSessionID);
+						Api.AuthenticateWithZSessionID(userName, zSessionID);
 
 					if (authResult == RallyRestApi.AuthenticationResult.Authenticated)
 					{
@@ -384,31 +408,112 @@ namespace Rally.RestApi.Auth
 			string username, string password, string rallyServer,
 			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
 		{
-			RallyRestApi.AuthenticationResult authResult = RallyRestApi.AuthenticationResult.NotAuthorized;
+			PerformAuthenticationCheckAgainstIdp(rallyServer, null, null, null, out errorMessage);
+			return RallyRestApi.AuthenticationResult.PendingSSO;
+
+			//RallyRestApi.AuthenticationResult authResult = RallyRestApi.AuthenticationResult.NotAuthorized;
+			//errorMessage = String.Empty;
+			//WebProxy proxy = null;
+			//if (!String.IsNullOrWhiteSpace(proxyServer))
+			//{
+			//	try
+			//	{
+			//		proxy = new WebProxy(new Uri(proxyServer));
+			//	}
+			//	catch
+			//	{
+			//		errorMessage = "Bad URI format for Proxy Server";
+			//		return RallyRestApi.AuthenticationResult.NotAuthorized;
+			//	}
+
+			//	if (!String.IsNullOrWhiteSpace(proxyUser))
+			//		proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
+			//	else
+			//		proxy.UseDefaultCredentials = true;
+			//}
+
+			//if (String.IsNullOrWhiteSpace(rallyServer))
+			//	errorMessage = LoginFailureServerEmpty;
+			//else if (String.IsNullOrWhiteSpace(username))
+			//	errorMessage = LoginFailureLoginEmpty;
+
+			//Uri serverUri = null;
+			//try
+			//{
+			//	serverUri = new Uri(rallyServer);
+			//}
+			//catch
+			//{
+			//	errorMessage = "Bad URI format for Rally Server";
+			//}
+
+			//try
+			//{
+			//	if (String.IsNullOrWhiteSpace(errorMessage))
+			//		authResult = Api.Authenticate(username, password, serverUri, proxy);
+			//}
+			//catch (RallyUnavailableException)
+			//{
+			//	errorMessage = "Rally is currently unavailable.";
+			//}
+			//catch (WebException e)
+			//{
+			//	if (e.Response is HttpWebResponse)
+			//	{
+			//		if ((((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadGateway) ||
+			//			(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
+			//		{
+			//			errorMessage = LoginFailureBadServer;
+			//		}
+			//		else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.ProxyAuthenticationRequired)
+			//		{
+			//			errorMessage = LoginFailureProxyCredentials;
+			//		}
+			//		else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
+			//		{
+			//			errorMessage = LoginFailureCredentials;
+			//		}
+			//		else
+			//			errorMessage = LoginFailureUnknown;
+			//	}
+			//	else if ((e is WebException) &&
+			//		(((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+			//	{
+			//		errorMessage = LoginFailureBadConnection;
+			//	}
+			//	else
+			//		errorMessage = LoginFailureUnknown;
+			//}
+
+			//if (AuthenticationStateChange != null)
+			//{
+			//	switch (Api.AuthenticationState)
+			//	{
+			//		case RallyRestApi.AuthenticationResult.Authenticated:
+			//			AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
+			//			break;
+			//		case RallyRestApi.AuthenticationResult.PendingSSO:
+			//		case RallyRestApi.AuthenticationResult.NotAuthorized:
+			//			AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
+			//			break;
+			//		default:
+			//			throw new NotImplementedException();
+			//	}
+			//}
+			//return Api.AuthenticationState;
+		}
+		#endregion
+
+		#region PerformAuthenticationCheckAgainstRally
+		/// <summary>
+		/// Performs an authentication check against Rally with the specified credentials
+		/// </summary>
+		protected void PerformAuthenticationCheckAgainstIdp(
+			string rallyServer, string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		{
 			errorMessage = String.Empty;
-			WebProxy proxy = null;
-			if (!String.IsNullOrWhiteSpace(proxyServer))
-			{
-				try
-				{
-					proxy = new WebProxy(new Uri(proxyServer));
-				}
-				catch
-				{
-					errorMessage = "Bad URI format for Proxy Server";
-					return RallyRestApi.AuthenticationResult.NotAuthorized;
-				}
-
-				if (!String.IsNullOrWhiteSpace(proxyUser))
-					proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
-				else
-					proxy.UseDefaultCredentials = true;
-			}
-
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				errorMessage = LoginFailureServerEmpty;
-			else if (String.IsNullOrWhiteSpace(username))
-				errorMessage = LoginFailureLoginEmpty;
 
 			Uri serverUri = null;
 			try
@@ -420,60 +525,11 @@ namespace Rally.RestApi.Auth
 				errorMessage = "Bad URI format for Rally Server";
 			}
 
-			try
+			if (String.IsNullOrWhiteSpace(errorMessage))
 			{
-				if (String.IsNullOrWhiteSpace(errorMessage))
-					authResult = Api.Authenticate(username, password, serverUri, proxy);
+				// Do IDP Based SSO Auth if no error and valid URI.
+				OpenIdpBasedSsoPage(serverUri);
 			}
-			catch (RallyUnavailableException)
-			{
-				errorMessage = "Rally is currently unavailable.";
-			}
-			catch (WebException e)
-			{
-				if (e.Response is HttpWebResponse)
-				{
-					if ((((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadGateway) ||
-						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
-					{
-						errorMessage = LoginFailureBadServer;
-					}
-					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.ProxyAuthenticationRequired)
-					{
-						errorMessage = LoginFailureProxyCredentials;
-					}
-					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
-					{
-						errorMessage = LoginFailureCredentials;
-					}
-					else
-						errorMessage = LoginFailureUnknown;
-				}
-				else if ((e is WebException) &&
-					(((WebException)e).Status == WebExceptionStatus.ConnectFailure))
-				{
-					errorMessage = LoginFailureBadConnection;
-				}
-				else
-					errorMessage = LoginFailureUnknown;
-			}
-
-			if (AuthenticationStateChange != null)
-			{
-				switch (Api.AuthenticationState)
-				{
-					case RallyRestApi.AuthenticationResult.Authenticated:
-						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
-						break;
-					case RallyRestApi.AuthenticationResult.PendingSSO:
-					case RallyRestApi.AuthenticationResult.NotAuthorized:
-						AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
-						break;
-					default:
-						throw new NotImplementedException();
-				}
-			}
-			return Api.AuthenticationState;
 		}
 		#endregion
 

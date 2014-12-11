@@ -40,6 +40,16 @@ namespace Rally.RestApi.Auth
 		}
 		#endregion
 
+		#region OpenIdpBasedSsoPageInternal
+		/// <summary>
+		/// Opens the window that displays the SSO URL to the user.
+		/// </summary>
+		protected override void OpenIdpBasedSsoPageInternal(Uri ssoUrl)
+		{
+			throw new NotImplementedException("This authorization manager does not support UI elements.");
+		}
+		#endregion
+
 		#region NotifyLoginWindowSsoComplete
 		/// <summary>
 		/// Notifies the login window that SSO has been completed.

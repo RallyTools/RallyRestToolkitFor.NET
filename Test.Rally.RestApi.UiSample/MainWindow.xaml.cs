@@ -48,6 +48,12 @@ namespace Test.Rally.RestApi.UiSample
 
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 			defaultServerUri.Text = RallyRestApi.DEFAULT_SERVER;
+
+			// WARNING: Do not commit these line.
+			defaultServerUri.Text =
+				"https://pingidp.f4tech.com/idp/startSSO.ping?PartnerSpId=https://pingsp.f4tech.com&TargetResource=https://test2cluster.f4tech.com/login/sso?redirect=https://test2cluster.f4tech.com";
+			ApiAuthManager.Configure(loginWindowDefaultServer: new Uri(defaultServerUri.Text));
+
 		}
 		#endregion
 
