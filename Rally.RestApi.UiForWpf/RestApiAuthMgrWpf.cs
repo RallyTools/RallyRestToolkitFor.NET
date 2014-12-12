@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Rally.RestApi.UiForWpf
@@ -69,8 +70,20 @@ namespace Rally.RestApi.UiForWpf
 		/// <param name="ssoUrl">The Uri that the user was redirected to in order to perform their SSO authentication.</param>
 		protected override void OpenSsoPageInternal(Uri ssoUrl)
 		{
-			SsoWindow window = new SsoWindow();
-			window.ShowSsoPage(this, ssoUrl);
+			try
+			{
+				SsoWindow window = new SsoWindow();
+				window.ShowSsoPage(this, ssoUrl);
+			}
+			catch
+			{
+				SsoWindow window = null;
+				Application.Current.Dispatcher.Invoke(delegate() { window = new SsoWindow(); });
+				if (window != null)
+				{
+					Application.Current.Dispatcher.Invoke(delegate() { window.ShowSsoPage(this, ssoUrl); });
+				}
+			}
 		}
 		#endregion
 

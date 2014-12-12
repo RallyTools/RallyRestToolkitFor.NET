@@ -209,8 +209,7 @@ namespace Rally.RestApi.Web
 			{
 				using (var webClient = GetWebClient(headers))
 				{
-					if ((connectionInfo.AuthType == AuthorizationType.ZSessionID) &&
-						(target.ToString().EndsWith(RallyRestApi.SECURITY_ENDPOINT)))
+					if (connectionInfo.AuthType == AuthorizationType.ZSessionID)
 					{
 						// Sending blank username
 						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
