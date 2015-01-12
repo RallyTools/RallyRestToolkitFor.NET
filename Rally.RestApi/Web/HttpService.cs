@@ -9,7 +9,6 @@ using System.Reflection;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
 using Rally.RestApi.Auth;
-using Rally.RestApi.Sso;
 using System.Collections.Specialized;
 
 namespace Rally.RestApi.Web
