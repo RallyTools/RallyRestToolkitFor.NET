@@ -401,7 +401,12 @@ namespace Rally.RestApi
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
-			var response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
+			DynamicJsonObject response;
+			if (IsWsapi2)
+				response = DoGetAsPost(request);
+			else
+				response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
+
 			var result = new QueryResult(response["QueryResult"]);
 			int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
 			int alreadyDownloadedItems = request.Start - 1 + request.PageSize;
@@ -817,6 +822,17 @@ namespace Rally.RestApi
 		private DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
 		{
 			return httpService.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
+		}
+		#endregion
+
+		#region DoGetAsPost
+		private DynamicJsonObject DoGetAsPost(Request request)
+		{
+			Dictionary<string, string> data = request.GetDataToSend();
+
+			Uri uri = GetFullyQualifiedUri(request.ShortRequestUrl);
+			string response = httpService.GetAsPost(GetSecuredUri(uri), data, GetProcessedHeaders());
+			return serializer.Deserialize(response);
 		}
 		#endregion
 

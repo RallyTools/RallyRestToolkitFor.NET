@@ -176,7 +176,9 @@ namespace Rally.RestApi
 			}
 		}
 
-		internal virtual string RequestUrl { get { return BuildQueryString(".js"); } }
+		internal virtual string ShortRequestUrl { get { return String.Format("{0}{1}", Endpoint, ".js"); ; } }
+
+		internal virtual string RequestUrl { get { return BuildQueryString(); } }
 
 		#endregion
 
@@ -190,43 +192,43 @@ namespace Rally.RestApi
 		}
 		#endregion
 
-		#region BuildQueryString
-		/// <summary>
-		/// Create a query string from this request.
-		/// </summary>
-		/// <param name="extension">The extension to use for the type (default = "")</param>
-		/// <returns>A query string representation of this request</returns>
-		protected string BuildQueryString(string extension = "")
+		#region GetDataToSend
+		internal Dictionary<string, string> GetDataToSend(bool urlEncodeData = false)
 		{
 			StringBuilder sb = new StringBuilder();
+			Dictionary<string, string> data = new Dictionary<string, string>();
 			int pageSize = Math.Min(Math.Min(MAX_PAGE_SIZE, PageSize), Limit);
-			sb.AppendFormat("{0}{1}?pagesize={2}", Endpoint, extension, pageSize);
-
+			data.Add("pagesize", pageSize.ToString());
 			if (Fetch.Count == 0)
-				sb.Append("&fetch=true");
+				data.Add("fetch", "true");
 			else
 			{
+				string keyword = "fetch";
+				if (UseShallowFetch)
+					keyword = "shallowFetch";
+
 				bool first = true;
+				sb.Clear();
 				foreach (string currentFetch in Fetch)
 				{
 					if (first)
-					{
-						if (UseShallowFetch)
-							sb.AppendFormat("&shallowFetch={0}", HttpUtility.UrlEncode(currentFetch));
-						else
-							sb.AppendFormat("&fetch={0}", HttpUtility.UrlEncode(currentFetch));
-
 						first = false;
-					}
 					else
-						sb.AppendFormat(",{0}", HttpUtility.UrlEncode(currentFetch));
+						sb.Append(",");
+
+					if (urlEncodeData)
+						sb.Append(HttpUtility.UrlEncode(currentFetch));
+					else
+						sb.Append(currentFetch);
 				}
+
+				data.Add(keyword, sb.ToString());
 			}
 
 			if (!Parameters.Keys.Contains("order"))
 			{
 				// Add order on 'ObjectID' clause to workaround server-side WSAPI bug
-				sb.AppendFormat("&order=ObjectID");
+				data.Add("order", "ObjectID");
 			}
 			else
 			{
@@ -234,25 +236,30 @@ namespace Rally.RestApi
 				List<string> orderList = orderString.Split(',').ToList();
 				bool first = true;
 				bool objectIdFound = false;
+				sb.Clear();
 				foreach (string currentOrder in orderList)
 				{
 					if (currentOrder.Contains("ObjectID") || currentOrder.Contains("ObjectID desc"))
 						objectIdFound = true;
 
 					if (first)
-					{
-						sb.AppendFormat("&order={0}", HttpUtility.UrlEncode(currentOrder));
 						first = false;
-					}
 					else
-						sb.AppendFormat(",{0}", HttpUtility.UrlEncode(currentOrder));
+						sb.Append(",");
+
+					if (urlEncodeData)
+						sb.Append(HttpUtility.UrlEncode(currentOrder));
+					else
+						sb.Append(currentOrder);
 				}
 
 				if (!objectIdFound)
 				{
 					// Add 'ObjectID' to an existing order clause to workaround server-side WSAPI bug
-					sb.AppendFormat(",ObjectID");
+					sb.Append(",ObjectID");
 				}
+
+				data.Add("order", sb.ToString());
 			}
 
 			foreach (string currentParameter in Parameters.Keys)
@@ -264,12 +271,46 @@ namespace Rally.RestApi
 				if (value == null)
 					continue;
 
+				string dataValue;
 				if (value is bool)
-					sb.AppendFormat("&{0}={1}", currentParameter, HttpUtility.UrlEncode(value.ToString().ToLower()));
+					dataValue = value.ToString().ToLower();
 				else
-					sb.AppendFormat("&{0}={1}", currentParameter, HttpUtility.UrlEncode(value.ToString()));
+					dataValue = value.ToString();
+
+				if (urlEncodeData)
+					data.Add(currentParameter, HttpUtility.UrlEncode(dataValue));
+				else
+					data.Add(currentParameter, dataValue);
 			}
 
+			return data;
+		}
+		#endregion
+
+		#region BuildQueryString
+		/// <summary>
+		/// Create a query string from this request.
+		/// </summary>
+		/// <returns>A query string representation of this request</returns>
+		protected string BuildQueryString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append(ShortRequestUrl);
+
+			Dictionary<string, string> data = GetDataToSend(true);
+			bool isFirst = true;
+			foreach (string key in data.Keys)
+			{
+				if (isFirst)
+				{
+					sb.Append("?");
+					isFirst = false;
+				}
+				else
+					sb.Append("&");
+
+				sb.AppendFormat("{0}={1}", key, data[key]);
+			}
 			return sb.ToString();
 		}
 		#endregion

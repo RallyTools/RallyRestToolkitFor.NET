@@ -201,6 +201,7 @@ namespace Rally.RestApi.Test
 		public void GetByReferenceTest()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
+			AssertCanCreate(restApi);
 			dynamic response = restApi.GetByReference("/Defect/" + defectOid + ".js");
 			Assert.AreEqual(defectOid, response.ObjectID.ToString());
 		}
