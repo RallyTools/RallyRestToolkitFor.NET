@@ -143,10 +143,7 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			//int retries = 0;
 
-			//do
-			//{
 			try
 			{
 				using (var webClient = GetWebClient(headers))
@@ -159,24 +156,6 @@ namespace Rally.RestApi.Web
 					return response;
 				}
 			}
-			//catch (WebException e)
-			//{
-			//	if ((e.Response != null) &&
-			//		(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
-			//		(connectionInfo.AuthType == AuthorizationType.ZSessionID))
-			//	{
-			//		if (retries > MAX_RETRIES)
-			//		{
-			//			Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
-			//			throw;
-			//		}
-
-			//		Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-			//		PerformSsoAuthentication();
-			//		continue;
-			//	}
-			//	throw;
-			//}
 			finally
 			{
 				Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
@@ -189,7 +168,6 @@ namespace Rally.RestApi.Web
 															 cookiesAfter,
 															 response);
 			}
-			//} while (true);
 		}
 		#endregion
 
@@ -254,10 +232,7 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			//int retries = 0;
 
-			//do
-			//{
 			try
 			{
 				using (var webClient = GetWebClient(headers))
@@ -279,24 +254,6 @@ namespace Rally.RestApi.Web
 					return response;
 				}
 			}
-			//catch (WebException e)
-			//{
-			//	if ((e.Response != null) &&
-			//		(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized) &&
-			//		(connectionInfo.AuthType == AuthorizationType.ZSessionID))
-			//	{
-			//		if (retries > MAX_RETRIES)
-			//		{
-			//			Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
-			//			throw;
-			//		}
-
-			//		Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-			//		PerformSsoAuthentication();
-			//		continue;
-			//	}
-			//	throw;
-			//}
 			finally
 			{
 				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
@@ -308,7 +265,6 @@ namespace Rally.RestApi.Web
 															 cookiesAfter,
 															 response);
 			}
-			//} while (true);
 		}
 		#endregion
 
@@ -357,10 +313,7 @@ namespace Rally.RestApi.Web
 			String responseHeaders = "";
 			String cookiesBefore = "";
 			String cookiesAfter = "";
-			//int retries = 0;
 
-			//do
-			//{
 			try
 			{
 				var request = WebRequest.Create(target) as HttpWebRequest;
@@ -381,15 +334,7 @@ namespace Rally.RestApi.Web
 				responseHeaders = httpResponse.Headers.ToString();
 				if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
 				{
-					//if (retries > MAX_RETRIES)
-					//{
-					//	Trace.TraceWarning("Got Unauthorized response code ({0}} more than {1} times in a row. Failing.", HttpStatusCode.Unauthorized, retries);
 					throw new WebException("Unauthorized", null, WebExceptionStatus.TrustFailure, httpResponse);
-					//}
-
-					//Trace.TraceWarning("Got Unauthorized response code ({0}). Re-authorizing using SSO.", HttpStatusCode.Unauthorized);
-					//PerformSsoAuthentication();
-					//continue;
 				}
 				var enc = Encoding.ASCII;
 				var responseStream = new StreamReader(httpResponse.GetResponseStream(), enc);
@@ -408,7 +353,6 @@ namespace Rally.RestApi.Web
 															 cookiesAfter,
 															 response);
 			}
-			//} while (true);
 		}
 		#endregion
 

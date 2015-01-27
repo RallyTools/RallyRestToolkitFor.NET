@@ -47,7 +47,11 @@ namespace Test.Rally.RestApi.UiSample
 			wpfAuthMgr = new RestApiAuthMgrWpf();
 
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
-			defaultServerUri.Text = RallyRestApi.DEFAULT_SERVER;
+			// TODO: mnoreke - Remove prior to release
+			defaultServerUri.Text = "https://pingidp.f4tech.com/idp/startSSO.ping?PartnerSpId=https://pingsp.f4tech.com&TargetResource=https://test2cluster.f4tech.com/login/sso?redirect=https://test2cluster.f4tech.com"; //RallyRestApi.DEFAULT_SERVER;
+			ApiAuthManager.Configure(loginWindowDefaultServer: new Uri(defaultServerUri.Text));
+			// TODO: mnoreke - Remove prior to release
+			wpfAuthMgr.TrustAllCertificates = true;
 		}
 		#endregion
 
@@ -69,7 +73,7 @@ namespace Test.Rally.RestApi.UiSample
 			// If this is not called, the default labels will be used.
 			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
-				serverTabLabel.Text, serverLabel.Text, new Uri(defaultServerUri.Text),
+				serverTabLabel.Text, String.Empty, serverLabel.Text, new Uri(defaultServerUri.Text),
 				proxyTabLabel.Text, proxyServerLabel.Text, proxyUsernameLabel.Text,
 				proxyPasswordLabel.Text, defaultProxyServer,
 				loginWindowSsoInProgressLabel.Text,

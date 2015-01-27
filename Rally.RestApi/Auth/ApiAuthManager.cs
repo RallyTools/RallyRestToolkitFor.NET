@@ -1,4 +1,5 @@
-﻿using Rally.RestApi.Exceptions;
+﻿using Rally.RestApi.Connection;
+using Rally.RestApi.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,10 @@ namespace Rally.RestApi.Auth
 		/// The text for the password label in the login window.
 		/// </summary>
 		public static string LoginWindowPwdLabelText { get; private set; }
-
+		/// <summary>
+		/// The text for the connection type label in the login window.
+		/// </summary>
+		public static string LoginWindowConnectionTypeText { get; private set; }
 		/// <summary>
 		/// The text for the server label in the login window.
 		/// </summary>
@@ -185,7 +189,8 @@ namespace Rally.RestApi.Auth
 			string loginWindowHeaderLabelText = null,
 			string loginWindowCredentialsTabText = null,
 			string loginWindowUserNameLabelText = null, string loginWindowPwdLabelText = null,
-			string loginWindowServerTabText = null, string loginWindowServerLabelText = null,
+			string loginWindowServerTabText = null, string loginWindowConnectionTypeText = null,
+			string loginWindowServerLabelText = null,
 			Uri loginWindowDefaultServer = null,
 			string loginWindowProxyServerTabText = null,
 			string loginWindowProxyServerLabelText = null, string loginWindowProxyUserNameLabelText = null,
@@ -229,6 +234,10 @@ namespace Rally.RestApi.Auth
 			#endregion
 
 			#region Default Strings: Rally
+			LoginWindowConnectionTypeText = loginWindowConnectionTypeText;
+			if (String.IsNullOrWhiteSpace(LoginWindowConnectionTypeText))
+				LoginWindowConnectionTypeText = "Connection Type";
+
 			LoginWindowRallyServerTabText = loginWindowServerTabText;
 			if (String.IsNullOrWhiteSpace(LoginWindowRallyServerTabText))
 				LoginWindowRallyServerTabText = "Rally";
@@ -347,6 +356,17 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		/// <param name="success">Was SSO authentication completed successfully?</param>
 		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
+		public void ReportIdpBasedSsoResults(bool success, string zSessionID)
+		{
+		}
+		#endregion
+
+		#region ReportSsoResults
+		/// <summary>
+		/// Reports the results of an SSO action.
+		/// </summary>
+		/// <param name="success">Was SSO authentication completed successfully?</param>
+		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
 		public void ReportSsoResults(bool success, string zSessionID)
 		{
 			if (SsoAuthenticationComplete != null)
@@ -424,6 +444,110 @@ namespace Rally.RestApi.Auth
 			{
 				if (String.IsNullOrWhiteSpace(errorMessage))
 					authResult = Api.Authenticate(username, password, serverUri, proxy);
+			}
+			catch (RallyUnavailableException)
+			{
+				errorMessage = "Rally is currently unavailable.";
+			}
+			catch (WebException e)
+			{
+				if (e.Response is HttpWebResponse)
+				{
+					if ((((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadGateway) ||
+						(((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.BadRequest))
+					{
+						errorMessage = LoginFailureBadServer;
+					}
+					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.ProxyAuthenticationRequired)
+					{
+						errorMessage = LoginFailureProxyCredentials;
+					}
+					else if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
+					{
+						errorMessage = LoginFailureCredentials;
+					}
+					else
+						errorMessage = LoginFailureUnknown;
+				}
+				else if ((e is WebException) &&
+					(((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+				{
+					errorMessage = LoginFailureBadConnection;
+				}
+				else
+					errorMessage = LoginFailureUnknown;
+			}
+
+			if (AuthenticationStateChange != null)
+			{
+				switch (Api.AuthenticationState)
+				{
+					case RallyRestApi.AuthenticationResult.Authenticated:
+						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
+						break;
+					case RallyRestApi.AuthenticationResult.PendingSSO:
+					case RallyRestApi.AuthenticationResult.NotAuthorized:
+						AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
+						break;
+					default:
+						throw new NotImplementedException();
+				}
+			}
+			return Api.AuthenticationState;
+		}
+		#endregion
+
+		#region PerformAuthenticationCheckAgainstIdp
+		/// <summary>
+		/// Performs an authentication check against an identity provider (IDP Initiated).
+		/// </summary>
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(
+			string idpUrl, string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		{
+			errorMessage = String.Empty;
+			WebProxy proxy = null;
+			if (!String.IsNullOrWhiteSpace(proxyServer))
+			{
+				try
+				{
+					proxy = new WebProxy(new Uri(proxyServer));
+				}
+				catch
+				{
+					errorMessage = "Bad URI format for Proxy Server";
+					return RallyRestApi.AuthenticationResult.NotAuthorized;
+				}
+
+				if (!String.IsNullOrWhiteSpace(proxyUser))
+					proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
+				else
+					proxy.UseDefaultCredentials = true;
+			}
+
+			if (String.IsNullOrWhiteSpace(idpUrl))
+				errorMessage = LoginFailureServerEmpty;
+
+			Uri serverUri = null;
+			try
+			{
+				serverUri = new Uri(idpUrl);
+			}
+			catch
+			{
+				errorMessage = "Bad URI format for Rally Server";
+			}
+
+			try
+			{
+				if (String.IsNullOrWhiteSpace(errorMessage))
+				{
+					if (String.IsNullOrWhiteSpace(errorMessage))
+					{
+						Api.CreateIdpAuthentication(serverUri, proxy);
+						OpenSsoPage(Api.ConnectionInfo.IdpServer);
+					}
+					// TODO: Perform authentication
+				}
 			}
 			catch (RallyUnavailableException)
 			{

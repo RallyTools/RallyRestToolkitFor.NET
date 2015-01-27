@@ -111,11 +111,22 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		internal RallyRestApi.AuthenticationResult PerformAuthenticationCheck(string username, string password, string rallyServer,
+		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(string username, string password, string rallyServer,
 			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
 		{
-			return PerformAuthenticationCheckAgainstRally(username, password, rallyServer,
+			return base.PerformAuthenticationCheckAgainstRally(username, password, rallyServer,
 				proxyServer, proxyUser, proxyPassword, out errorMessage);
+		}
+		#endregion
+
+		#region PerformAuthenticationCheckAgainstIdp
+		/// <summary>
+		/// Performs an authentication check against an IDP.
+		/// </summary>
+		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(string idpServer,
+			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		{
+			return base.PerformAuthenticationCheckAgainstIdp(idpServer, proxyServer, proxyUser, proxyPassword, out errorMessage);
 		}
 		#endregion
 

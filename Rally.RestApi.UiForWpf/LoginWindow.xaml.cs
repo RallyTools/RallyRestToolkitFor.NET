@@ -18,6 +18,15 @@ using System.Windows.Shapes;
 
 namespace Rally.RestApi.UiForWpf
 {
+	// TODO: Josh:
+	// - Move the ConnectionType to where the Authorization Type enum is.
+	//    - Update the ConnectionInfo to track the connection type the user has used. This is needed for reauthorization code (this window, or from VSP).	
+	// - Store the connection type in VSP
+	// - Store the IDP Based URI in VSP. Ensure this flows through in this code.
+	// - Ensure VSP can pass the IDP based URI back to this window (requires successful login to work - TBD)
+	// - Ensure VSP can pass the Connection Type back to this window
+	// Note: Some items may require successful login to work
+
 	/// <summary>
 	/// Interaction logic for LoginWindow.xaml
 	/// </summary>
@@ -32,11 +41,21 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
+		#region Enum: ConnectionType
+		private enum ConnectionType
+		{
+			BasicAuth,
+			SpBasedSso,
+			IdpBasedSso,
+		}
+		#endregion
+
 		#region Enum: EditorControlType
 		private enum EditorControlType
 		{
 			Username,
 			Password,
+			ConnectionType,
 			RallyServer,
 			ProxyServer,
 			ProxyUsername,
@@ -44,13 +63,19 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
+		private static int ROW_HEIGHT = 28;
+
 		Dictionary<EditorControlType, Control> controls;
 		Dictionary<Control, Label> controlReadOnlyLabels;
+		Dictionary<TabType, Control> tabControls;
+		Dictionary<ConnectionType, string> connectionTypes;
+		Dictionary<EditorControlType, RowDefinition> controlRowElements;
 
 		internal RestApiAuthMgrWpf AuthMgr { get; set; }
 		Button loginButton;
 		Button logoutButton;
 		Button cancelButton;
+		ConnectionType currentConnectionType;
 
 		#region Constructor
 		/// <summary>
@@ -63,6 +88,14 @@ namespace Rally.RestApi.UiForWpf
 			headerLabel.Content = ApiAuthManager.LoginWindowHeaderLabelText;
 			controls = new Dictionary<EditorControlType, Control>();
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
+			tabControls = new Dictionary<TabType, Control>();
+			controlRowElements = new Dictionary<EditorControlType, RowDefinition>();
+			currentConnectionType = ConnectionType.BasicAuth;
+
+			connectionTypes = new Dictionary<ConnectionType, string>();
+			connectionTypes.Add(ConnectionType.BasicAuth, "Basic Authentication (will try Rally SSO if it fails)");
+			connectionTypes.Add(ConnectionType.SpBasedSso, "Rally based SSO Authentication");
+			connectionTypes.Add(ConnectionType.IdpBasedSso, "IDP Based SSO Authentication");
 		}
 		#endregion
 
@@ -178,6 +211,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			HeaderedContentControl tab = GetTabItem();
 			tabControl.Items.Add(tab);
+			tabControls.Add(tabType, tab);
 
 			Grid tabGrid = new Grid();
 			tab.Content = tabGrid;
@@ -189,20 +223,21 @@ namespace Rally.RestApi.UiForWpf
 			if (tabType == TabType.Credentials)
 			{
 				tab.Header = ApiAuthManager.LoginWindowCredentialsTabText;
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowUserNameLabelText, GetEditor(EditorControlType.Username));
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowPwdLabelText, GetEditor(EditorControlType.Password), true);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowUserNameLabelText, EditorControlType.Username);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowPwdLabelText, EditorControlType.Password, true);
 			}
 			else if (tabType == TabType.Rally)
 			{
 				tab.Header = ApiAuthManager.LoginWindowRallyServerTabText;
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, GetEditor(EditorControlType.RallyServer));
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowConnectionTypeText, EditorControlType.ConnectionType);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, EditorControlType.RallyServer);
 			}
 			else if (tabType == TabType.Proxy)
 			{
 				tab.Header = ApiAuthManager.LoginWindowProxyServerTabText;
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyServerLabelText, GetEditor(EditorControlType.ProxyServer));
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyUserNameLabelText, GetEditor(EditorControlType.ProxyUsername));
-				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyPwdLabelText, GetEditor(EditorControlType.ProxyPassword), true);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyServerLabelText, EditorControlType.ProxyServer);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyUserNameLabelText, EditorControlType.ProxyUsername);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowProxyPwdLabelText, EditorControlType.ProxyPassword, true);
 			}
 			else
 				throw new NotImplementedException();
@@ -232,10 +267,11 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region AddInputToTabGrid
-		private void AddInputToTabGrid(Grid tabGrid, string labelText, Control control, bool skipReadOnlyLabel = false)
+		private void AddInputToTabGrid(Grid tabGrid, string labelText, EditorControlType controlType, bool skipReadOnlyLabel = false)
 		{
+			Control control = GetEditor(controlType);
 			int rowIndex = tabGrid.RowDefinitions.Count;
-			AddRowDefinition(tabGrid, 28);
+			AddRowDefinition(tabGrid, controlType, ROW_HEIGHT);
 			Label label = new Label();
 			label.Content = labelText;
 			label.FontWeight = FontWeights.Bold;
@@ -306,6 +342,15 @@ namespace Rally.RestApi.UiForWpf
 						passwordBox.PasswordChar = '*';
 						control = passwordBox;
 						break;
+					case EditorControlType.ConnectionType:
+						ComboBox comboBox = new ComboBox();
+						comboBox.SelectedValuePath = "Key";
+						comboBox.DisplayMemberPath = "Value";
+						comboBox.ItemsSource = connectionTypes;
+						comboBox.SelectedValue = currentConnectionType;
+						comboBox.SelectionChanged += ConnectionTypeChanged;
+						control = comboBox;
+						break;
 					default:
 						throw new NotImplementedException();
 				}
@@ -318,6 +363,63 @@ namespace Rally.RestApi.UiForWpf
 			}
 
 			return control;
+		}
+		#endregion
+
+		#region ConnectionTypeChanged
+		void ConnectionTypeChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ComboBox comboBox = sender as ComboBox;
+			if (comboBox != null)
+			{
+				currentConnectionType = (ConnectionType)comboBox.SelectedValue;
+				switch (currentConnectionType)
+				{
+					case ConnectionType.BasicAuth:
+						SetTabVisibility(TabType.Credentials, true);
+						SetControlVisibility(EditorControlType.Password, true);
+						break;
+					case ConnectionType.SpBasedSso:
+						SetTabVisibility(TabType.Credentials, true);
+						SetControlVisibility(EditorControlType.Password, false);
+						break;
+					case ConnectionType.IdpBasedSso:
+						SetTabVisibility(TabType.Credentials, false);
+						break;
+					default:
+						throw new NotImplementedException();
+				}
+			}
+		}
+		#endregion
+
+		#region SetTabVisibility
+		private void SetTabVisibility(TabType tabType, bool isVisible)
+		{
+			if (isVisible)
+			{
+				tabControls[tabType].Visibility = Visibility.Visible;
+				tabControls[tabType].Width = double.NaN;
+			}
+			else
+			{
+				tabControls[tabType].Visibility = Visibility.Hidden;
+				tabControls[tabType].Width = 0.0;
+			}
+		}
+		#endregion
+
+		#region SetControlVisibility
+		private void SetControlVisibility(EditorControlType controlType, bool isVisible)
+		{
+			if (isVisible)
+			{
+				controlRowElements[controlType].Height = new GridLength(ROW_HEIGHT);
+			}
+			else
+			{
+				controlRowElements[controlType].Height = new GridLength(0.0);
+			}
 		}
 		#endregion
 
@@ -347,7 +449,7 @@ namespace Rally.RestApi.UiForWpf
 			Grid.SetColumn(buttonGrid, 2);
 			Grid.SetRow(buttonGrid, 3);
 			layoutGrid.Children.Add(buttonGrid);
-			AddRowDefinition(buttonGrid, 30);
+			AddRowDefinition(buttonGrid, null, 30);
 
 			buttonGrid.Height = 100;
 			AddColumnDefinition(buttonGrid, 70);
@@ -410,7 +512,7 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region AddRowDefinition
-		private void AddRowDefinition(Grid grid, int pixels = Int32.MaxValue)
+		private void AddRowDefinition(Grid grid, EditorControlType? controlType, int pixels = Int32.MaxValue)
 		{
 			RowDefinition rowDef = new RowDefinition();
 			if (pixels == Int32.MaxValue)
@@ -418,6 +520,9 @@ namespace Rally.RestApi.UiForWpf
 			else
 				rowDef.Height = new GridLength(pixels, GridUnitType.Pixel);
 			grid.RowDefinitions.Add(rowDef);
+
+			if (controlType.HasValue)
+				controlRowElements.Add(controlType.Value, rowDef);
 
 			if (pixels != Int32.MaxValue)
 			{
@@ -445,13 +550,36 @@ namespace Rally.RestApi.UiForWpf
 		{
 			string errorMessage;
 			ShowMessage("Logging into Rally");
-			AuthMgr.PerformAuthenticationCheck(GetEditorValue(EditorControlType.Username),
-				GetEditorValue(EditorControlType.Password),
-				GetEditorValue(EditorControlType.RallyServer),
-				GetEditorValue(EditorControlType.ProxyServer),
-				GetEditorValue(EditorControlType.ProxyUsername),
-				GetEditorValue(EditorControlType.ProxyPassword),
-				out errorMessage);
+
+			ComboBox comboBox = sender as ComboBox;
+			if (comboBox != null)
+			{
+				ConnectionType connectionType = (ConnectionType)comboBox.SelectedValue;
+			}
+
+			switch (currentConnectionType)
+			{
+				case ConnectionType.BasicAuth:
+				case ConnectionType.SpBasedSso:
+					AuthMgr.PerformAuthenticationCheckAgainstRally(GetEditorValue(EditorControlType.Username),
+						GetEditorValue(EditorControlType.Password),
+						GetEditorValue(EditorControlType.RallyServer),
+						GetEditorValue(EditorControlType.ProxyServer),
+						GetEditorValue(EditorControlType.ProxyUsername),
+						GetEditorValue(EditorControlType.ProxyPassword),
+						out errorMessage);
+					break;
+				case ConnectionType.IdpBasedSso:
+					AuthMgr.PerformAuthenticationCheckAgainstIdp(
+						GetEditorValue(EditorControlType.RallyServer),
+						GetEditorValue(EditorControlType.ProxyServer),
+						GetEditorValue(EditorControlType.ProxyUsername),
+						GetEditorValue(EditorControlType.ProxyPassword),
+						out errorMessage);
+					break;
+				default:
+					throw new NotImplementedException();
+			}
 			ShowMessage(errorMessage);
 
 			UpdateLoginState();

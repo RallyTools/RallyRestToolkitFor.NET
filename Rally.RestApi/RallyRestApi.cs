@@ -198,6 +198,7 @@ namespace Rally.RestApi
 				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
+			// TODO: Josh - Set the connection type
 			connectionInfo.AuthType = AuthorizationType.ZSessionID;
 			connectionInfo.UserName = userName;
 			connectionInfo.ZSessionID = zSessionID;
@@ -328,6 +329,24 @@ namespace Rally.RestApi
 			}
 
 			return AuthenticationState;
+		}
+		#endregion
+
+		#region CreateIdpAuthentication
+		/// <summary>
+		/// Configures authentication to run against an IDP.
+		/// </summary>
+		public void CreateIdpAuthentication(Uri idpServer, WebProxy proxy = null)
+		{
+			if (idpServer == null)
+				throw new ArgumentNullException("idpServer");
+
+			ConnectionInfo = new ConnectionInfo();
+			ConnectionInfo.AuthType = AuthorizationType.Basic;
+			ConnectionInfo.UserName = String.Empty;
+			ConnectionInfo.Password = String.Empty;
+			ConnectionInfo.IdpServer = idpServer;
+			ConnectionInfo.Proxy = proxy;
 		}
 		#endregion
 

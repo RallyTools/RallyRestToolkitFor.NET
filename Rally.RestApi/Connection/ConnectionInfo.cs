@@ -35,6 +35,10 @@ namespace Rally.RestApi.Connection
 		/// </summary>
 		public virtual Uri Server { get; set; }
 		/// <summary>
+		/// The IDP server to use for authentication.
+		/// </summary>
+		public virtual Uri IdpServer { get; set; }
+		/// <summary>
 		/// The username for this connection.
 		/// </summary>
 		public virtual String UserName { get; set; }
