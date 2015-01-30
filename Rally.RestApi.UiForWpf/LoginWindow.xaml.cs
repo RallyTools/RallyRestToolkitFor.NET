@@ -15,17 +15,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Rally.RestApi.Connection;
 
 namespace Rally.RestApi.UiForWpf
 {
-	// TODO: Josh:
-	// - Move the ConnectionType to where the Authorization Type enum is.
-	//    - Update the ConnectionInfo to track the connection type the user has used. This is needed for reauthorization code (this window, or from VSP).	
-	// - Store the connection type in VSP
-	// - Store the IDP Based URI in VSP. Ensure this flows through in this code.
-	// - Ensure VSP can pass the IDP based URI back to this window (requires successful login to work - TBD)
-	// - Ensure VSP can pass the Connection Type back to this window
-	// Note: Some items may require successful login to work
 
 	/// <summary>
 	/// Interaction logic for LoginWindow.xaml
@@ -38,15 +31,6 @@ namespace Rally.RestApi.UiForWpf
 			Credentials,
 			Rally,
 			Proxy,
-		}
-		#endregion
-
-		#region Enum: ConnectionType
-		private enum ConnectionType
-		{
-			BasicAuth,
-			SpBasedSso,
-			IdpBasedSso,
 		}
 		#endregion
 
@@ -567,6 +551,7 @@ namespace Rally.RestApi.UiForWpf
 						GetEditorValue(EditorControlType.ProxyServer),
 						GetEditorValue(EditorControlType.ProxyUsername),
 						GetEditorValue(EditorControlType.ProxyPassword),
+						ConnectionType.SpBasedSso,
 						out errorMessage);
 					break;
 				case ConnectionType.IdpBasedSso:
@@ -575,6 +560,7 @@ namespace Rally.RestApi.UiForWpf
 						GetEditorValue(EditorControlType.ProxyServer),
 						GetEditorValue(EditorControlType.ProxyUsername),
 						GetEditorValue(EditorControlType.ProxyPassword),
+						ConnectionType.IdpBasedSso,
 						out errorMessage);
 					break;
 				default:

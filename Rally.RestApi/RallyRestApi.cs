@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 using Rally.RestApi.Web;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
-using System.Threading;
 using Rally.RestApi.Auth;
 
 namespace Rally.RestApi
@@ -198,7 +197,6 @@ namespace Rally.RestApi
 				throw new InvalidOperationException("ZSessionID authentication is only supported with a valid SSO provider.");
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
-			// TODO: Josh - Set the connection type
 			connectionInfo.AuthType = AuthorizationType.ZSessionID;
 			connectionInfo.UserName = userName;
 			connectionInfo.ZSessionID = zSessionID;

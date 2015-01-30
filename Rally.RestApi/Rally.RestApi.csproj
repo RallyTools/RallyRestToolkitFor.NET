@@ -60,6 +60,7 @@
     <Compile Include="Auth\ApiConsoleAuthManager.cs" />
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
+    <Compile Include="Connection\ConnectionType.cs" />
     <Compile Include="Response\AttachmentResult.cs" />
     <Compile Include="Web\SsoWebClient.cs" />
     <Compile Include="Web\CookieAwareCacheableWebClient.cs" />

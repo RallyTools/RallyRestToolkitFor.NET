@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Rally.RestApi.Connection;
 
 namespace Rally.RestApi.UiForWpf
 {
@@ -112,8 +113,9 @@ namespace Rally.RestApi.UiForWpf
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
 		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(string username, string password, string rallyServer,
-			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+			string proxyServer, string proxyUser, string proxyPassword, ConnectionType connType, out string errorMessage)
 		{
+			LoginConnectionType = connType;
 			return base.PerformAuthenticationCheckAgainstRally(username, password, rallyServer,
 				proxyServer, proxyUser, proxyPassword, out errorMessage);
 		}
@@ -124,8 +126,9 @@ namespace Rally.RestApi.UiForWpf
 		/// Performs an authentication check against an IDP.
 		/// </summary>
 		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(string idpServer,
-			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+			string proxyServer, string proxyUser, string proxyPassword, ConnectionType connType, out string errorMessage)
 		{
+			LoginConnectionType = connType;
 			return base.PerformAuthenticationCheckAgainstIdp(idpServer, proxyServer, proxyUser, proxyPassword, out errorMessage);
 		}
 		#endregion

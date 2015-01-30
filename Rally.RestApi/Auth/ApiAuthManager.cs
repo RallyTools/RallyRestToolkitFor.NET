@@ -119,6 +119,10 @@ namespace Rally.RestApi.Auth
 		/// The error message to show when an unknown login failure occured.
 		/// </summary>
 		public static String LoginFailureUnknown { get; private set; }
+		/// <summary>
+		/// The connection type indicating SSO type if required
+		/// </summary>
+		public ConnectionType LoginConnectionType { get; set; }
 
 		#endregion
 
