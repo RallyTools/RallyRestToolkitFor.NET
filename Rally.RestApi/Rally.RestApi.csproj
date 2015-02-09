@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Auth\ApiAuthManager.cs" />
     <Compile Include="Auth\ApiConsoleAuthManager.cs" />
+    <Compile Include="Auth\IEncryptionRoutines.cs" />
+    <Compile Include="Auth\LoginDetails.cs" />
     <Compile Include="Connection\AuthorizationType.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="Connection\ConnectionType.cs" />

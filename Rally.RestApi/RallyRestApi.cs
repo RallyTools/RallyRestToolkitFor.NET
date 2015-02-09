@@ -202,6 +202,7 @@ namespace Rally.RestApi
 			connectionInfo.ZSessionID = zSessionID;
 			connectionInfo.Server = new Uri(rallyServer);
 			connectionInfo.Proxy = proxy;
+			connectionInfo.IdpServer = ConnectionInfo.IdpServer;
 			return AuthenticateWithConnectionInfo(connectionInfo, allowSSO);
 		}
 		/// <summary>
@@ -307,7 +308,8 @@ namespace Rally.RestApi
 
 			try
 			{
-				GetCurrentUser("Name");
+				dynamic userObject = GetCurrentUser("UserName");
+				ConnectionInfo.UserName = userObject["UserName"];
 				AuthenticationState = AuthenticationResult.Authenticated;
 			}
 			catch (Exception e)

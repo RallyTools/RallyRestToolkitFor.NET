@@ -41,6 +41,7 @@ namespace Rally.RestApi.UiForWpf
 			Password,
 			ConnectionType,
 			RallyServer,
+			IdpServer,
 			ProxyServer,
 			ProxyUsername,
 			ProxyPassword,
@@ -56,10 +57,10 @@ namespace Rally.RestApi.UiForWpf
 		Dictionary<EditorControlType, RowDefinition> controlRowElements;
 
 		internal RestApiAuthMgrWpf AuthMgr { get; set; }
+		HeaderedContentControl rallyTab;
 		Button loginButton;
 		Button logoutButton;
 		Button cancelButton;
-		ConnectionType currentConnectionType;
 
 		#region Constructor
 		/// <summary>
@@ -74,7 +75,6 @@ namespace Rally.RestApi.UiForWpf
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
 			tabControls = new Dictionary<TabType, Control>();
 			controlRowElements = new Dictionary<EditorControlType, RowDefinition>();
-			currentConnectionType = ConnectionType.BasicAuth;
 
 			connectionTypes = new Dictionary<ConnectionType, string>();
 			connectionTypes.Add(ConnectionType.BasicAuth, "Basic Authentication (will try Rally SSO if it fails)");
@@ -125,6 +125,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			Title = ApiAuthManager.LoginWindowTitle;
 			AuthMgr = authMgr;
+
 			Selector tabControl = GetTabControl();
 			tabControl.Margin = new Thickness(10, 10, 10, 5);
 			Grid.SetColumn(tabControl, 0);
@@ -144,6 +145,8 @@ namespace Rally.RestApi.UiForWpf
 			this.Height = inputRow.Height.Value + (28 * 2) + 100;
 			this.MinHeight = this.Height;
 			this.MaxHeight = this.Height;
+
+			ConnectionTypeChanged(GetEditor(EditorControlType.ConnectionType), null);
 		}
 		#endregion
 
@@ -180,6 +183,12 @@ namespace Rally.RestApi.UiForWpf
 					TextBox textBox = control as TextBox;
 					if (textBox != null)
 						label.Content = textBox.Text;
+					else
+					{
+						ComboBox comboBox = control as ComboBox;
+						if (comboBox != null)
+							label.Content = comboBox.Text;
+					}
 
 					if (isReadOnly)
 						label.Visibility = Visibility.Visible;
@@ -212,9 +221,11 @@ namespace Rally.RestApi.UiForWpf
 			}
 			else if (tabType == TabType.Rally)
 			{
+				rallyTab = tab;
 				tab.Header = ApiAuthManager.LoginWindowRallyServerTabText;
 				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowConnectionTypeText, EditorControlType.ConnectionType);
 				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, EditorControlType.RallyServer);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, EditorControlType.IdpServer);
 			}
 			else if (tabType == TabType.Proxy)
 			{
@@ -286,6 +297,7 @@ namespace Rally.RestApi.UiForWpf
 				{
 					case EditorControlType.Username:
 					case EditorControlType.RallyServer:
+					case EditorControlType.IdpServer:
 					case EditorControlType.ProxyServer:
 					case EditorControlType.ProxyUsername:
 						TextBox textBox = new TextBox();
@@ -296,24 +308,26 @@ namespace Rally.RestApi.UiForWpf
 									textBox.Text = AuthMgr.Api.ConnectionInfo.UserName;
 								break;
 							case EditorControlType.RallyServer:
-								if ((AuthMgr.Api.ConnectionInfo != null) &&
-									(!String.IsNullOrWhiteSpace(AuthMgr.Api.ConnectionInfo.Server.ToString())))
+								if (!String.IsNullOrWhiteSpace(AuthMgr.LoginDetails.RallyServer))
 								{
-									textBox.Text = AuthMgr.Api.ConnectionInfo.Server.ToString();
+									textBox.Text = AuthMgr.LoginDetails.RallyServer;
 								}
 								else if (ApiAuthManager.LoginWindowDefaultServer != null)
 									textBox.Text = ApiAuthManager.LoginWindowDefaultServer.ToString();
 								else
 									textBox.Text = RallyRestApi.DEFAULT_SERVER;
 								break;
+							case EditorControlType.IdpServer:
+								textBox.Text = AuthMgr.LoginDetails.IdpServer;
+								break;
 							case EditorControlType.ProxyServer:
-								if ((AuthMgr.Api.ConnectionInfo != null) &&
-									(AuthMgr.Api.ConnectionInfo.Proxy != null))
-								{
-									textBox.Text = AuthMgr.Api.ConnectionInfo.Proxy.Address.ToString();
-								}
+								if (AuthMgr.LoginDetails.ProxyServer != null)
+									textBox.Text = AuthMgr.LoginDetails.ProxyServer;
 								else if (ApiAuthManager.LoginWindowDefaultProxyServer != null)
 									textBox.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
+								break;
+							case EditorControlType.ProxyUsername:
+								textBox.Text = AuthMgr.LoginDetails.ProxyUsername;
 								break;
 							default:
 								break;
@@ -325,13 +339,15 @@ namespace Rally.RestApi.UiForWpf
 						PasswordBox passwordBox = new PasswordBox();
 						passwordBox.PasswordChar = '*';
 						control = passwordBox;
+						if (controlType == EditorControlType.ProxyPassword)
+							passwordBox.Password = AuthMgr.LoginDetails.GetProxyPassword();
 						break;
 					case EditorControlType.ConnectionType:
 						ComboBox comboBox = new ComboBox();
 						comboBox.SelectedValuePath = "Key";
 						comboBox.DisplayMemberPath = "Value";
 						comboBox.ItemsSource = connectionTypes;
-						comboBox.SelectedValue = currentConnectionType;
+						comboBox.SelectedValue = AuthMgr.LoginDetails.ConnectionType;
 						comboBox.SelectionChanged += ConnectionTypeChanged;
 						control = comboBox;
 						break;
@@ -356,23 +372,31 @@ namespace Rally.RestApi.UiForWpf
 			ComboBox comboBox = sender as ComboBox;
 			if (comboBox != null)
 			{
-				currentConnectionType = (ConnectionType)comboBox.SelectedValue;
-				switch (currentConnectionType)
+				AuthMgr.LoginDetails.ConnectionType = (ConnectionType)comboBox.SelectedValue;
+				switch (AuthMgr.LoginDetails.ConnectionType)
 				{
 					case ConnectionType.BasicAuth:
 						SetTabVisibility(TabType.Credentials, true);
 						SetControlVisibility(EditorControlType.Password, true);
+						SetControlVisibility(EditorControlType.RallyServer, true);
+						SetControlVisibility(EditorControlType.IdpServer, false);
 						break;
 					case ConnectionType.SpBasedSso:
 						SetTabVisibility(TabType.Credentials, true);
 						SetControlVisibility(EditorControlType.Password, false);
+						SetControlVisibility(EditorControlType.RallyServer, true);
+						SetControlVisibility(EditorControlType.IdpServer, false);
 						break;
 					case ConnectionType.IdpBasedSso:
 						SetTabVisibility(TabType.Credentials, false);
+						SetControlVisibility(EditorControlType.RallyServer, false);
+						SetControlVisibility(EditorControlType.IdpServer, true);
 						break;
 					default:
 						throw new NotImplementedException();
 				}
+
+				rallyTab.Focus();
 			}
 		}
 		#endregion
@@ -535,37 +559,15 @@ namespace Rally.RestApi.UiForWpf
 			string errorMessage;
 			ShowMessage("Logging into Rally");
 
-			ComboBox comboBox = sender as ComboBox;
-			if (comboBox != null)
-			{
-				ConnectionType connectionType = (ConnectionType)comboBox.SelectedValue;
-			}
+			AuthMgr.LoginDetails.Username = GetEditorValue(EditorControlType.Username);
+			AuthMgr.LoginDetails.SetPassword(GetEditorValue(EditorControlType.Password));
+			AuthMgr.LoginDetails.RallyServer = GetEditorValue(EditorControlType.RallyServer);
+			AuthMgr.LoginDetails.IdpServer = GetEditorValue(EditorControlType.RallyServer);
+			AuthMgr.LoginDetails.ProxyServer = GetEditorValue(EditorControlType.ProxyServer);
+			AuthMgr.LoginDetails.ProxyUsername = GetEditorValue(EditorControlType.ProxyUsername);
+			AuthMgr.LoginDetails.SetProxyPassword(GetEditorValue(EditorControlType.ProxyPassword));
 
-			switch (currentConnectionType)
-			{
-				case ConnectionType.BasicAuth:
-				case ConnectionType.SpBasedSso:
-					AuthMgr.PerformAuthenticationCheckAgainstRally(GetEditorValue(EditorControlType.Username),
-						GetEditorValue(EditorControlType.Password),
-						GetEditorValue(EditorControlType.RallyServer),
-						GetEditorValue(EditorControlType.ProxyServer),
-						GetEditorValue(EditorControlType.ProxyUsername),
-						GetEditorValue(EditorControlType.ProxyPassword),
-						ConnectionType.SpBasedSso,
-						out errorMessage);
-					break;
-				case ConnectionType.IdpBasedSso:
-					AuthMgr.PerformAuthenticationCheckAgainstIdp(
-						GetEditorValue(EditorControlType.RallyServer),
-						GetEditorValue(EditorControlType.ProxyServer),
-						GetEditorValue(EditorControlType.ProxyUsername),
-						GetEditorValue(EditorControlType.ProxyPassword),
-						ConnectionType.IdpBasedSso,
-						out errorMessage);
-					break;
-				default:
-					throw new NotImplementedException();
-			}
+			AuthMgr.PerformAuthenticationCheck(out errorMessage);
 			ShowMessage(errorMessage);
 
 			UpdateLoginState();

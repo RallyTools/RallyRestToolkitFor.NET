@@ -69,7 +69,9 @@ namespace Rally.RestApi.UiForWinforms
 					if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))
 					{
 						WindowState = FormWindowState.Minimized;
-						authMgr.ReportSsoResults(true, currentCookie.Value);
+
+						string rallyServer = browser.Url.GetLeftPart(UriPartial.Authority);
+						authMgr.ReportSsoResults(true, rallyServer, currentCookie.Value);
 						ssoReported = true;
 						Close();
 					}
@@ -135,7 +137,7 @@ namespace Rally.RestApi.UiForWinforms
 		protected override void OnClosed(EventArgs e)
 		{
 			if (!ssoReported)
-				authMgr.ReportSsoResults(false, String.Empty);
+				authMgr.ReportSsoResults(false, String.Empty, String.Empty);
 
 			base.OnClosed(e);
 		}

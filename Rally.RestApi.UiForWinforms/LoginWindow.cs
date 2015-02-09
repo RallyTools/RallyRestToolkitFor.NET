@@ -170,9 +170,15 @@ namespace Rally.RestApi.UiForWinforms
 		private void loginBtn_Click(object sender, EventArgs e)
 		{
 			string errorMessage;
-			AuthMgr.PerformAuthenticationCheck(usernameInput.Text, passwordInput.Text,
-				rallyServerInput.Text, proxyServerInput.Text,
-				 proxyUserNameInput.Text, proxyPasswordInput.Text, out errorMessage);
+			AuthMgr.LoginDetails.ConnectionType = Connection.ConnectionType.SpBasedSso;
+			AuthMgr.LoginDetails.Username = usernameInput.Text;
+			AuthMgr.LoginDetails.SetPassword(passwordInput.Text);
+			AuthMgr.LoginDetails.RallyServer = rallyServerInput.Text;
+			AuthMgr.LoginDetails.ProxyServer = proxyServerInput.Text;
+			AuthMgr.LoginDetails.ProxyUsername = proxyUserNameInput.Text;
+			AuthMgr.LoginDetails.SetProxyPassword(proxyPasswordInput.Text);
+
+			AuthMgr.PerformAuthenticationCheck(out errorMessage);
 			ShowMessage(errorMessage);
 
 			UpdateLoginState();

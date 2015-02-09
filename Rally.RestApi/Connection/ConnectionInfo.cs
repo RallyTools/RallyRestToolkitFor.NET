@@ -67,6 +67,7 @@ namespace Rally.RestApi.Connection
 			ApiKey = String.Empty;
 			UserName = String.Empty;
 			Password = String.Empty;
+			IdpServer = null;
 			Server = null;
 			Proxy = null;
 		}

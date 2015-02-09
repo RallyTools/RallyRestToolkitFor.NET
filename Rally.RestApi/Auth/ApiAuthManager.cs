@@ -119,10 +119,6 @@ namespace Rally.RestApi.Auth
 		/// The error message to show when an unknown login failure occured.
 		/// </summary>
 		public static String LoginFailureUnknown { get; private set; }
-		/// <summary>
-		/// The connection type indicating SSO type if required
-		/// </summary>
-		public ConnectionType LoginConnectionType { get; set; }
 
 		#endregion
 
@@ -149,9 +145,16 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		public RallyRestApi Api { get; private set; }
 		/// <summary>
+		/// The details for the user who is logging in using this auth manager.
+		/// </summary>
+		public LoginDetails LoginDetails { get; private set; }
+		/// <summary>
 		/// Is the UI supported?
 		/// </summary>
 		public bool IsUiSupported { get; private set; }
+		internal string ApplicationToken { get; private set; }
+		internal string EncryptionKey { get; private set; }
+		internal IEncryptionRoutines EncryptionRoutines { get; private set; }
 		/// <summary>
 		/// Notifies that SSO authentication has completed.
 		/// </summary>
@@ -170,16 +173,46 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public ApiAuthManager(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
+		/// <param name="isUiSupported">Does this auth manager support a UI?</param>
+		/// <param name="applicationToken">An application token to be used as the file name to store data as (no extension needed). Each 
+		/// consuming application should use a unique name in order to ensure that the user credentials are not 
+		/// overwritten by other applications. An exception will be thrown elsewhere if this is not a valid file name.</param>
+		/// <param name="encryptionKey">The encryption key, or salt, to be used for any encryption routines. This salt 
+		/// should be different for each user, and not the same for everyone consuming the same application. Only used 
+		/// for UI support.</param>
+		/// <param name="encryptionRoutines">The encryption routines to use for encryption/decryption of data. Only used for UI support.</param>
+		/// <param name="webServiceVersion">The version of the WSAPI API to use.</param>
+		protected ApiAuthManager(bool isUiSupported, string applicationToken, string encryptionKey,
+			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
 		{
-			IsUiSupported = false;
-			Api = new RallyRestApi(this, webServiceVersion: webServiceVersion);
-		}
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		protected ApiAuthManager(bool isUiSupported, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
-		{
+			if (isUiSupported)
+			{
+				if (String.IsNullOrWhiteSpace(applicationToken))
+				{
+					throw new ArgumentNullException("applicationToken",
+						"You must provide an application token.");
+				}
+
+				if (encryptionKey == null)
+				{
+					throw new ArgumentNullException("encryptionKey",
+						"You must provide an encryption key that will be used to keep user data safe.");
+				}
+
+				if (encryptionRoutines == null)
+				{
+					throw new ArgumentNullException("encryptionRoutines",
+						"You must provide encryption routines that will be used to keep user data safe.");
+				}
+
+				ApplicationToken = applicationToken;
+				EncryptionKey = encryptionKey;
+				EncryptionRoutines = encryptionRoutines;
+
+				LoginDetails = new LoginDetails(this);
+				LoginDetails.LoadFromDisk();
+			}
+
 			IsUiSupported = isUiSupported;
 			Api = new RallyRestApi(this, webServiceVersion: webServiceVersion);
 		}
@@ -359,35 +392,27 @@ namespace Rally.RestApi.Auth
 		/// Reports the results of an SSO action.
 		/// </summary>
 		/// <param name="success">Was SSO authentication completed successfully?</param>
+		/// <param name="rallyServer">The server that the ZSessionID is for.</param>
 		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
-		public void ReportIdpBasedSsoResults(bool success, string zSessionID)
-		{
-		}
-		#endregion
-
-		#region ReportSsoResults
-		/// <summary>
-		/// Reports the results of an SSO action.
-		/// </summary>
-		/// <param name="success">Was SSO authentication completed successfully?</param>
-		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
-		public void ReportSsoResults(bool success, string zSessionID)
+		public void ReportSsoResults(bool success, string rallyServer, string zSessionID)
 		{
 			if (SsoAuthenticationComplete != null)
 			{
 				if (success)
 				{
 					RallyRestApi.AuthenticationResult authResult =
-						Api.AuthenticateWithZSessionID(Api.ConnectionInfo.UserName, zSessionID);
+						Api.AuthenticateWithZSessionID(Api.ConnectionInfo.UserName, zSessionID, rallyServer: rallyServer);
 
 					if (authResult == RallyRestApi.AuthenticationResult.Authenticated)
 					{
+						LoginDetails.SaveToDisk();
 						NotifyLoginWindowSsoComplete(authResult, Api);
 						SsoAuthenticationComplete.Invoke(authResult, Api);
 						return;
 					}
 				}
 
+				LoginDetails.MarkUserAsLoggedOut();
 				Api.Logout();
 				NotifyLoginWindowSsoComplete(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 				SsoAuthenticationComplete.Invoke(RallyRestApi.AuthenticationResult.NotAuthorized, null);
@@ -400,44 +425,62 @@ namespace Rally.RestApi.Auth
 			RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api);
 		#endregion
 
+		#region DeleteCachedLoginDetailsFromDisk
+		/// <summary>
+		/// Deletes any cached login credentials from disk.
+		/// </summary>
+		public bool DeleteCachedLoginDetailsFromDisk()
+		{
+			return LoginDetails.DeleteCachedLoginDetailsFromDisk();
+		}
+		#endregion
+
+		#region PerformAuthenticationCheck
+		/// <summary>
+		/// Performs an authentication check against an identity provider (IDP Initiated).
+		/// </summary>
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
+		{
+			if (!IsUiSupported)
+				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
+
+			switch (LoginDetails.ConnectionType)
+			{
+				case ConnectionType.BasicAuth:
+				case ConnectionType.SpBasedSso:
+					return PerformAuthenticationCheckAgainstRally(out errorMessage);
+				case ConnectionType.IdpBasedSso:
+					return PerformAuthenticationCheckAgainstIdp(out errorMessage);
+				default:
+					throw new NotImplementedException();
+			}
+		}
+		#endregion
+
 		#region PerformAuthenticationCheckAgainstRally
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(
-			string username, string password, string rallyServer,
-			string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(out string errorMessage)
 		{
+			if (!IsUiSupported)
+				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
+
 			RallyRestApi.AuthenticationResult authResult = RallyRestApi.AuthenticationResult.NotAuthorized;
 			errorMessage = String.Empty;
-			WebProxy proxy = null;
-			if (!String.IsNullOrWhiteSpace(proxyServer))
-			{
-				try
-				{
-					proxy = new WebProxy(new Uri(proxyServer));
-				}
-				catch
-				{
-					errorMessage = "Bad URI format for Proxy Server";
-					return RallyRestApi.AuthenticationResult.NotAuthorized;
-				}
+			WebProxy proxy = GetProxy(out errorMessage);
+			if (!String.IsNullOrWhiteSpace(errorMessage))
+				return RallyRestApi.AuthenticationResult.NotAuthorized;
 
-				if (!String.IsNullOrWhiteSpace(proxyUser))
-					proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
-				else
-					proxy.UseDefaultCredentials = true;
-			}
-
-			if (String.IsNullOrWhiteSpace(rallyServer))
+			if (String.IsNullOrWhiteSpace(LoginDetails.RallyServer))
 				errorMessage = LoginFailureServerEmpty;
-			else if (String.IsNullOrWhiteSpace(username))
+			else if (String.IsNullOrWhiteSpace(LoginDetails.Username))
 				errorMessage = LoginFailureLoginEmpty;
 
 			Uri serverUri = null;
 			try
 			{
-				serverUri = new Uri(rallyServer);
+				serverUri = new Uri(LoginDetails.RallyServer);
 			}
 			catch
 			{
@@ -447,7 +490,7 @@ namespace Rally.RestApi.Auth
 			try
 			{
 				if (String.IsNullOrWhiteSpace(errorMessage))
-					authResult = Api.Authenticate(username, password, serverUri, proxy);
+					authResult = Api.Authenticate(LoginDetails.Username, LoginDetails.GetPassword(), serverUri, proxy);
 			}
 			catch (RallyUnavailableException)
 			{
@@ -482,21 +525,7 @@ namespace Rally.RestApi.Auth
 					errorMessage = LoginFailureUnknown;
 			}
 
-			if (AuthenticationStateChange != null)
-			{
-				switch (Api.AuthenticationState)
-				{
-					case RallyRestApi.AuthenticationResult.Authenticated:
-						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
-						break;
-					case RallyRestApi.AuthenticationResult.PendingSSO:
-					case RallyRestApi.AuthenticationResult.NotAuthorized:
-						AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
-						break;
-					default:
-						throw new NotImplementedException();
-				}
-			}
+			UpdateAuthenticationState();
 			return Api.AuthenticationState;
 		}
 		#endregion
@@ -505,36 +534,23 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against an identity provider (IDP Initiated).
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(
-			string idpUrl, string proxyServer, string proxyUser, string proxyPassword, out string errorMessage)
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(out string errorMessage)
 		{
+			if (!IsUiSupported)
+				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
+
 			errorMessage = String.Empty;
-			WebProxy proxy = null;
-			if (!String.IsNullOrWhiteSpace(proxyServer))
-			{
-				try
-				{
-					proxy = new WebProxy(new Uri(proxyServer));
-				}
-				catch
-				{
-					errorMessage = "Bad URI format for Proxy Server";
-					return RallyRestApi.AuthenticationResult.NotAuthorized;
-				}
+			WebProxy proxy = GetProxy(out errorMessage);
+			if (!String.IsNullOrWhiteSpace(errorMessage))
+				return RallyRestApi.AuthenticationResult.NotAuthorized;
 
-				if (!String.IsNullOrWhiteSpace(proxyUser))
-					proxy.Credentials = new NetworkCredential(proxyUser, proxyPassword);
-				else
-					proxy.UseDefaultCredentials = true;
-			}
-
-			if (String.IsNullOrWhiteSpace(idpUrl))
+			if (String.IsNullOrWhiteSpace(LoginDetails.IdpServer))
 				errorMessage = LoginFailureServerEmpty;
 
 			Uri serverUri = null;
 			try
 			{
-				serverUri = new Uri(idpUrl);
+				serverUri = new Uri(LoginDetails.IdpServer);
 			}
 			catch
 			{
@@ -545,12 +561,8 @@ namespace Rally.RestApi.Auth
 			{
 				if (String.IsNullOrWhiteSpace(errorMessage))
 				{
-					if (String.IsNullOrWhiteSpace(errorMessage))
-					{
-						Api.CreateIdpAuthentication(serverUri, proxy);
-						OpenSsoPage(Api.ConnectionInfo.IdpServer);
-					}
-					// TODO: Perform authentication
+					Api.CreateIdpAuthentication(serverUri, proxy);
+					OpenSsoPage(Api.ConnectionInfo.IdpServer);
 				}
 			}
 			catch (RallyUnavailableException)
@@ -586,12 +598,21 @@ namespace Rally.RestApi.Auth
 					errorMessage = LoginFailureUnknown;
 			}
 
+			UpdateAuthenticationState();
+			return Api.AuthenticationState;
+		}
+		#endregion
+
+		#region UpdateAuthenticationState
+		private void UpdateAuthenticationState()
+		{
 			if (AuthenticationStateChange != null)
 			{
 				switch (Api.AuthenticationState)
 				{
 					case RallyRestApi.AuthenticationResult.Authenticated:
 						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
+						LoginDetails.SaveToDisk();
 						break;
 					case RallyRestApi.AuthenticationResult.PendingSSO:
 					case RallyRestApi.AuthenticationResult.NotAuthorized:
@@ -601,7 +622,36 @@ namespace Rally.RestApi.Auth
 						throw new NotImplementedException();
 				}
 			}
-			return Api.AuthenticationState;
+		}
+		#endregion
+
+		#region GetProxy
+		/// <summary>
+		/// Creates the web proxy object.
+		/// </summary>
+		private WebProxy GetProxy(out string errorMessage)
+		{
+			errorMessage = String.Empty;
+			WebProxy proxy = null;
+			if (!String.IsNullOrWhiteSpace(LoginDetails.ProxyServer))
+			{
+				try
+				{
+					proxy = new WebProxy(new Uri(LoginDetails.ProxyServer));
+				}
+				catch
+				{
+					errorMessage = "Bad URI format for Proxy Server";
+					return null;
+				}
+
+				if (!String.IsNullOrWhiteSpace(LoginDetails.ProxyUsername))
+					proxy.Credentials = new NetworkCredential(LoginDetails.ProxyUsername, LoginDetails.GetProxyPassword());
+				else
+					proxy.UseDefaultCredentials = true;
+			}
+
+			return proxy;
 		}
 		#endregion
 
@@ -612,6 +662,7 @@ namespace Rally.RestApi.Auth
 		protected void PerformLogoutFromRally()
 		{
 			Api.Logout();
+			LoginDetails.MarkUserAsLoggedOut();
 			AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
 		}
 		#endregion

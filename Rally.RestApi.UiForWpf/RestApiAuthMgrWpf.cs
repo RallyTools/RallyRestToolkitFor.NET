@@ -26,8 +26,17 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public RestApiAuthMgrWpf(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
-			: base(true, webServiceVersion)
+		/// <param name="applicationToken">An application token to be used as the file name to store data as. Each 
+		/// consuming application should use a unique name in order to ensure that the user credentials are not 
+		/// overwritten by other applications.</param>
+		/// <param name="encryptionKey">The encryption key, or salt, to be used for any encryption routines. This salt 
+		/// should be different for each user, and not the same for everyone consuming the same application. Only used 
+		/// for UI support.</param>
+		/// <param name="encryptionRoutines">The encryption routines to use for encryption/decryption of data. Only used for UI support.</param>
+		/// <param name="webServiceVersion">The version of the WSAPI API to use.</param>
+		public RestApiAuthMgrWpf(string applicationToken, string encryptionKey,
+			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
+			: base(true, applicationToken, encryptionKey, encryptionRoutines, webServiceVersion)
 		{
 		}
 		#endregion
@@ -112,24 +121,9 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(string username, string password, string rallyServer,
-			string proxyServer, string proxyUser, string proxyPassword, ConnectionType connType, out string errorMessage)
+		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
 		{
-			LoginConnectionType = connType;
-			return base.PerformAuthenticationCheckAgainstRally(username, password, rallyServer,
-				proxyServer, proxyUser, proxyPassword, out errorMessage);
-		}
-		#endregion
-
-		#region PerformAuthenticationCheckAgainstIdp
-		/// <summary>
-		/// Performs an authentication check against an IDP.
-		/// </summary>
-		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(string idpServer,
-			string proxyServer, string proxyUser, string proxyPassword, ConnectionType connType, out string errorMessage)
-		{
-			LoginConnectionType = connType;
-			return base.PerformAuthenticationCheckAgainstIdp(idpServer, proxyServer, proxyUser, proxyPassword, out errorMessage);
+			return base.PerformAuthenticationCheck(out errorMessage);
 		}
 		#endregion
 

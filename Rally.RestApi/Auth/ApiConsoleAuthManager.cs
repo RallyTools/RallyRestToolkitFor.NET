@@ -15,7 +15,7 @@ namespace Rally.RestApi.Auth
 		/// Constructor
 		/// </summary>
 		public ApiConsoleAuthManager(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
-			: base()
+			: base(false, null, null, null, webServiceVersion)
 		{
 		}
 		#endregion

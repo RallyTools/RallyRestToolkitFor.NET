@@ -36,6 +36,11 @@ namespace Test.Rally.RestApi.UiSample
 		RestApiAuthMgrWinforms winFormsAuthMgr;
 		RestApiAuthMgrWpf wpfAuthMgr;
 
+		// HELP: Define your encryption items prior to instantiating authorization managers
+		string applicationToken = "RallyRestAPISample";
+		string encryptionKey = "UserSpecificSaltForEncryption";
+		EncryptionUtilities encryptionUtilities = new EncryptionUtilities();
+
 		#region MainWindow
 		public MainWindow()
 		{
@@ -43,13 +48,11 @@ namespace Test.Rally.RestApi.UiSample
 			headerLabel.Text = "Login Window Example";
 
 			// HELP: Instantiate authorization managers
-			winFormsAuthMgr = new RestApiAuthMgrWinforms();
-			wpfAuthMgr = new RestApiAuthMgrWpf();
+			winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
+			wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
-			// TODO: mnoreke - Remove prior to release
-			defaultServerUri.Text = "https://pingidp.f4tech.com/idp/startSSO.ping?PartnerSpId=https://pingsp.f4tech.com&TargetResource=https://test2cluster.f4tech.com/login/sso?redirect=https://test2cluster.f4tech.com"; //RallyRestApi.DEFAULT_SERVER;
-			ApiAuthManager.Configure(loginWindowDefaultServer: new Uri(defaultServerUri.Text));
+
 			// TODO: mnoreke - Remove prior to release
 			wpfAuthMgr.TrustAllCertificates = true;
 		}
@@ -64,8 +67,8 @@ namespace Test.Rally.RestApi.UiSample
 				defaultProxyServer = new Uri(defaultProxyServerUri.Text);
 
 			// HELP: This is for demo purposes only. We are clearing all known data in the authentication managers by doing this.
-			winFormsAuthMgr = new RestApiAuthMgrWinforms();
-			wpfAuthMgr = new RestApiAuthMgrWpf();
+			winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
+			wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
 			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 
@@ -159,5 +162,23 @@ namespace Test.Rally.RestApi.UiSample
 			}
 		}
 		#endregion
+
+		private void deleteFileContents_Click(object sender, RoutedEventArgs e)
+		{
+			bool result = wpfAuthMgr.DeleteCachedLoginDetailsFromDisk();
+			if (!result)
+			{
+				MessageBox.Show("Failed to delete. Please try again later");
+				return;
+			}
+			result = winFormsAuthMgr.DeleteCachedLoginDetailsFromDisk();
+			if (!result)
+			{
+				MessageBox.Show("Failed to delete. Please try again later");
+				return;
+			}
+
+			MessageBox.Show("File deleted. Please shutdown this application now.");
+		}
 	}
 }

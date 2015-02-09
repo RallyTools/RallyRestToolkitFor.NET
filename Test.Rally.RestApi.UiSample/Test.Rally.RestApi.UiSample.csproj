@@ -94,6 +94,7 @@
     <Compile Include="CustomControls\CustomTabItem.xaml.cs">
       <DependentUpon>CustomTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EncryptionUtilities.cs" />
     <Compile Include="Images\ImageResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

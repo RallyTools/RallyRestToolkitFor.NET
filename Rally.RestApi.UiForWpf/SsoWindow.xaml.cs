@@ -27,6 +27,8 @@ namespace Rally.RestApi.UiForWpf
 		bool ssoReported = false;
 		RestApiAuthMgrWpf authMgr;
 		private Uri ssoUrl;
+		private Uri idpUrl = null;
+		private WebProxy idpProxy = null;
 
 		#region Constructor
 		/// <summary>
@@ -54,6 +56,12 @@ namespace Rally.RestApi.UiForWpf
 			try
 			{
 				this.authMgr = authMgr;
+				if (authMgr.Api.ConnectionInfo.IdpServer != null)
+				{
+					idpUrl = authMgr.Api.ConnectionInfo.IdpServer;
+					idpProxy = authMgr.Api.ConnectionInfo.Proxy;
+				}
+
 				browser.Source = ssoUrl;
 				Show();
 			}
@@ -80,11 +88,12 @@ namespace Rally.RestApi.UiForWpf
 				HTMLDocumentClass document = ((HTMLDocumentClass)browser.Document);
 				if (document != null)
 				{
-					CookieContainer cookiejar = GetUriCookieContainer(new Uri(document.url));
+					Uri documentUri = new Uri(document.url);
+					CookieContainer cookiejar = GetUriCookieContainer(documentUri);
 					if (cookiejar == null)
 						return;
 
-					CookieCollection cookieCollection = cookiejar.GetCookies(new Uri(document.url));
+					CookieCollection cookieCollection = cookiejar.GetCookies(documentUri);
 					if (cookieCollection == null)
 						return;
 
@@ -93,7 +102,12 @@ namespace Rally.RestApi.UiForWpf
 						if (currentCookie.Name.Equals(RallyRestApi.ZSessionID, StringComparison.InvariantCultureIgnoreCase))
 						{
 							WindowState = WindowState.Minimized;
-							authMgr.ReportSsoResults(true, currentCookie.Value);
+
+							string rallyServer = documentUri.GetLeftPart(UriPartial.Authority);
+							if (idpUrl != null)
+								authMgr.Api.CreateIdpAuthentication(idpUrl, idpProxy);
+
+							authMgr.ReportSsoResults(true, rallyServer, currentCookie.Value);
 							ssoReported = true;
 							Close();
 						}
@@ -160,7 +174,7 @@ namespace Rally.RestApi.UiForWpf
 		protected override void OnClosed(EventArgs e)
 		{
 			if (!ssoReported)
-				authMgr.ReportSsoResults(false, String.Empty);
+				authMgr.ReportSsoResults(false, String.Empty, String.Empty);
 
 			base.OnClosed(e);
 		}
