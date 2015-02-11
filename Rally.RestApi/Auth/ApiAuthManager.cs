@@ -53,6 +53,10 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		public static string LoginWindowServerLabelText { get; private set; }
 		/// <summary>
+		/// The text for the trust all certificates label in the login window.
+		/// </summary>
+		public static string LoginWindowTrustAllCertificatesText { get; private set; }
+		/// <summary>
 		/// The text for the proxy server label in the login window.
 		/// </summary>
 		public static string LoginWindowProxyServerLabelText { get; private set; }
@@ -123,23 +127,6 @@ namespace Rally.RestApi.Auth
 		#endregion
 
 		#region Properties
-		private bool trustAllCertificates;
-		/// <summary>
-		/// Should all certificates be trusted?
-		/// </summary>
-		public bool TrustAllCertificates
-		{
-			get { return trustAllCertificates; }
-			set
-			{
-				trustAllCertificates = value;
-				if (trustAllCertificates)
-					ServicePointManager.ServerCertificateValidationCallback =
-						new RemoteCertificateValidationCallback(delegate { return true; });
-				else
-					ServicePointManager.ServerCertificateValidationCallback = null;
-			}
-		}
 		/// <summary>
 		/// The API that is linked to this authorization manager.
 		/// </summary>
@@ -218,6 +205,29 @@ namespace Rally.RestApi.Auth
 		}
 		#endregion
 
+		#region AutoAuthenticate
+		/// <summary>
+		/// Auto authenticates the user if there are saved credentials.
+		/// </summary>
+		/// <param name="allowSsoForautoAuthenticate">Is SSO authentication allowed for auto-authentication? 
+		/// This may open a web browser UI.</param>
+		/// <returns></returns>
+		public RallyRestApi.AuthenticationResult AutoAuthenticate(bool allowSsoForautoAuthenticate)
+		{
+			if (!IsUiSupported)
+				throw new NotImplementedException("Auto-Authentication is only supported for UI based authentication mangers.");
+
+			RallyRestApi.AuthenticationResult authenticationResult = Api.AuthenticationState;
+			if (authenticationResult != RallyRestApi.AuthenticationResult.Authenticated)
+			{
+				string errorMessage;
+				authenticationResult = PerformAuthenticationCheck(out errorMessage, allowSsoForautoAuthenticate);
+			}
+
+			return authenticationResult;
+		}
+		#endregion
+
 		#region Configure
 		/// <summary>
 		/// Configures the authorization manger. This must be called before any other method.
@@ -227,7 +237,7 @@ namespace Rally.RestApi.Auth
 			string loginWindowCredentialsTabText = null,
 			string loginWindowUserNameLabelText = null, string loginWindowPwdLabelText = null,
 			string loginWindowServerTabText = null, string loginWindowConnectionTypeText = null,
-			string loginWindowServerLabelText = null,
+			string loginWindowServerLabelText = null, string loginWindowTrustAllCertificatesText = null,
 			Uri loginWindowDefaultServer = null,
 			string loginWindowProxyServerTabText = null,
 			string loginWindowProxyServerLabelText = null, string loginWindowProxyUserNameLabelText = null,
@@ -282,6 +292,10 @@ namespace Rally.RestApi.Auth
 			LoginWindowServerLabelText = loginWindowServerLabelText;
 			if (String.IsNullOrWhiteSpace(LoginWindowServerLabelText))
 				LoginWindowServerLabelText = "Server";
+
+			LoginWindowTrustAllCertificatesText = loginWindowTrustAllCertificatesText;
+			if (String.IsNullOrWhiteSpace(LoginWindowTrustAllCertificatesText))
+				LoginWindowTrustAllCertificatesText = "Trust all certificates";
 			#endregion
 
 			#region Default Strings: Proxy
@@ -439,7 +453,8 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against an identity provider (IDP Initiated).
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheck(
+			out string errorMessage, bool allowSso = true)
 		{
 			if (!IsUiSupported)
 				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
@@ -448,7 +463,7 @@ namespace Rally.RestApi.Auth
 			{
 				case ConnectionType.BasicAuth:
 				case ConnectionType.SpBasedSso:
-					return PerformAuthenticationCheckAgainstRally(out errorMessage);
+					return PerformAuthenticationCheckAgainstRally(out errorMessage, allowSso);
 				case ConnectionType.IdpBasedSso:
 					return PerformAuthenticationCheckAgainstIdp(out errorMessage);
 				default:
@@ -461,7 +476,8 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(out string errorMessage)
+		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(out string errorMessage,
+			bool allowSso)
 		{
 			if (!IsUiSupported)
 				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
@@ -490,7 +506,10 @@ namespace Rally.RestApi.Auth
 			try
 			{
 				if (String.IsNullOrWhiteSpace(errorMessage))
-					authResult = Api.Authenticate(LoginDetails.Username, LoginDetails.GetPassword(), serverUri, proxy);
+				{
+					authResult = Api.Authenticate(LoginDetails.Username, LoginDetails.GetPassword(),
+						serverUri, proxy, allowSSO: allowSso);
+				}
 			}
 			catch (RallyUnavailableException)
 			{

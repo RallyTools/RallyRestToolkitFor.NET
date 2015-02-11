@@ -51,10 +51,10 @@ namespace Test.Rally.RestApi.UiSample
 			winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
 			wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
-			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
+			// Help: You can auto-authenticate if you want. We do not have it enabled for this application.
+			// wpfAuthMgr.AutoAuthenticate(true);
 
-			// TODO: mnoreke - Remove prior to release
-			wpfAuthMgr.TrustAllCertificates = true;
+			UpdateAuthenticationResults(RallyRestApi.AuthenticationResult.NotAuthorized, null);
 		}
 		#endregion
 
@@ -76,7 +76,7 @@ namespace Test.Rally.RestApi.UiSample
 			// If this is not called, the default labels will be used.
 			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
-				serverTabLabel.Text, String.Empty, serverLabel.Text, new Uri(defaultServerUri.Text),
+				serverTabLabel.Text, String.Empty, serverLabel.Text, String.Empty, new Uri(defaultServerUri.Text),
 				proxyTabLabel.Text, proxyServerLabel.Text, proxyUsernameLabel.Text,
 				proxyPasswordLabel.Text, defaultProxyServer,
 				loginWindowSsoInProgressLabel.Text,

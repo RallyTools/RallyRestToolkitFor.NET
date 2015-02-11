@@ -21,8 +21,8 @@ namespace Rally.RestApi.Auth
 		/// Decrypts a string using the provided key string as a decryption token.
 		/// </summary>
 		/// <param name="keyString">The key string, or salt, to use when decrypting.</param>
-		/// <param name="textToEncrypt">The text to be decrypted.</param>
+		/// <param name="textToDecrypt">The text to be decrypted.</param>
 		/// <returns>The decrypted string.</returns>
-		string DecryptString(string keyString, string textToEncrypt);
+		string DecryptString(string keyString, string textToDecrypt);
 	}
 }

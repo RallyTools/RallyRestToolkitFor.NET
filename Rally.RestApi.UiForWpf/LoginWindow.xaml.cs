@@ -42,6 +42,7 @@ namespace Rally.RestApi.UiForWpf
 			ConnectionType,
 			RallyServer,
 			IdpServer,
+			TrustAllCertificates,
 			ProxyServer,
 			ProxyUsername,
 			ProxyPassword,
@@ -57,6 +58,7 @@ namespace Rally.RestApi.UiForWpf
 		Dictionary<EditorControlType, RowDefinition> controlRowElements;
 
 		internal RestApiAuthMgrWpf AuthMgr { get; set; }
+		Selector tabControl;
 		HeaderedContentControl rallyTab;
 		Button loginButton;
 		Button logoutButton;
@@ -126,7 +128,7 @@ namespace Rally.RestApi.UiForWpf
 			Title = ApiAuthManager.LoginWindowTitle;
 			AuthMgr = authMgr;
 
-			Selector tabControl = GetTabControl();
+			tabControl = GetTabControl();
 			tabControl.Margin = new Thickness(10, 10, 10, 5);
 			Grid.SetColumn(tabControl, 0);
 			Grid.SetColumnSpan(tabControl, 3);
@@ -146,6 +148,7 @@ namespace Rally.RestApi.UiForWpf
 			this.MinHeight = this.Height;
 			this.MaxHeight = this.Height;
 
+			SetDefaultValues();
 			ConnectionTypeChanged(GetEditor(EditorControlType.ConnectionType), null);
 		}
 		#endregion
@@ -165,6 +168,114 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
+		#region SetDefaultValues
+		private void SetDefaultValues()
+		{
+			Array controlTypes = Enum.GetValues(typeof(EditorControlType));
+			foreach (EditorControlType editorControlType in controlTypes)
+			{
+				Control control = GetEditor(editorControlType);
+
+				if (control is TextBox)
+				{
+					TextBox textBox = control as TextBox;
+					if (textBox != null)
+					{
+						switch (editorControlType)
+						{
+							case EditorControlType.Username:
+								if (AuthMgr.Api.ConnectionInfo != null)
+									textBox.Text = AuthMgr.Api.ConnectionInfo.UserName;
+								else
+									textBox.Text = AuthMgr.LoginDetails.Username;
+								break;
+							case EditorControlType.RallyServer:
+								if (!String.IsNullOrWhiteSpace(AuthMgr.LoginDetails.RallyServer))
+								{
+									textBox.Text = AuthMgr.LoginDetails.RallyServer;
+								}
+								else if (ApiAuthManager.LoginWindowDefaultServer != null)
+									textBox.Text = ApiAuthManager.LoginWindowDefaultServer.ToString();
+								else
+									textBox.Text = RallyRestApi.DEFAULT_SERVER;
+								break;
+							case EditorControlType.IdpServer:
+								textBox.Text = AuthMgr.LoginDetails.IdpServer;
+								break;
+							case EditorControlType.ProxyServer:
+								if (AuthMgr.LoginDetails.ProxyServer != null)
+									textBox.Text = AuthMgr.LoginDetails.ProxyServer;
+								else if (ApiAuthManager.LoginWindowDefaultProxyServer != null)
+									textBox.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
+								break;
+							case EditorControlType.ProxyUsername:
+								textBox.Text = AuthMgr.LoginDetails.ProxyUsername;
+								break;
+							default:
+								throw new InvalidProgramException("The specified editor does not use a text box to set the value.");
+						}
+					}
+				}
+				else if (control is PasswordBox)
+				{
+					PasswordBox passwordBox = control as PasswordBox;
+					if (passwordBox != null)
+					{
+						switch (editorControlType)
+						{
+							case EditorControlType.Password:
+								// Password for user credentials is never sent back to the UI.
+								break;
+							case EditorControlType.ProxyPassword:
+								passwordBox.Password = AuthMgr.LoginDetails.GetProxyPassword();
+								break;
+							default:
+								throw new InvalidProgramException("The specified editor does not use a password box to set the value.");
+						}
+					}
+				}
+				else if (control is ComboBox)
+				{
+					ComboBox comboBox = control as ComboBox;
+					if (comboBox != null)
+					{
+						switch (editorControlType)
+						{
+							case EditorControlType.ConnectionType:
+								// Due to errors in sequencing, we are removing the event listener while we set the value.
+								comboBox.SelectionChanged -= ConnectionTypeChanged;
+								comboBox.SelectedValue = AuthMgr.LoginDetails.ConnectionType;
+								comboBox.SelectionChanged += ConnectionTypeChanged;
+
+								// We then trigger the event manually here.
+								ConnectionTypeChanged(comboBox, null);
+								break;
+							default:
+								throw new InvalidProgramException("The specified editor does not use a password box to set the value.");
+						}
+					}
+				}
+				else if (control is CheckBox)
+				{
+					CheckBox checkBox = control as CheckBox;
+					if (checkBox != null)
+					{
+						switch (editorControlType)
+						{
+							case EditorControlType.TrustAllCertificates:
+								checkBox.IsChecked = AuthMgr.LoginDetails.TrustAllCertificates;
+								break;
+							default:
+								throw new InvalidProgramException("The specified editor does not use a checkbox to set the value.");
+						}
+					}
+				}
+				else
+					throw new InvalidProgramException("Unknown handling of control type.");
+			}
+		}
+		#endregion
+
 		#region SetReadOnlyStateForEditor
 		private void SetReadOnlyStateForEditors(bool isReadOnly)
 		{
@@ -173,21 +284,31 @@ namespace Rally.RestApi.UiForWpf
 			{
 				Control control = GetEditor(editorControlType);
 				if (isReadOnly)
+				{
 					control.Visibility = Visibility.Hidden;
+				}
 				else
 					control.Visibility = Visibility.Visible;
 
 				if (controlReadOnlyLabels.ContainsKey(control))
 				{
 					Label label = controlReadOnlyLabels[control];
-					TextBox textBox = control as TextBox;
-					if (textBox != null)
-						label.Content = textBox.Text;
-					else
+					if (control is TextBox)
+					{
+						TextBox textBox = control as TextBox;
+						if (textBox != null)
+							label.Content = textBox.Text;
+					}
+					else if (control is ComboBox)
 					{
 						ComboBox comboBox = control as ComboBox;
 						if (comboBox != null)
 							label.Content = comboBox.Text;
+					}
+					else if (control is CheckBox)
+					{
+						if (editorControlType == EditorControlType.TrustAllCertificates)
+							label.Content = GetEditorValueAsBool(EditorControlType.TrustAllCertificates).ToString();
 					}
 
 					if (isReadOnly)
@@ -226,6 +347,7 @@ namespace Rally.RestApi.UiForWpf
 				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowConnectionTypeText, EditorControlType.ConnectionType);
 				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, EditorControlType.RallyServer);
 				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowServerLabelText, EditorControlType.IdpServer);
+				AddInputToTabGrid(tabGrid, ApiAuthManager.LoginWindowTrustAllCertificatesText, EditorControlType.TrustAllCertificates);
 			}
 			else if (tabType == TabType.Proxy)
 			{
@@ -301,37 +423,6 @@ namespace Rally.RestApi.UiForWpf
 					case EditorControlType.ProxyServer:
 					case EditorControlType.ProxyUsername:
 						TextBox textBox = new TextBox();
-						switch (controlType)
-						{
-							case EditorControlType.Username:
-								if (AuthMgr.Api.ConnectionInfo != null)
-									textBox.Text = AuthMgr.Api.ConnectionInfo.UserName;
-								break;
-							case EditorControlType.RallyServer:
-								if (!String.IsNullOrWhiteSpace(AuthMgr.LoginDetails.RallyServer))
-								{
-									textBox.Text = AuthMgr.LoginDetails.RallyServer;
-								}
-								else if (ApiAuthManager.LoginWindowDefaultServer != null)
-									textBox.Text = ApiAuthManager.LoginWindowDefaultServer.ToString();
-								else
-									textBox.Text = RallyRestApi.DEFAULT_SERVER;
-								break;
-							case EditorControlType.IdpServer:
-								textBox.Text = AuthMgr.LoginDetails.IdpServer;
-								break;
-							case EditorControlType.ProxyServer:
-								if (AuthMgr.LoginDetails.ProxyServer != null)
-									textBox.Text = AuthMgr.LoginDetails.ProxyServer;
-								else if (ApiAuthManager.LoginWindowDefaultProxyServer != null)
-									textBox.Text = ApiAuthManager.LoginWindowDefaultProxyServer.ToString();
-								break;
-							case EditorControlType.ProxyUsername:
-								textBox.Text = AuthMgr.LoginDetails.ProxyUsername;
-								break;
-							default:
-								break;
-						}
 						control = textBox;
 						break;
 					case EditorControlType.Password:
@@ -339,17 +430,18 @@ namespace Rally.RestApi.UiForWpf
 						PasswordBox passwordBox = new PasswordBox();
 						passwordBox.PasswordChar = '*';
 						control = passwordBox;
-						if (controlType == EditorControlType.ProxyPassword)
-							passwordBox.Password = AuthMgr.LoginDetails.GetProxyPassword();
 						break;
 					case EditorControlType.ConnectionType:
 						ComboBox comboBox = new ComboBox();
 						comboBox.SelectedValuePath = "Key";
 						comboBox.DisplayMemberPath = "Value";
 						comboBox.ItemsSource = connectionTypes;
-						comboBox.SelectedValue = AuthMgr.LoginDetails.ConnectionType;
 						comboBox.SelectionChanged += ConnectionTypeChanged;
 						control = comboBox;
+						break;
+					case EditorControlType.TrustAllCertificates:
+						CheckBox checkBox = new CheckBox();
+						control = checkBox;
 						break;
 					default:
 						throw new NotImplementedException();
@@ -391,6 +483,7 @@ namespace Rally.RestApi.UiForWpf
 						SetTabVisibility(TabType.Credentials, false);
 						SetControlVisibility(EditorControlType.RallyServer, false);
 						SetControlVisibility(EditorControlType.IdpServer, true);
+						tabControl.SelectedItem = rallyTab;
 						break;
 					default:
 						throw new NotImplementedException();
@@ -447,6 +540,24 @@ namespace Rally.RestApi.UiForWpf
 				return passwordBox.Password;
 
 			return null;
+		}
+		#endregion
+
+		#region GetEditorValueAsBool
+		private bool GetEditorValueAsBool(EditorControlType controlType)
+		{
+			Control control = GetEditor(controlType);
+			if (control == null)
+				return false;
+
+			CheckBox checkBox = control as CheckBox;
+			if (checkBox != null)
+			{
+				if (checkBox.IsChecked.HasValue)
+					return checkBox.IsChecked.Value;
+			}
+
+			return false;
 		}
 		#endregion
 
@@ -562,10 +673,11 @@ namespace Rally.RestApi.UiForWpf
 			AuthMgr.LoginDetails.Username = GetEditorValue(EditorControlType.Username);
 			AuthMgr.LoginDetails.SetPassword(GetEditorValue(EditorControlType.Password));
 			AuthMgr.LoginDetails.RallyServer = GetEditorValue(EditorControlType.RallyServer);
-			AuthMgr.LoginDetails.IdpServer = GetEditorValue(EditorControlType.RallyServer);
+			AuthMgr.LoginDetails.IdpServer = GetEditorValue(EditorControlType.IdpServer);
 			AuthMgr.LoginDetails.ProxyServer = GetEditorValue(EditorControlType.ProxyServer);
 			AuthMgr.LoginDetails.ProxyUsername = GetEditorValue(EditorControlType.ProxyUsername);
 			AuthMgr.LoginDetails.SetProxyPassword(GetEditorValue(EditorControlType.ProxyPassword));
+			AuthMgr.LoginDetails.TrustAllCertificates = GetEditorValueAsBool(EditorControlType.TrustAllCertificates);
 
 			AuthMgr.PerformAuthenticationCheck(out errorMessage);
 			ShowMessage(errorMessage);
@@ -580,6 +692,7 @@ namespace Rally.RestApi.UiForWpf
 		void logoutButton_Click(object sender, RoutedEventArgs e)
 		{
 			AuthMgr.PerformLogout();
+			SetDefaultValues();
 			UpdateLoginState();
 		}
 		#endregion

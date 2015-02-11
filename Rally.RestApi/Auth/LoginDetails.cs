@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
 using System.Text;
 using System.Xml;
 
@@ -42,6 +44,25 @@ namespace Rally.RestApi.Auth
 		/// ConnectionType enum value determining SSO auth type
 		/// </summary>
 		public ConnectionType ConnectionType { get; set; }
+		bool trustAllCertificates;
+		/// <summary>
+		/// Should all certificates be trusted?
+		/// </summary>
+		public bool TrustAllCertificates
+		{
+			get { return trustAllCertificates; }
+			set
+			{
+				trustAllCertificates = value;
+				if (TrustAllCertificates)
+				{
+					ServicePointManager.ServerCertificateValidationCallback =
+						new RemoteCertificateValidationCallback(delegate { return true; });
+				}
+				else
+					ServicePointManager.ServerCertificateValidationCallback = null;
+			}
+		}
 
 		private string password = null;
 		private string proxyPassword = null;
@@ -119,6 +140,9 @@ namespace Rally.RestApi.Auth
 				string connType = GetChildNodeValue(xmlDoc.FirstChild.ChildNodes, "ConnectionType");
 				ConnectionType = (ConnectionType)Enum.Parse(typeof(ConnectionType), connType);
 
+				string trustAllCerts = GetChildNodeValue(xmlDoc.FirstChild.ChildNodes, "TrustAllCertificates");
+				Boolean.TryParse(trustAllCerts, out trustAllCertificates);
+
 				string passwordValue = GetChildNodeValue(xmlDoc.FirstChild.ChildNodes, "Password");
 				if (!String.IsNullOrWhiteSpace(passwordValue))
 					password = passwordValue;
@@ -153,6 +177,7 @@ namespace Rally.RestApi.Auth
 			AddChildNode(rootNode, "ZSessionID", ZSessionID);
 			AddChildNode(rootNode, "IdpServer", IdpServer);
 			AddChildNode(rootNode, "ConnectionType", ConnectionType.ToString());
+			AddChildNode(rootNode, "TrustAllCertificates", trustAllCertificates.ToString());
 			if (!String.IsNullOrWhiteSpace(GetPassword()))
 				AddChildNode(rootNode, "Password", password);
 			else

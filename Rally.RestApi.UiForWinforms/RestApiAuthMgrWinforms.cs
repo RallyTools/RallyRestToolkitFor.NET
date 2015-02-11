@@ -107,7 +107,7 @@ namespace Rally.RestApi.UiForWinforms
 		/// </summary>
 		internal RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
 		{
-			return PerformAuthenticationCheckAgainstRally(out errorMessage);
+			return PerformAuthenticationCheckAgainstRally(out errorMessage, true);
 		}
 		#endregion
 
