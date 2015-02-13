@@ -32,12 +32,12 @@ namespace Rally.RestApi.Json
 			{
 				return deSerializer.Deserialize(json, typeof(object)) as DynamicJsonObject;
 			}
-			catch
+			catch (Exception e)
 			{
-				if (json.StartsWith("<!DOCTYPE HTML"))
-					throw new RallyUnavailableException();
+				if ((!String.IsNullOrWhiteSpace(json)) && (json.StartsWith("<!DOCTYPE HTML")))
+					throw new RallyUnavailableException(json);
 				else
-					throw;
+					throw new RallyFailedToDeserializeJson(e, json);
 			}
 		}
 

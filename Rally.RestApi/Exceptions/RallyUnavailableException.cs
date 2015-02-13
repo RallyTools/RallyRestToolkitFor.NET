@@ -10,5 +10,18 @@ namespace Rally.RestApi.Exceptions
 	/// </summary>
 	public class RallyUnavailableException : Exception
 	{
+		/// <summary>
+		/// The error message from Rally
+		/// </summary>
+		public string ErrorMessage { get; private set; }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="errorMessage">The error message that was returned from Rally.</param>
+		internal RallyUnavailableException(string errorMessage)
+		{
+			ErrorMessage = errorMessage;
+		}
 	}
 }
