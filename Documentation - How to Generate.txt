@@ -7,6 +7,8 @@ Download and install the tools required to run SHFB: https://github.com/EWSoftwa
 Launch the SHFB and open the file DocumentationGeneration.shfbproj, or double click the file to open it.
 Select Documentation, Build Project.
 
+Namespace summaries can be edited within the SHFB application under "Summaries"
+
 Prior to building documentation, you must have done a Debug build as this generates the source files for documentation. One 
 annoying "feature" is that when the SHFB program is open, it locks DLLs an you cannot compile from Visual Studio without 
 shutting down SHFB first.
