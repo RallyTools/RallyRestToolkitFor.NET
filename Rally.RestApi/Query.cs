@@ -60,7 +60,7 @@ namespace Rally.RestApi
 		/// An enumeration of the available operators
 		/// to join query clauses
 		/// </summary>
-		protected enum ClauseOperator
+		private enum ClauseOperator
 		{
 			/// <summary>
 			/// AND
@@ -170,7 +170,7 @@ namespace Rally.RestApi
 		/// <param name="b">The second query to be joined</param>
 		/// <param name="op">The operator</param>
 		/// <returns>The joined query</returns>
-		protected Query Join(Query a, Query b, ClauseOperator op)
+		private Query Join(Query a, Query b, ClauseOperator op)
 		{
 			return new Query(string.Format("({0} {1} {2})", a.QueryClause, op.ToString().ToUpper(), b.QueryClause));
 		}

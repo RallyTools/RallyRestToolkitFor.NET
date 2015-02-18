@@ -52,7 +52,7 @@ namespace Rally.RestApi.Json
 		/// </summary>
 		/// <param name="name">The specified member</param>
 		/// <returns>The value of the specified member</returns>
-		protected dynamic GetMember(string name)
+		private dynamic GetMember(string name)
 		{
 			// Prevent exceptions
 			if (!Dictionary.ContainsKey(name))
@@ -88,7 +88,7 @@ namespace Rally.RestApi.Json
 		/// </summary>
 		/// <param name="value">The value to be formatted</param>
 		/// <returns>The formatted item</returns>
-		protected object FormatSetValue(object value)
+		private object FormatSetValue(object value)
 		{
 			if (value == null)
 			{
@@ -148,7 +148,7 @@ namespace Rally.RestApi.Json
 		/// </summary>
 		/// <param name="name">The member</param>
 		/// <param name="value">The value</param>
-		protected void SetMember(string name, dynamic value)
+		private void SetMember(string name, dynamic value)
 		{
 			if (Dictionary.ContainsKey(name))
 			{

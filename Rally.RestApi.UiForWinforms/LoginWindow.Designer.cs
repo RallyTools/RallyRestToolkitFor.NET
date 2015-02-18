@@ -75,28 +75,25 @@
 			this.panel1.Controls.Add(this.logoIcon);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
-			this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(508, 84);
+			this.panel1.Size = new System.Drawing.Size(381, 68);
 			this.panel1.TabIndex = 2;
 			// 
 			// headerTitleLabel
 			// 
 			this.headerTitleLabel.AutoSize = true;
 			this.headerTitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.headerTitleLabel.Location = new System.Drawing.Point(77, 26);
-			this.headerTitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.headerTitleLabel.Location = new System.Drawing.Point(58, 21);
 			this.headerTitleLabel.Name = "headerTitleLabel";
-			this.headerTitleLabel.Size = new System.Drawing.Size(224, 39);
+			this.headerTitleLabel.Size = new System.Drawing.Size(178, 31);
 			this.headerTitleLabel.TabIndex = 0;
 			this.headerTitleLabel.Text = "Login to Rally";
 			// 
 			// logoIcon
 			// 
-			this.logoIcon.Location = new System.Drawing.Point(16, 15);
-			this.logoIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.logoIcon.Location = new System.Drawing.Point(12, 12);
 			this.logoIcon.Name = "logoIcon";
-			this.logoIcon.Size = new System.Drawing.Size(53, 49);
+			this.logoIcon.Size = new System.Drawing.Size(40, 40);
 			this.logoIcon.TabIndex = 1;
 			this.logoIcon.TabStop = false;
 			// 
@@ -106,21 +103,19 @@
 			this.tabControl1.Controls.Add(this.tabServer);
 			this.tabControl1.Controls.Add(this.tabProxy);
 			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.tabControl1.Location = new System.Drawing.Point(13, 12);
-			this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabControl1.Location = new System.Drawing.Point(10, 10);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(482, 128);
+			this.tabControl1.Size = new System.Drawing.Size(361, 104);
 			this.tabControl1.TabIndex = 1;
 			this.tabControl1.TabStop = false;
 			// 
 			// tabCredentials
 			// 
 			this.tabCredentials.Controls.Add(this.tableLayoutPanel1);
-			this.tabCredentials.Location = new System.Drawing.Point(4, 25);
-			this.tabCredentials.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabCredentials.Location = new System.Drawing.Point(4, 22);
 			this.tabCredentials.Name = "tabCredentials";
-			this.tabCredentials.Size = new System.Drawing.Size(474, 99);
+			this.tabCredentials.Size = new System.Drawing.Size(353, 78);
 			this.tabCredentials.TabIndex = 0;
 			this.tabCredentials.Text = "Credentials";
 			this.tabCredentials.UseVisualStyleBackColor = true;
@@ -128,7 +123,7 @@
 			// tableLayoutPanel1
 			// 
 			this.tableLayoutPanel1.ColumnCount = 2;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Controls.Add(this.passwordInput, 1, 1);
 			this.tableLayoutPanel1.Controls.Add(this.passwordLabel, 0, 1);
@@ -136,34 +131,31 @@
 			this.tableLayoutPanel1.Controls.Add(this.usernameInput, 1, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 3;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(474, 98);
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(353, 80);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// passwordInput
 			// 
 			this.passwordInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.passwordInput.Location = new System.Drawing.Point(137, 35);
-			this.passwordInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.passwordInput.Location = new System.Drawing.Point(103, 28);
 			this.passwordInput.Name = "passwordInput";
 			this.passwordInput.PasswordChar = '*';
-			this.passwordInput.Size = new System.Drawing.Size(333, 22);
+			this.passwordInput.Size = new System.Drawing.Size(251, 20);
 			this.passwordInput.TabIndex = 2;
 			// 
 			// passwordLabel
 			// 
 			this.passwordLabel.AutoSize = true;
 			this.passwordLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.passwordLabel.Location = new System.Drawing.Point(4, 31);
-			this.passwordLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.passwordLabel.Location = new System.Drawing.Point(3, 25);
 			this.passwordLabel.Name = "passwordLabel";
-			this.passwordLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.passwordLabel.Size = new System.Drawing.Size(125, 31);
+			this.passwordLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.passwordLabel.Size = new System.Drawing.Size(94, 25);
 			this.passwordLabel.TabIndex = 3;
 			this.passwordLabel.Text = "Password";
 			this.passwordLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -172,11 +164,10 @@
 			// 
 			this.userNameLabel.AutoSize = true;
 			this.userNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.userNameLabel.Location = new System.Drawing.Point(4, 0);
-			this.userNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.userNameLabel.Location = new System.Drawing.Point(3, 0);
 			this.userNameLabel.Name = "userNameLabel";
-			this.userNameLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.userNameLabel.Size = new System.Drawing.Size(125, 31);
+			this.userNameLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.userNameLabel.Size = new System.Drawing.Size(94, 25);
 			this.userNameLabel.TabIndex = 4;
 			this.userNameLabel.Text = "User Name";
 			this.userNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -184,19 +175,17 @@
 			// usernameInput
 			// 
 			this.usernameInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.usernameInput.Location = new System.Drawing.Point(137, 4);
-			this.usernameInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.usernameInput.Location = new System.Drawing.Point(103, 3);
 			this.usernameInput.Name = "usernameInput";
-			this.usernameInput.Size = new System.Drawing.Size(333, 22);
+			this.usernameInput.Size = new System.Drawing.Size(251, 20);
 			this.usernameInput.TabIndex = 1;
 			// 
 			// tabServer
 			// 
 			this.tabServer.Controls.Add(this.tableLayoutPanel2);
-			this.tabServer.Location = new System.Drawing.Point(4, 25);
-			this.tabServer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabServer.Location = new System.Drawing.Point(4, 22);
 			this.tabServer.Name = "tabServer";
-			this.tabServer.Size = new System.Drawing.Size(473, 99);
+			this.tabServer.Size = new System.Drawing.Size(354, 78);
 			this.tabServer.TabIndex = 1;
 			this.tabServer.Text = "Server";
 			this.tabServer.UseVisualStyleBackColor = true;
@@ -204,30 +193,28 @@
 			// tableLayoutPanel2
 			// 
 			this.tableLayoutPanel2.ColumnCount = 2;
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Controls.Add(this.rallyServerLabel, 0, 0);
 			this.tableLayoutPanel2.Controls.Add(this.rallyServerInput, 1, 0);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
 			this.tableLayoutPanel2.RowCount = 3;
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(473, 98);
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(354, 80);
 			this.tableLayoutPanel2.TabIndex = 0;
 			// 
 			// rallyServerLabel
 			// 
 			this.rallyServerLabel.AutoSize = true;
 			this.rallyServerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rallyServerLabel.Location = new System.Drawing.Point(4, 0);
-			this.rallyServerLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.rallyServerLabel.Location = new System.Drawing.Point(3, 0);
 			this.rallyServerLabel.Name = "rallyServerLabel";
-			this.rallyServerLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.rallyServerLabel.Size = new System.Drawing.Size(125, 31);
+			this.rallyServerLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.rallyServerLabel.Size = new System.Drawing.Size(94, 25);
 			this.rallyServerLabel.TabIndex = 0;
 			this.rallyServerLabel.Text = "Server";
 			this.rallyServerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -235,19 +222,17 @@
 			// rallyServerInput
 			// 
 			this.rallyServerInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rallyServerInput.Location = new System.Drawing.Point(137, 4);
-			this.rallyServerInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.rallyServerInput.Location = new System.Drawing.Point(103, 3);
 			this.rallyServerInput.Name = "rallyServerInput";
-			this.rallyServerInput.Size = new System.Drawing.Size(332, 22);
+			this.rallyServerInput.Size = new System.Drawing.Size(250, 20);
 			this.rallyServerInput.TabIndex = 3;
 			// 
 			// tabProxy
 			// 
 			this.tabProxy.Controls.Add(this.tableLayoutPanel3);
-			this.tabProxy.Location = new System.Drawing.Point(4, 25);
-			this.tabProxy.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabProxy.Location = new System.Drawing.Point(4, 22);
 			this.tabProxy.Name = "tabProxy";
-			this.tabProxy.Size = new System.Drawing.Size(473, 99);
+			this.tabProxy.Size = new System.Drawing.Size(354, 78);
 			this.tabProxy.TabIndex = 2;
 			this.tabProxy.Text = "Proxy";
 			this.tabProxy.UseVisualStyleBackColor = true;
@@ -255,7 +240,7 @@
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 2;
-			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel3.Controls.Add(this.proxyServerInput, 0, 0);
 			this.tableLayoutPanel3.Controls.Add(this.proxyServerLabel, 0, 0);
@@ -265,34 +250,31 @@
 			this.tableLayoutPanel3.Controls.Add(this.proxyUserNameInput, 1, 1);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 3;
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(473, 98);
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(354, 80);
 			this.tableLayoutPanel3.TabIndex = 0;
 			// 
 			// proxyServerInput
 			// 
 			this.proxyServerInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyServerInput.Location = new System.Drawing.Point(137, 4);
-			this.proxyServerInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.proxyServerInput.Location = new System.Drawing.Point(103, 3);
 			this.proxyServerInput.Name = "proxyServerInput";
-			this.proxyServerInput.Size = new System.Drawing.Size(332, 22);
+			this.proxyServerInput.Size = new System.Drawing.Size(250, 20);
 			this.proxyServerInput.TabIndex = 4;
 			// 
 			// proxyServerLabel
 			// 
 			this.proxyServerLabel.AutoSize = true;
 			this.proxyServerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyServerLabel.Location = new System.Drawing.Point(4, 0);
-			this.proxyServerLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.proxyServerLabel.Location = new System.Drawing.Point(3, 0);
 			this.proxyServerLabel.Name = "proxyServerLabel";
-			this.proxyServerLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.proxyServerLabel.Size = new System.Drawing.Size(125, 31);
+			this.proxyServerLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.proxyServerLabel.Size = new System.Drawing.Size(94, 25);
 			this.proxyServerLabel.TabIndex = 5;
 			this.proxyServerLabel.Text = "Server";
 			this.proxyServerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -300,22 +282,20 @@
 			// proxyPasswordInput
 			// 
 			this.proxyPasswordInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyPasswordInput.Location = new System.Drawing.Point(137, 66);
-			this.proxyPasswordInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.proxyPasswordInput.Location = new System.Drawing.Point(103, 53);
 			this.proxyPasswordInput.Name = "proxyPasswordInput";
 			this.proxyPasswordInput.PasswordChar = '*';
-			this.proxyPasswordInput.Size = new System.Drawing.Size(332, 22);
+			this.proxyPasswordInput.Size = new System.Drawing.Size(250, 20);
 			this.proxyPasswordInput.TabIndex = 6;
 			// 
 			// proxyPasswordLabel
 			// 
 			this.proxyPasswordLabel.AutoSize = true;
 			this.proxyPasswordLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyPasswordLabel.Location = new System.Drawing.Point(4, 62);
-			this.proxyPasswordLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.proxyPasswordLabel.Location = new System.Drawing.Point(3, 50);
 			this.proxyPasswordLabel.Name = "proxyPasswordLabel";
-			this.proxyPasswordLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.proxyPasswordLabel.Size = new System.Drawing.Size(125, 36);
+			this.proxyPasswordLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.proxyPasswordLabel.Size = new System.Drawing.Size(94, 30);
 			this.proxyPasswordLabel.TabIndex = 7;
 			this.proxyPasswordLabel.Text = "Password";
 			this.proxyPasswordLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -324,11 +304,10 @@
 			// 
 			this.proxyUserNameLabel.AutoSize = true;
 			this.proxyUserNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyUserNameLabel.Location = new System.Drawing.Point(4, 31);
-			this.proxyUserNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.proxyUserNameLabel.Location = new System.Drawing.Point(3, 25);
 			this.proxyUserNameLabel.Name = "proxyUserNameLabel";
-			this.proxyUserNameLabel.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
-			this.proxyUserNameLabel.Size = new System.Drawing.Size(125, 31);
+			this.proxyUserNameLabel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.proxyUserNameLabel.Size = new System.Drawing.Size(94, 25);
 			this.proxyUserNameLabel.TabIndex = 8;
 			this.proxyUserNameLabel.Text = "User Name";
 			this.proxyUserNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -336,10 +315,9 @@
 			// proxyUserNameInput
 			// 
 			this.proxyUserNameInput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.proxyUserNameInput.Location = new System.Drawing.Point(137, 35);
-			this.proxyUserNameInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.proxyUserNameInput.Location = new System.Drawing.Point(103, 28);
 			this.proxyUserNameInput.Name = "proxyUserNameInput";
-			this.proxyUserNameInput.Size = new System.Drawing.Size(332, 22);
+			this.proxyUserNameInput.Size = new System.Drawing.Size(250, 20);
 			this.proxyUserNameInput.TabIndex = 5;
 			// 
 			// flowLayoutPanel1
@@ -349,19 +327,17 @@
 			this.flowLayoutPanel1.Controls.Add(this.loginBtn);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 257);
-			this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 209);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			this.flowLayoutPanel1.Size = new System.Drawing.Size(508, 37);
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(381, 30);
 			this.flowLayoutPanel1.TabIndex = 1;
 			// 
 			// cancelBtn
 			// 
 			this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelBtn.Location = new System.Drawing.Point(404, 4);
-			this.cancelBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cancelBtn.Location = new System.Drawing.Point(303, 3);
 			this.cancelBtn.Name = "cancelBtn";
-			this.cancelBtn.Size = new System.Drawing.Size(100, 28);
+			this.cancelBtn.Size = new System.Drawing.Size(75, 23);
 			this.cancelBtn.TabIndex = 0;
 			this.cancelBtn.TabStop = false;
 			this.cancelBtn.Text = "Cancel";
@@ -370,10 +346,9 @@
 			// 
 			// logoutBtn
 			// 
-			this.logoutBtn.Location = new System.Drawing.Point(296, 4);
-			this.logoutBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.logoutBtn.Location = new System.Drawing.Point(222, 3);
 			this.logoutBtn.Name = "logoutBtn";
-			this.logoutBtn.Size = new System.Drawing.Size(100, 28);
+			this.logoutBtn.Size = new System.Drawing.Size(75, 23);
 			this.logoutBtn.TabIndex = 1;
 			this.logoutBtn.TabStop = false;
 			this.logoutBtn.Text = "Logout";
@@ -382,10 +357,9 @@
 			// 
 			// loginBtn
 			// 
-			this.loginBtn.Location = new System.Drawing.Point(188, 4);
-			this.loginBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.loginBtn.Location = new System.Drawing.Point(141, 3);
 			this.loginBtn.Name = "loginBtn";
-			this.loginBtn.Size = new System.Drawing.Size(100, 28);
+			this.loginBtn.Size = new System.Drawing.Size(75, 23);
 			this.loginBtn.TabIndex = 2;
 			this.loginBtn.TabStop = false;
 			this.loginBtn.Text = "Login";
@@ -397,11 +371,10 @@
 			this.panel2.Controls.Add(this.userMessageLabel);
 			this.panel2.Controls.Add(this.tabControl1);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panel2.Location = new System.Drawing.Point(0, 84);
-			this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.panel2.Location = new System.Drawing.Point(0, 68);
 			this.panel2.Name = "panel2";
-			this.panel2.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-			this.panel2.Size = new System.Drawing.Size(508, 173);
+			this.panel2.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
+			this.panel2.Size = new System.Drawing.Size(381, 141);
 			this.panel2.TabIndex = 0;
 			// 
 			// userMessageLabel
@@ -409,25 +382,23 @@
 			this.userMessageLabel.AutoSize = true;
 			this.userMessageLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.userMessageLabel.ForeColor = System.Drawing.Color.Red;
-			this.userMessageLabel.Location = new System.Drawing.Point(17, 144);
-			this.userMessageLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.userMessageLabel.Location = new System.Drawing.Point(13, 117);
 			this.userMessageLabel.Name = "userMessageLabel";
-			this.userMessageLabel.Size = new System.Drawing.Size(127, 20);
+			this.userMessageLabel.Size = new System.Drawing.Size(106, 17);
 			this.userMessageLabel.TabIndex = 0;
 			this.userMessageLabel.Text = "User Messages";
 			// 
 			// LoginWindow
 			// 
 			this.AcceptButton = this.loginBtn;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelBtn;
-			this.ClientSize = new System.Drawing.Size(508, 294);
+			this.ClientSize = new System.Drawing.Size(381, 239);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.flowLayoutPanel1);
 			this.Controls.Add(this.panel1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.Name = "LoginWindow";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Login to Rally";

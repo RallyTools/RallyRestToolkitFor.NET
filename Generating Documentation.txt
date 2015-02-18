@@ -1,0 +1,15 @@
+In order to generate Sandcastle based documentation, please follow these steps:
+
+Definitions:
+SHFB = "Sandcastle Help File Builder"
+
+Download and install the tools required to run SHFB: https://github.com/EWSoftware/SHFB
+Launch the SHFB and open the file DocumentationGeneration.shfbproj, or double click the file to open it.
+Select Documentation, Build Project.
+
+Prior to building documentation, you must have done a Debug build as this generates the source files for documentation.
+
+Known Issues:
+CHM (HTML Help 1) based documentation doesn't always generate correctly, so it is kept off by default in the project file.
+
+A good reference for code documentation to ensure it is correctly listed in the Sandcastle documentation is located here: http://tiny.cc/q9urn

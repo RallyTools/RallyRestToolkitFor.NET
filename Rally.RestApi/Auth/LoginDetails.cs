@@ -235,7 +235,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Gets the value from a child node.
 		/// </summary>
-		protected string GetChildNodeValue(XmlNodeList childNodes, string childNodeName)
+		private string GetChildNodeValue(XmlNodeList childNodes, string childNodeName)
 		{
 			if (childNodes == null)
 				return null;
@@ -254,7 +254,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Adds a child node to a parent node.
 		/// </summary>
-		protected XmlElement AddChildNode(XmlElement parentNode, string name, string dataValue)
+		private XmlElement AddChildNode(XmlElement parentNode, string name, string dataValue)
 		{
 			XmlElement node = parentNode.OwnerDocument.CreateElement(name);
 			if (!String.IsNullOrWhiteSpace(dataValue))

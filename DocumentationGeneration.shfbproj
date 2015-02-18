@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which assemblies to include from solution and
+				 project documentation sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95dfa21e-b8a8-46d3-be80-47a4f74d2168}</ProjectGuid>
+    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
+    <OutputPath>Documentation\</OutputPath>
+    <HtmlHelpName>RallyRestAPIForDotNetDocumentation</HtmlHelpName>
+    <Language>en-US</Language>
+    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
+    <HelpFileFormat>Website</HelpFileFormat>
+    <IndentHtml>True</IndentHtml>
+    <KeepLogFile>True</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <CleanIntermediates>True</CleanIntermediates>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <NamespaceGrouping>False</NamespaceGrouping>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <PresentationStyle>VS2013</PresentationStyle>
+    <Preliminary>False</Preliminary>
+    <NamingMethod>Guid</NamingMethod>
+    <HelpTitle>Rally Rest API for .Net</HelpTitle>
+    <FeedbackEMailAddress>support%40rallydev.com</FeedbackEMailAddress>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="Rally.RestApi\bin\Debug\Rally.RestApi.dll" />
+      <DocumentationSource sourceFile="Rally.RestApi.UiForWinforms\bin\Debug\Rally.RestApi.UiForWinforms.dll" />
+      <DocumentationSource sourceFile="Rally.RestApi.UiForWinforms\bin\Debug\Rally.RestApi.UiForWinforms.XML" />
+      <DocumentationSource sourceFile="Rally.RestApi.UiForWpf\bin\Debug\Rally.RestApi.UiForWpf.dll" />
+      <DocumentationSource sourceFile="Rally.RestApi.UiForWpf\bin\Debug\Rally.RestApi.UiForWpf.XML" />
+      <DocumentationSource sourceFile="Rally.RestApi\bin\Debug\Rally.RestApi.xml" />
+    </DocumentationSources>
+    <HtmlHelp1xCompilerPath>Documentation\</HtmlHelp1xCompilerPath>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="Rally.RestApi.UiForWinforms" isDocumented="True">&lt;p&gt;This library provides a reusable UI for Winforms to provide common authentication.&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;NOTE: If you need IDP based SSO, you must use the UI for WPF instead as the IDP support was not implemented in the Winforms libraries.&lt;/i&gt;&lt;/p&gt;
+
+&lt;p&gt;This pseudo code example shows how to use the UI for Winforms. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.&lt;/p&gt;
+
+&lt;code&gt;
+public static RestApiAuthMgrWinforms winFormsAuthMgr { get; set; }
+
+public static void PrimaryEntryMethod()
+{
+	// HELP: Define your encryption items prior to instantiating authorization managers
+	// You must define your own private application token. This ensures that your login details are not overwritten by someone else.
+	string applicationToken = "RallyRestAPISample";
+	// You must set a user specific salt for encryption.
+	string encryptionKey = "UserSpecificSaltForEncryption";
+	// You must define your own encryption routines.
+	IEncryptionRoutines encryptionUtilities = new EncryptionUtilities();
+
+	// HELP: Instantiate authorization manager
+	winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
+
+	// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.
+	// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.
+	ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label", loginWindowDefaultServer: new Uri("http://onprem-url"));
+
+	// HELP: Set the logo that is shown in the login window
+	RestApiAuthMgrWinforms.SetLogo(ImageResources.RallyLogo40x40);
+
+	// Help: You can auto-authenticate if you want. We do not have it enabled for this application.
+	// winFormsAuthMgr.AutoAuthenticate(true);
+}
+
+// HELP: This method shows you how to open a login window.
+private void openWinformsLogin_Click(object sender, RoutedEventArgs e)
+{
+	// HELP: Delegates are provided so we can be notified that authentication or SSO authentication has completed.
+	winFormsAuthMgr.ShowUserLoginWindow(AuthenticationComplete, SsoAuthenticationComplete);
+}
+
+// HELP: This delegate notifies us that authentication has completed.
+private void AuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	UpdateAuthenticationResults(authenticationResult, api);
+}
+
+// HELP: This delegate notifies us that SSO authentication has completed.
+private void SsoAuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	UpdateAuthenticationResults(authenticationResult, api);
+}
+
+// HELP: This method handles the passthrough from the delegates.
+// This is where you would need to update your application to show the logged in state.
+private void UpdateAuthenticationResults(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	// Change your applications behavoir based upon the new AuthenticationResult
+}
+
+&lt;/code&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi.UiForWpf" isDocumented="True">&lt;p&gt;This library provides a reusable UI for WPF to provide common authentication.&lt;/p&gt;
+
+&lt;p&gt;This pseudo code example shows how to use the UI for WPF. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.&lt;/p&gt;
+
+&lt;code&gt;
+public static RestApiAuthMgrWpf wpfAuthMgr { get; set; }
+
+public static void PrimaryEntryMethod()
+{
+	// HELP: Define your encryption items prior to instantiating authorization managers
+	// You must define your own private application token. This ensures that your login details are not overwritten by someone else.
+	string applicationToken = "RallyRestAPISample";
+	// You must set a user specific salt for encryption.
+	string encryptionKey = "UserSpecificSaltForEncryption";
+	// You must define your own encryption routines.
+	IEncryptionRoutines encryptionUtilities = new EncryptionUtilities();
+
+	// HELP: Instantiate authorization manager
+	wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
+
+	// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.
+	// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.
+	ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label", loginWindowDefaultServer: new Uri("http://onprem-url"));
+
+	// HELP: Set the logo that is shown in the login window
+	RestApiAuthMgrWpf.SetLogo(ImageResources.RallyLogo40x40);
+
+	// Help: You can auto-authenticate if you want. We do not have it enabled for this application.
+	// wpfAuthMgr.AutoAuthenticate(true);
+}
+
+// HELP: This method shows you how to open a login window.
+private void openWpfLogin_Click(object sender, RoutedEventArgs e)
+{
+	// HELP: Delegates are provided so we can be notified that authentication or SSO authentication has completed.
+	wpfAuthMgr.ShowUserLoginWindow(AuthenticationComplete, SsoAuthenticationComplete);
+}
+
+// HELP: This delegate notifies us that authentication has completed.
+private void AuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	UpdateAuthenticationResults(authenticationResult, api);
+}
+
+// HELP: This delegate notifies us that SSO authentication has completed.
+private void SsoAuthenticationComplete(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	UpdateAuthenticationResults(authenticationResult, api);
+}
+
+// HELP: This method handles the passthrough from the delegates.
+// This is where you would need to update your application to show the logged in state.
+private void UpdateAuthenticationResults(RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
+{
+	// Change your applications behavoir based upon the new AuthenticationResult
+}
+
+&lt;/code&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="(global)" isDocumented="True" />
+<NamespaceSummaryItem name="Rally.RestApi.Auth" isDocumented="True">&lt;p&gt;This namespace contains classes that control how the RestAPI toolkit authenticates with Rally.&lt;/p&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi.Connection" isDocumented="True">&lt;p&gt;This namespace contains classes that control how the RestAPI toolkit connects and communicates with Rally.&lt;/p&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi.Exceptions" isDocumented="True">&lt;p&gt;This namespace contains all of the specific exceptions that might be thrown by the RestAPI toolkit.&lt;/p&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi.Json" isDocumented="True">&lt;p&gt;This namespace contains classes that control how the RestAPI toolkit works with JSON data received from Rally.&lt;/p&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi.Response" isDocumented="True">&lt;p&gt;This namespace contains classes that define the responses the RestAPI toolkit will return after comunicating with Rally.&lt;/p&gt;</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Rally.RestApi" isDocumented="True">&lt;p&gt;This is the primary namespace for the Rally Rest API for DotNet.&lt;/p&gt;
+
+&lt;h3&gt;Introduction&lt;/h3&gt;
+The Rally REST API for .NET provides an intuitive interface to your Rally Data. It supports querying items in addition to individual item creates, reads, updates and deletes. It is compatible with any .NET 4.0 language (C#, VB.NET, F#, etc.)
+
+&lt;h3&gt;Adding the API to your Solution&lt;/h3&gt;
+Add a reference to the Rally.RestApi.dll library or libraries from a new or existing project. Your project must have a Project Target Framework of .NET Framework 4 or higher.
+
+&lt;table width="550"&gt;
+&lt;tr&gt;
+&lt;th&gt;Library&lt;/th&gt;
+&lt;th&gt;Required&lt;/th&gt;
+&lt;th&gt;Used For&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Rally.RestApi.dll&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Communication with Rally&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Rally.RestApi.UiForWinforms.dll&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;Provides a UI for Winforms applications&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Rally.RestApi.UiForWpf.dll&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;Provides a UI for WPF applications&lt;br/&gt;
+Can be used by Winforms applications that need IDP based SSO
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;h3&gt;Sample Usage&lt;/h3&gt;
+&lt;p&gt;This sample code snippet shows how the Rally Rest API can be used by a console application:&lt;/p&gt;
+
+&lt;code&gt;string username = "paul@acme.com";
+string password = "Just4Rally";
+// Initialize the REST API. You can specify a web service version if needed in the constructor.
+RallyRestApi restApi = new RallyRestApi();
+restApi.Authenticate(username, password, "https://preview.rallydev.com", proxy: null, allowSSO: false);
+
+//Create an item
+DynamicJsonObject toCreate = new DynamicJsonObject();
+toCreate["Name"] = "My Defect";
+CreateResult createResult = restApi.Create("defect", toCreate);
+
+//Update the item
+DynamicJsonObject toUpdate = new DynamicJsonObject();
+toUpdate["Description"] = "This is my defect.";
+OperationResult updateResult = restApi.Update(createResult.Reference, toUpdate);
+
+//Get the item
+DynamicJsonObject item = restApi.GetByReference(createResult.Reference);
+
+//Query for items
+Request request = new Request("defect");
+request.Fetch = new List&amp;lt;string&amp;gt;() { "Name", "Description", "FormattedID" };
+request.Query = new Query("Name", Query.Operator.Equals, "My Defect");
+QueryResult queryResult = restApi.Query(request);
+foreach (var result in queryResult.Results)
+{
+  //Process item as needed
+}
+
+//Delete the item
+OperationResult deleteResult = restApi.Delete(createResult.Reference);
+&lt;/code&gt;
+
+
+&lt;h3&gt;Logging&lt;/h3&gt;
+The Rally REST API for .NET provides the ability to log all requests and responses to aid in troubleshooting.
+
+To enable this behavior simply configure one or more trace listeners at the Information level.
+
+Below is an example App.config which will enable this:
+&lt;code&gt;
+&amp;lt;?xml version="1.0" encoding="utf-8" ?&amp;gt;
+&amp;lt;configuration&amp;gt;
+	&amp;lt;startup&amp;gt;
+		&amp;lt;supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" /&amp;gt;
+	&amp;lt;/startup&amp;gt;
+	&amp;lt;system.diagnostics&amp;gt;
+		&amp;lt;trace autoflush="true" indentsize="2"&amp;gt;
+			&amp;lt;listeners&amp;gt;
+				&amp;lt;add name="RallyRestApiUiSample" type="System.Diagnostics.TextWriterTraceListener
+					initializeData="RallyRestApiUiSample.log" /&amp;gt;
+				&amp;lt;remove name="Default" /&amp;gt;
+			&amp;lt;/listeners&amp;gt;
+		&amp;lt;/trace&amp;gt;
+	&amp;lt;/system.diagnostics&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;
+
+&lt;h3&gt;Upgrading from Rally Rest API 2.x&lt;/h3&gt;
+&lt;p&gt;If you are upgrading from the 2.x series of the Rally Rest API for DotNet, the following major changes are known:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li/&gt;Reorganization of Namespaces - Moved many classes into sub-namespaces for better organization of code
+&lt;li/&gt;Authenication sequence - Constructor no longer performs authentication
+&lt;li/&gt;Reusable UI Layer - We added components for standardized login windows throughout all applications using the toolkit, including support for SSO
+&lt;/ul&gt;
+
+&lt;code&gt;
+// Old authentication in constructor
+RallyRestApi restApi = new RallyRestApi("user@sandbox.com", "secret", "https://sandbox.rallydev.com", "v2.0");
+
+// New authentication method
+RallyRestApi restApi = new RallyRestApi(webServiceVersion: "v2.0");
+restApi.Authenticate("user@sandbox.com", "secret", "https://sandbox.rallydev.com", allowSSO: false);
+&lt;/code&gt;</NamespaceSummaryItem></NamespaceSummaries>
+    <ProjectSummary>
+    </ProjectSummary>
+  </PropertyGroup>
+  <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
+			 the build.  The others are optional common platform types that may appear. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>

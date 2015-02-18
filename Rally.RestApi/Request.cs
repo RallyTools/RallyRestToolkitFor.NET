@@ -292,7 +292,7 @@ namespace Rally.RestApi
 		/// Create a query string from this request.
 		/// </summary>
 		/// <returns>A query string representation of this request</returns>
-		protected string BuildQueryString()
+		private string BuildQueryString()
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append(ShortRequestUrl);

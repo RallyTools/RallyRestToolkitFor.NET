@@ -239,7 +239,7 @@ namespace Rally.RestApi.Web
 				{
 					if (connectionInfo.AuthType == AuthorizationType.ZSessionID)
 					{
-						// Sending blank username
+						// Sending blank user name
 						string auth = string.Format(":{0}", connectionInfo.ZSessionID);
 						string enc = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
 						string cred = string.Format("{0} {1}", "Basic", enc);

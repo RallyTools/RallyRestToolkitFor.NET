@@ -24,6 +24,7 @@ namespace Rally.RestApi
 		/// The endpoint for getting a CSRF token. This has custom logic in HttpService for SSO users.
 		/// </summary>
 		public const string SECURITY_ENDPOINT = "/security/authorize";
+		TraceSource traceSource = new TraceSource("RallyRestApi");
 
 		#region Enumeration: AuthenticationResult
 		/// <summary>
@@ -182,11 +183,19 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		/// <param name="userName">The username to be used for access</param>
+		/// <param name="userName">The user name to be used for access</param>
 		/// <param name="zSessionID">The ZSessionID to be used for access. This would have been provided by Rally on a previous call.</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
+		/// <returns>An <see cref="AuthenticationResult"/> that indicates the current state of the authentication process.</returns>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.AuthenticateWithZSessionID("myuser@company.com", "zSessionID", proxy: myProxy);
+		/// </code>
+		/// </example>
 		public AuthenticationResult AuthenticateWithZSessionID(string userName, string zSessionID,
 			string rallyServer = DEFAULT_SERVER, WebProxy proxy = null, bool allowSSO = true)
 		{
@@ -211,8 +220,16 @@ namespace Rally.RestApi
 		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
-		public AuthenticationResult AuthenticateWithApiKey(string apiKey, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null, bool allowSSO = true)
+		/// <returns>An <see cref="AuthenticationResult"/> that indicates the current state of the authentication process.</returns>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.AuthenticateWithApiKey("ApiKeyFromRally", proxy: myProxy);
+		/// </code>
+		/// </example>
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey,
+			string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
 		{
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
@@ -222,7 +239,7 @@ namespace Rally.RestApi
 			connectionInfo.ApiKey = apiKey;
 			connectionInfo.Server = new Uri(rallyServer);
 			connectionInfo.Proxy = proxy;
-			return AuthenticateWithConnectionInfo(connectionInfo, allowSSO);
+			return AuthenticateWithConnectionInfo(connectionInfo, false);
 		}
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
@@ -230,8 +247,15 @@ namespace Rally.RestApi
 		/// <param name="apiKey">The API key to be used for access</param>
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
-		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
-		public AuthenticationResult AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null, bool allowSSO = true)
+		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.AuthenticateWithApiKey("ApiKeyFromRally", new Uri("https://myserverurl"), proxy: myProxy);
+		/// </code>
+		/// </example>
+		public AuthenticationResult AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null)
 		{
 			if (serverUrl == null)
 				serverUrl = new Uri(DEFAULT_SERVER);
@@ -241,16 +265,24 @@ namespace Rally.RestApi
 			connectionInfo.ApiKey = apiKey;
 			connectionInfo.Server = serverUrl;
 			connectionInfo.Proxy = proxy;
-			return AuthenticateWithConnectionInfo(connectionInfo, allowSSO);
+			return AuthenticateWithConnectionInfo(connectionInfo, false);
 		}
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		/// <param name="username">The username to be used for access</param>
+		/// <param name="username">The user name to be used for access</param>
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
+		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.Authenticate("myuser@company.com", "password", proxy: myProxy);
+		/// </code>
+		/// </example>
 		public AuthenticationResult Authenticate(string username, string password, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null, bool allowSSO = true)
 		{
 			if (String.IsNullOrWhiteSpace(rallyServer))
@@ -267,11 +299,19 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
-		/// <param name="username">The username to be used for access</param>
+		/// <param name="username">The user name to be used for access</param>
 		/// <param name="password">The password to be used for access</param>
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
+		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.Authenticate("myuser@company.com", "password", new Uri("https://myserverurl"), proxy: myProxy);
+		/// </code>
+		/// </example>
 		public AuthenticationResult Authenticate(string username, string password, Uri serverUrl, WebProxy proxy = null, bool allowSSO = true)
 		{
 			if (serverUrl == null)
@@ -336,7 +376,7 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Configures authentication to run against an IDP.
 		/// </summary>
-		public void CreateIdpAuthentication(Uri idpServer, WebProxy proxy = null)
+		internal void CreateIdpAuthentication(Uri idpServer, WebProxy proxy = null)
 		{
 			if (idpServer == null)
 				throw new ArgumentNullException("idpServer");
@@ -354,6 +394,15 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Logs this API out from any connection to Rally and clears the authentication configuration.
 		/// </summary>
+		/// <example>
+		/// <code>
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// WebProxy myProxy = new WebProxy();
+		/// restApi.AuthenticateWithZSessionID("myuser@company.com", "zSessionID", proxy: myProxy);
+		/// 
+		/// restApi.Logout();
+		/// </code>
+		/// </example>
 		public void Logout()
 		{
 			AuthenticationState = AuthenticationResult.NotAuthorized;
@@ -365,9 +414,14 @@ namespace Rally.RestApi
 		#region SetDefaultConnectionLimit
 		/// <summary>
 		/// Sets the default maximum concurrent connection limit for this application.
-		/// <para>Note: This will affect all connections that use Service Point.</para>
+		/// <note>This will affect all connections that use Service Point.</note>
 		/// </summary>
 		/// <param name="maxConnections">The maximum number of concurrent connections. Allowed values are between 1 and 25.</param>
+		/// <example>
+		/// <code>
+		/// RallyRestApi.SetDefaultConnectionLimit(10);
+		/// </code>
+		/// </example>
 		public static void SetDefaultConnectionLimit(ushort maxConnections)
 		{
 			if ((maxConnections < 1) || (25 < maxConnections))
@@ -381,6 +435,15 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Performs a post of data to the provided URI.
 		/// </summary>
+		/// <param name="relativeUri">The relative URI to post the data to.</param>
+		/// <param name="data">The data to submit to Rally.</param>
+		/// <returns>A <see cref="DynamicJsonObject"/> with information on the response from Rally.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject data = objectToPost;
+		/// restApi.Post("defect/12345", data)
+		/// </code>
+		/// </example>
 		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
 			if (ConnectionInfo == null)
@@ -414,7 +477,23 @@ namespace Rally.RestApi
 		/// on the data in the specified request
 		/// </summary>
 		/// <param name="request">The request configuration</param>
-		/// <returns>The results of the read operation</returns>
+		/// <returns>A <see cref="DynamicJsonObject"/> with the response from Rally.</returns>
+		/// <example>
+		/// <code>
+		/// // Build request
+		/// Request request = new Request("defect");
+		/// request.Fetch = new List&lt;string&gt;() { "Name", "Description", "FormattedID" };
+		/// 
+		/// request.Query = new Query("Name", Query.Operator.Equals, "My Defect").And(new Query("State", Query.Operator.Equals, "Submitted"));
+		/// 
+		/// // Make request and process results 
+		/// QueryResult queryResult = restApi.Query(request);
+		/// foreach (var result in queryResult.Results)
+		/// {
+		/// 	string itemName = result["Name"];
+		/// }
+		/// </code>
+		/// </example>
 		public QueryResult Query(Request request)
 		{
 			if (ConnectionInfo == null)
@@ -475,6 +554,16 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Get the current user
 		/// </summary>
+		/// <param name="fetchedFields">The fields that should be retrieved for the user.
+		/// If no fields are specified, a * wild card will be used.</param>
+		/// <returns>A <see cref="DynamicJsonObject"/> that contains the currently logged in user.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject user = restApi.GetCurrentUser("Name", "FormattedID");
+		/// string user = user["Name"];
+		/// string userID = user["FormattedID"];
+		/// </code>
+		/// </example>
 		public dynamic GetCurrentUser(params string[] fetchedFields)
 		{
 			return GetByReference("/user.js", fetchedFields);
@@ -486,7 +575,14 @@ namespace Rally.RestApi
 		/// Get the current subscription
 		/// </summary>
 		/// <param name="fetchedFields">An optional list of fields to be fetched</param>
-		/// <returns></returns>
+		/// <returns>A <see cref="DynamicJsonObject"/> that contains the currently logged in user.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject subscription = restApi.GetSubscription("Name", "FormattedID");
+		/// string subscriptionName = subscription["Name"];
+		/// string subscriptionFormattedID = subscription["FormattedID"];
+		/// </code>
+		/// </example>
 		public dynamic GetSubscription(params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
@@ -503,7 +599,14 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="oid">the object id</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
-		/// <returns>The requested object</returns>
+		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject item = restApi.GetByReference("defect", 12345, "Name", "FormattedID");
+		/// string itemName = item["Name"];
+		/// string itemFormattedID = item["FormattedID"];
+		/// </code>
+		/// </example>
 		public dynamic GetByReference(string typePath, long oid, params string[] fetchedFields)
 		{
 			return GetByReference(string.Format("/{0}/{1}", typePath, oid), fetchedFields);
@@ -514,7 +617,14 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="aRef">the reference</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
-		/// <returns>The requested object</returns>
+		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <example>
+		/// <code>
+		/// string aRef = "https://preview.rallydev.com/slm/webservice/v2.0/defect/12345.js"
+		/// DynamicJsonObject item = restApi.GetByReference(aRef, "Name", "FormattedID");
+		/// string itemName = item["Name"];
+		/// </code>
+		/// </example>
 		public dynamic GetByReference(string aRef, params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
@@ -542,7 +652,15 @@ namespace Rally.RestApi
 		/// <param name="aRef">the reference</param>
 		/// <param name="workspaceRef">workspace scope</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
-		/// <returns>The requested object</returns>
+		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <example>
+		/// <code>
+		/// string aRef = "https://preview.rallydev.com/slm/webservice/v2.0/defect/12345.js"
+		/// string workspaceRef = "/workspace/12345678910";
+		/// DynamicJsonObject item = restApi.GetByReference(aRef, workspaceRef, "Name", "FormattedID");
+		/// string itemName = item["Name"];
+		/// </code>
+		/// </example>
 		public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
@@ -575,6 +693,13 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="oid">the object id</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// string workspaceRef = "/workspace/12345678910";
+		/// long objectID = 12345678912L;
+		/// OperationResult deleteResult = restApi.Delete(workspaceRef, "Defect", objectID);
+		///</code>
+		///</example>
 		public OperationResult Delete(string workspaceRef, string typePath, long oid)
 		{
 			return Delete(workspaceRef, string.Format("/{0}/{1}", typePath, oid));
@@ -586,6 +711,12 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="oid">the object id</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// long objectID = 12345678912L;
+		/// OperationResult deleteResult = restApi.Delete("Defect", objectID);
+		/// </code>
+		/// </example>
 		public OperationResult Delete(string typePath, long oid)
 		{
 			return Delete(null, string.Format("/{0}/{1}", typePath, oid));
@@ -596,6 +727,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="aRef">the reference</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// string objectRef = "/defect/12345678912";
+		/// OperationResult deleteResult = restApi.Delete(objectRef);
+		///</code>
+		///</example>
 		public OperationResult Delete(string aRef)
 		{
 			return Delete(null, aRef);
@@ -607,6 +744,13 @@ namespace Rally.RestApi
 		/// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>
 		/// <param name="aRef">the reference</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// string workspaceRef = "/workspace/12345678910";;
+		/// string objectRef = "/defect/12345678912";
+		/// OperationResult deleteResult = restApi.Delete(workspaceRef, objectRef);
+		///</code>
+		///</example>
 		public OperationResult Delete(string workspaceRef, string aRef)
 		{
 			if (ConnectionInfo == null)
@@ -631,7 +775,14 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="typePath">the type to be created</param>
 		/// <param name="obj">the object to be created</param>
-		/// <returns></returns>
+		/// <returns>A <see cref="CreateResult"/> with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject toCreate = new DynamicJsonObject();
+		/// toCreate["Name"] = "My Defect";
+		/// CreateResult createResult = restApi.Create("defect", toCreate);
+		/// </code>
+		/// </example>
 		public CreateResult Create(string typePath, DynamicJsonObject obj)
 		{
 			return Create(null, typePath, obj);
@@ -643,7 +794,15 @@ namespace Rally.RestApi
 		/// <param name="workspaceRef">the workspace into which the object should be created.  Null means that the server will pick a workspace.</param>
 		/// <param name="typePath">the type to be created</param>
 		/// <param name="obj">the object to be created</param>
-		/// <returns></returns>
+		/// <returns>A <see cref="CreateResult"/> with information on the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// string workspaceRef = "/workspace/12345678910";
+		/// DynamicJsonObject toCreate = new DynamicJsonObject();
+		/// toCreate["Name"] = "My Defect";
+		/// CreateResult createResult = restApi.Create(workspaceRef, "defect", toCreate);
+		/// </code>
+		/// </example>
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
 		{
 			if (ConnectionInfo == null)
@@ -672,7 +831,15 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="reference">the reference to be updated</param>
 		/// <param name="obj">the object fields to update</param>
-		/// <returns>An OperationResult describing the status of the request</returns>
+		/// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// string rallyRef = "https://preview.rallydev.com/slm/webservice/1.40/defect/12345.js";
+		/// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
+		/// toUpdate["Description"] = "This is my defect."; 
+		/// OperationResult updateResult = restApi.Update(rallyRef, toUpdate);
+		/// </code>
+		/// </example>
 		public OperationResult Update(string reference, DynamicJsonObject obj)
 		{
 			return Update(Ref.GetTypeFromRef(reference), Ref.GetOidFromRef(reference), obj);
@@ -685,7 +852,14 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type of the item to be updated</param>
 		/// <param name="oid">the object id of the item to be updated</param>
 		/// <param name="obj">the object fields to update</param>
-		/// <returns>An OperationResult describing the status of the request</returns>
+		/// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
+		/// toUpdate["Description"] = "This is my defect."; 
+		/// OperationResult updateResult = restApi.Update("defect", "12345", toUpdate);
+		/// </code>
+		/// </example>
 		public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
 		{
 			if (ConnectionInfo == null)
@@ -709,8 +883,13 @@ namespace Rally.RestApi
 		/// Get the allowed values for the specified type and attribute
 		/// </summary>
 		/// <param name="typePath">the type</param>
-		/// <param name="attributeName">the attribute to retireve allowed values for</param>
-		/// <returns>The allowed values for the specified attribute</returns>
+		/// <param name="attributeName">the attribute to retrieve allowed values for</param>
+		/// <returns>Returns a <see cref="DynamicJsonObject"/> containing the allowed values for the specified type and attribute.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
+		/// </code>
+		/// </example>
 		public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
 		{
 			if (ConnectionInfo == null)
@@ -742,10 +921,18 @@ namespace Rally.RestApi
 
 		#region GetTypes
 		/// <summary>
-		/// Get the attribute definitions for the specified type
+		/// <para><b>Unsupported - DO NOT USE</b></para>
+		/// Get the attribute definitions for the specified project or workspace (part of the query string).
+		/// <note>This uses an unpublished/unsupported endpoint and should NOT be used by non-Rally applications. 
+		/// This endpoint may alter behavior at any point in time.</note>
 		/// </summary>
 		/// <param name="queryString">The query string to get types for</param>
 		/// <returns>The type definitions for the specified query</returns>
+		/// <example>
+		/// <para><b>Unsupported - DO NOT USE</b></para>
+		/// <note>This uses an unpublished/unsupported endpoint and should NOT be used by non-Rally applications. 
+		/// This endpoint may alter behavior at any point in time.</note>
+		/// </example>
 		public CacheableQueryResult GetTypes(string queryString)
 		{
 			if (ConnectionInfo == null)
@@ -767,7 +954,12 @@ namespace Rally.RestApi
 		/// Get the attribute definitions for the specified type
 		/// </summary>
 		/// <param name="type">The type to get attributes for</param>
-		/// <returns>The attribute definitions for the specified type</returns>
+		/// <returns>Returns a <see cref="QueryResult"/> object containing the attribute definitions for the specified type.</returns>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
+		/// </code>
+		/// </example>
 		public QueryResult GetAttributesByType(string type)
 		{
 			if (ConnectionInfo == null)
@@ -805,6 +997,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="relativeUrl">The relative URL to the attachment.</param>
 		/// <returns>The result of the request.</returns>
+		/// <example>
+		/// <code>
+		/// string relativeUrl = "/slm/attachment/12345678900/image_file_name.jpg"
+		/// AttachmentResult attachmentResult = DownloadAttachment(relativeUrl);
+		/// </code>
+		/// </example>
 		public AttachmentResult DownloadAttachment(string relativeUrl)
 		{
 			if (relativeUrl.Length < 5)
@@ -941,12 +1139,11 @@ namespace Rally.RestApi
 
 		#region GetFullyQualifiedUri
 		/// <summary>
-		/// Ensure the specified ref is fully qualified
-		/// with the full WSAPI url
+		/// Ensure the specified ref is fully qualified with the full WSAPI URL
 		/// </summary>
 		/// <param name="aRef">A Rally object ref</param>
 		/// <returns>The fully qualified ref</returns>
-		protected Uri GetFullyQualifiedUri(string aRef)
+		private Uri GetFullyQualifiedUri(string aRef)
 		{
 			return new Uri(GetFullyQualifiedRef(aRef));
 		}
@@ -954,12 +1151,11 @@ namespace Rally.RestApi
 
 		#region GetFullyQualifiedRef
 		/// <summary>
-		/// Ensure the specified ref is fully qualified
-		/// with the full WSAPI url
+		/// Ensure the specified ref is fully qualified with the full WSAPI URL
 		/// </summary>
 		/// <param name="aRef">A Rally object ref</param>
 		/// <returns>The fully qualified ref</returns>
-		protected string GetFullyQualifiedRef(string aRef)
+		private string GetFullyQualifiedRef(string aRef)
 		{
 			if (!aRef.StartsWith(WebServiceUrl))
 				return String.Format("{0}{1}", WebServiceUrl, aRef);
@@ -970,11 +1166,11 @@ namespace Rally.RestApi
 
 		#region GetFullyQualifiedV2xSchemaUri
 		/// <summary>
-		/// Ensure the specified ref is fully qualified with the full WSAPI url
+		/// Ensure the specified ref is fully qualified with the full WSAPI URL
 		/// </summary>
 		/// <param name="aRef">A Rally object ref</param>
 		/// <returns>The fully qualified ref</returns>
-		protected Uri GetFullyQualifiedV2xSchemaUri(string aRef)
+		private Uri GetFullyQualifiedV2xSchemaUri(string aRef)
 		{
 			// HACK: This is a total hack to access a custom API that does not follow standard endpoint behavior.
 			// The schema endpoint has a different base and version, and therefore requires this workaround.

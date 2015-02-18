@@ -39,7 +39,7 @@ namespace Test.Rally.RestApi.UiSample
 		// HELP: Define your encryption items prior to instantiating authorization managers
 		string applicationToken = "RallyRestAPISample";
 		string encryptionKey = "UserSpecificSaltForEncryption";
-		EncryptionUtilities encryptionUtilities = new EncryptionUtilities();
+		IEncryptionRoutines encryptionUtilities = new EncryptionUtilities();
 
 		#region MainWindow
 		public MainWindow()
@@ -74,6 +74,8 @@ namespace Test.Rally.RestApi.UiSample
 
 			// HELP: Configure labels for UI. These are global and used by both authentication managers to build their UI.
 			// If this is not called, the default labels will be used.
+			ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label",
+				loginWindowDefaultServer: new Uri("http://onprem.rally.url"));
 			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
 				serverTabLabel.Text, String.Empty, serverLabel.Text, String.Empty, new Uri(defaultServerUri.Text),

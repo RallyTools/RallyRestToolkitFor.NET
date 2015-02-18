@@ -10,7 +10,7 @@ using System.Text;
 namespace Rally.RestApi.Auth
 {
 	/// <summary>
-	/// A authentication manager for a manually implmemented authentication.
+	/// A authentication manager for a manually implemented authentication.
 	/// </summary>
 	public abstract class ApiAuthManager
 	{
@@ -230,8 +230,34 @@ namespace Rally.RestApi.Auth
 
 		#region Configure
 		/// <summary>
-		/// Configures the authorization manger. This must be called before any other method.
+		/// Configures the authorization manger.
 		/// </summary>
+		/// <param name="loginWindowTitle">The title to be used for the login window.</param>
+		/// <param name="loginWindowHeaderLabelText">The header title to be used for the login window.</param>
+		/// <param name="loginWindowCredentialsTabText">The credentials tab text to be used for the login window.</param>
+		/// <param name="loginWindowUserNameLabelText">The user name label to be used for the login window.</param>
+		/// <param name="loginWindowPwdLabelText">The password label to be used for the login window.</param>
+		/// <param name="loginWindowServerTabText">The server tab label to be used for the login window.</param>
+		/// <param name="loginWindowConnectionTypeText">The connection type label to be used for the login window.</param>
+		/// <param name="loginWindowServerLabelText">The server label to be used for the login window.</param>
+		/// <param name="loginWindowTrustAllCertificatesText">The trust all certificates label to be used for the login window.</param>
+		/// <param name="loginWindowDefaultServer">The default server to be used for the login window.</param>
+		/// <param name="loginWindowProxyServerTabText">The proxy tab label to be used for the login window.</param>
+		/// <param name="loginWindowProxyServerLabelText">The proxy server label to be used for the login window.</param>
+		/// <param name="loginWindowProxyUserNameLabelText">The proxy user name label to be used for the login window.</param>
+		/// <param name="loginWindowProxyPwdLabelText">The proxy password label to be used for the login window.</param>
+		/// <param name="loginWindowDefaultProxyServer">The default proxy server to be used for the login window.</param>
+		/// <param name="loginWindowSsoInProgressText">The SSO in progress label to be used for the login window.</param>
+		/// <param name="loginWindowLoginButtonText">The login button text to be used for the login window.</param>
+		/// <param name="loginWindowLogoutButtonText">The logout button text to be used for the login window.</param>
+		/// <param name="loginWindowCancelButtonText">The cancel button text to be used for the login window.</param>
+		/// <param name="loginFailureBadServer">The error message to be used for when the server is bad (can't connect).</param>
+		/// <param name="loginFailureCredentials">The error message to be used for when the credentials to Rally are bad.</param>
+		/// <param name="loginFailureLoginEmpty">The error message to be used for when the login input field is left empty.</param>
+		/// <param name="loginFailureServerEmpty">The error message to be used for when the server input field is left empty.</param>
+		/// <param name="loginFailureProxyCredentials">The error message to be used for bad proxy credentials.</param>
+		/// <param name="loginFailureBadConnection">The error message to be used for bad connection login failures.</param>
+		/// <param name="loginFailureUnknown">The error message to be used for unknown login failures.</param>
 		public static void Configure(string loginWindowTitle = null,
 			string loginWindowHeaderLabelText = null,
 			string loginWindowCredentialsTabText = null,
@@ -688,7 +714,7 @@ namespace Rally.RestApi.Auth
 	}
 
 	/// <summary>
-	/// A delegate to indicate that the authenication state (logged in, logged out, pending SSO) has changed.
+	/// A delegate to indicate that the authentication state (logged in, logged out, pending SSO) has changed.
 	/// </summary>
 	/// <param name="authenticationResult">The status of authentication.</param>
 	/// <param name="api">The authenticated API that can be used for the user who logged in.</param>
