@@ -10,6 +10,7 @@ using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
 using Rally.RestApi.Auth;
 using System.Collections.Specialized;
+using Rally.RestApi.Exceptions;
 
 namespace Rally.RestApi.Web
 {
@@ -269,6 +270,11 @@ namespace Rally.RestApi.Web
 		#endregion
 
 		#region GetCacheable
+		/// <summary>
+		/// Gets a cacheable response.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		internal DynamicJsonObject GetCacheable(Uri target, out bool isCachedResult, IDictionary<string, string> headers = null)
 		{
 			DynamicJsonObject response = null;

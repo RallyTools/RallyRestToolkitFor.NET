@@ -1,4 +1,5 @@
-﻿using Rally.RestApi.Json;
+﻿using Rally.RestApi.Exceptions;
+using Rally.RestApi.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -83,6 +84,8 @@ namespace Rally.RestApi.Web
 		/// <param name="address">A System.String containing the URI to download.</param>
 		/// <param name="isCachedResult">If the returned result was a cached result.</param>
 		/// <returns>A System.String containing the requested resource.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		public DynamicJsonObject DownloadCacheableResult(string address, out bool isCachedResult)
 		{
 			return DownloadCacheableResult(new Uri(address), out isCachedResult);
@@ -95,6 +98,8 @@ namespace Rally.RestApi.Web
 		/// <param name="address">A System.Uri object containing the URI to download.</param>
 		/// <param name="isCachedResult">If the returned result was a cached result.</param>
 		/// <returns>A System.String containing the requested resource.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		public DynamicJsonObject DownloadCacheableResult(Uri address, out bool isCachedResult)
 		{
 			string results = DownloadString(address);

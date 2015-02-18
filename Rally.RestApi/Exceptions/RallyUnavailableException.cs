@@ -6,7 +6,7 @@ using System.Text;
 namespace Rally.RestApi.Exceptions
 {
 	/// <summary>
-	/// An exception indicating that Rally is temporarily offline.
+	/// An exception indicating that Rally is temporarily off-line and returned an HTML error page.
 	/// </summary>
 	public class RallyUnavailableException : Exception
 	{

@@ -160,7 +160,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="isUiSupported">Does this auth manager support a UI?</param>
+		/// <param name="isUiSupported">Does this authentication manager support a UI?</param>
 		/// <param name="applicationToken">An application token to be used as the file name to store data as (no extension needed). Each 
 		/// consuming application should use a unique name in order to ensure that the user credentials are not 
 		/// overwritten by other applications. An exception will be thrown elsewhere if this is not a valid file name.</param>
@@ -211,7 +211,12 @@ namespace Rally.RestApi.Auth
 		/// </summary>
 		/// <param name="allowSsoForautoAuthenticate">Is SSO authentication allowed for auto-authentication? 
 		/// This may open a web browser UI.</param>
-		/// <returns></returns>
+		/// <returns>The current state of the authentication process. <see cref="RallyRestApi.AuthenticationResult"/></returns>
+		/// <example>
+		/// <code language="C#">
+		/// RallyRestApi.AuthenticationResult result = authMgr.AutoAuthenticate(false);
+		/// </code>
+		/// </example>
 		public RallyRestApi.AuthenticationResult AutoAuthenticate(bool allowSsoForautoAuthenticate)
 		{
 			if (!IsUiSupported)
@@ -258,6 +263,13 @@ namespace Rally.RestApi.Auth
 		/// <param name="loginFailureProxyCredentials">The error message to be used for bad proxy credentials.</param>
 		/// <param name="loginFailureBadConnection">The error message to be used for bad connection login failures.</param>
 		/// <param name="loginFailureUnknown">The error message to be used for unknown login failures.</param>
+		/// <example>
+		/// <para>Configures labels for UI. These are global and used by the authentication manager to build their UI.</para>
+		/// <para>If this is not called, the default labels will be used. In this sample we are changing a label and the default server URL.</para>
+		/// <code language="C#">
+		/// ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label", loginWindowDefaultServer: new Uri("http://onprem-url"));
+		/// </code>
+		/// </example>
 		public static void Configure(string loginWindowTitle = null,
 			string loginWindowHeaderLabelText = null,
 			string loginWindowCredentialsTabText = null,
@@ -396,6 +408,14 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Authenticates the user against Rally.
 		/// </summary>
+		/// <param name="authenticationStateChange">The delegate to call when an authentication state change occurs.</param>
+		/// <param name="ssoAuthenticationComplete">The delegate to call when an authentication state change occurs due to SSO.</param>
+		/// <example>
+		/// Opening the login window and passing the two delegates to it.
+		/// <code language="C#">
+		/// authMgr.ShowUserLoginWindow(authenticationStateChange, ssoAuthenticationComplete);
+		/// </code>
+		/// </example>
 		public virtual void ShowUserLoginWindow(AuthenticationStateChange authenticationStateChange,
 			SsoAuthenticationComplete ssoAuthenticationComplete)
 		{
@@ -414,7 +434,7 @@ namespace Rally.RestApi.Auth
 		/// Opens the specified SSO URL to the user.
 		/// </summary>
 		/// <param name="ssoUrl">The Uri that the user was redirected to in order to perform their SSO authentication.</param>
-		public void OpenSsoPage(Uri ssoUrl)
+		internal void OpenSsoPage(Uri ssoUrl)
 		{
 			if (ssoUrl == null)
 				throw new ArgumentNullException("ssoUrl", "You must provide a URL for completing SSO authentication.");
@@ -424,6 +444,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Opens the window that displays the SSO URL to the user.
 		/// </summary>
+		/// <param name="ssoUrl">The URL for the SSO page to be opened.</param>
 		protected abstract void OpenSsoPageInternal(Uri ssoUrl);
 		#endregion
 
@@ -434,7 +455,7 @@ namespace Rally.RestApi.Auth
 		/// <param name="success">Was SSO authentication completed successfully?</param>
 		/// <param name="rallyServer">The server that the ZSessionID is for.</param>
 		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
-		public void ReportSsoResults(bool success, string rallyServer, string zSessionID)
+		protected void ReportSsoResults(bool success, string rallyServer, string zSessionID)
 		{
 			if (SsoAuthenticationComplete != null)
 			{
@@ -461,6 +482,8 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Notifies the login window that SSO has been completed.
 		/// </summary>
+		/// <param name="authenticationResult">The current state of the authentication process. <see cref="RallyRestApi.AuthenticationResult"/></param>
+		/// <param name="api">The API that was authenticated against.</param>
 		protected abstract void NotifyLoginWindowSsoComplete(
 			RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api);
 		#endregion
@@ -469,6 +492,12 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Deletes any cached login credentials from disk.
 		/// </summary>
+		/// <returns>If the files were successfully deleted or not.</returns>
+		/// <example>
+		/// <code language="C#">
+		/// bool success = authMgr.DeleteCachedLoginDetailsFromDisk();
+		/// </code>
+		/// </example>
 		public bool DeleteCachedLoginDetailsFromDisk()
 		{
 			return LoginDetails.DeleteCachedLoginDetailsFromDisk();
@@ -479,6 +508,14 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against an identity provider (IDP Initiated).
 		/// </summary>
+		/// <param name="errorMessage">The error message or any that was generated by the authentication check.</param>
+		/// <param name="allowSso">Is SSO allowed for this authentication check?</param>
+		/// <returns>The current state of the authentication process. <see cref="RallyRestApi.AuthenticationResult"/></returns>
+		/// <example>
+		/// <code language="C#">
+		/// RallyRestApi.AuthenticationResult result = PerformAuthenticationCheck(out errorMessage);
+		/// </code>
+		/// </example>
 		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheck(
 			out string errorMessage, bool allowSso = true)
 		{
@@ -502,7 +539,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(out string errorMessage,
+		private RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstRally(out string errorMessage,
 			bool allowSso)
 		{
 			if (!IsUiSupported)
@@ -579,7 +616,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an authentication check against an identity provider (IDP Initiated).
 		/// </summary>
-		protected RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(out string errorMessage)
+		private RallyRestApi.AuthenticationResult PerformAuthenticationCheckAgainstIdp(out string errorMessage)
 		{
 			if (!IsUiSupported)
 				throw new InvalidProgramException("This method is only supported by UI enabled Authentication Managers.");
@@ -704,6 +741,11 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Performs an logout from Rally.
 		/// </summary>
+		/// <example>
+		/// <code language="C#">
+		/// authMgr.PerformLogoutFromRally();
+		/// </code>
+		/// </example>
 		protected void PerformLogoutFromRally()
 		{
 			Api.Logout();

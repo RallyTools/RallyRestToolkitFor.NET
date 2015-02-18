@@ -12,15 +12,15 @@ namespace Rally.RestApi.UiForWpf
 	public enum CustomWpfControlType
 	{
 		/// <summary>
-		/// Must extend from Button.
+		/// Replaces the default Button with a custom one. The replacement button must extend from <see cref="System.Windows.Controls.Button"/>.
 		/// </summary>
 		Buttons,
 		/// <summary>
-		/// Must extend from Selector
+		/// Replaces the default tab control with a custom one. The replacement tab control must extend from <see cref="System.Windows.Controls.Primitives.Selector"/>.
 		/// </summary>
 		TabControl,
 		/// <summary>
-		/// Must extend from HeaderedContentControl
+		/// Replaces the default tab item with a custom one. The replacement tab item control must extend from <see cref="System.Windows.Controls.HeaderedContentControl"/>.
 		/// </summary>
 		TabItem,
 	}

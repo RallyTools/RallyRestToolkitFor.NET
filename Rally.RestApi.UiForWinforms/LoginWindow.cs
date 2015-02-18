@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Rally.RestApi.UiForWinforms
 {
-	public partial class LoginWindow : Form
+	internal partial class LoginWindow : Form
 	{
 		#region Enum: TabType
 		private enum TabType

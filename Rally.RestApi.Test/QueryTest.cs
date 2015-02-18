@@ -16,7 +16,7 @@ namespace Rally.RestApi.Test
 		[TestMethod]
 		public void TestAnd()
 		{
-			var q = new Query("Release.Name", Query.Operator.Equals, "My Release");
+			Query q = new Query("Release.Name", Query.Operator.Equals, "My Release");
 			Assert.AreEqual(q.QueryClause, "(Release.Name = \"My Release\")");
 
 			Query q2 = q.And(new Query("Iteration.Name", Query.Operator.Equals, "My Iteration"));
@@ -77,7 +77,7 @@ namespace Rally.RestApi.Test
 		[TestMethod]
 		public void TestStaticParse()
 		{
-			var query = Query.Parse("(Name = Value)");
+			Query query = Query.Parse("(Name = Value)");
 			Assert.AreEqual(query.QueryOperator, Query.Operator.Equals);
 			Assert.AreEqual(query.Value, "Value");
 			Assert.AreEqual(query.Attribute, "Name");

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Rally.RestApi.UiForWinforms
 {
-	public partial class SsoWindow : Form
+	internal partial class SsoWindow : Form
 	{
 		bool ssoReported = false;
 		RestApiAuthMgrWinforms authMgr;
@@ -71,7 +71,7 @@ namespace Rally.RestApi.UiForWinforms
 						WindowState = FormWindowState.Minimized;
 
 						string rallyServer = browser.Url.GetLeftPart(UriPartial.Authority);
-						authMgr.ReportSsoResults(true, rallyServer, currentCookie.Value);
+						authMgr.ReportSsoResultsToMgr(true, rallyServer, currentCookie.Value);
 						ssoReported = true;
 						Close();
 					}
@@ -137,7 +137,7 @@ namespace Rally.RestApi.UiForWinforms
 		protected override void OnClosed(EventArgs e)
 		{
 			if (!ssoReported)
-				authMgr.ReportSsoResults(false, String.Empty, String.Empty);
+				authMgr.ReportSsoResultsToMgr(false, String.Empty, String.Empty);
 
 			base.OnClosed(e);
 		}

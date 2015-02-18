@@ -36,6 +36,17 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="reference">the ref to test</param>
 		/// <returns>true if a ref, false otherwise</returns>
+		/// <example>
+		/// <code language="C#">
+		/// bool isValid;
+		/// isValid = Ref.IsRef("http://rally1.rallydev.com/slm/webservice/1.32/defect/1234.js");
+		/// // isValid is true
+		/// 
+		/// 
+		/// isValid = Ref.IsRef("https://rally1.rallydev.com/slm/webservice/1.32/defect/abc.js");
+		/// // isValid is false
+		/// </code>
+		/// </example>
 		public static bool IsRef(string reference)
 		{
 			return GetMatch(reference) != null;
@@ -49,6 +60,14 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="reference">The absolute ref to be made relative</param>
 		/// <returns>The relative version of the specified absolute ref</returns>
+		/// <example>
+		/// <code language="C#">
+		/// string fullyQualifiedRef = "https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature/1234";
+		/// string relativeRef = Ref.GetRelativeRef(fullyQualifiedRef);
+		/// 
+		/// // returns "/portfolioitem/feature/1234"
+		/// </code>
+		/// </example>
 		public static string GetRelativeRef(string reference)
 		{
 			Match m = GetMatch(reference);
@@ -65,6 +84,14 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="reference">The ref to get the type from</param>
 		/// <returns>The type of the specified ref</returns>
+		/// <example>
+		/// <code language="C#">
+		/// string fullyQualifiedRef = "https://rally1.rallydev.com/slm/webservice/v2.0/user/1234";
+		/// string relativeRef = Ref.GetTypeFromRef(fullyQualifiedRef);
+		/// 
+		/// // returns "user"
+		/// </code>
+		/// </example>
 		public static string GetTypeFromRef(string reference)
 		{
 			Match m = GetMatch(reference);
@@ -81,6 +108,14 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="reference">The ref to get the object id from</param>
 		/// <returns>The object id of the specified ref</returns>
+		/// <example>
+		/// <code language="C#">
+		/// string fullyQualifiedRef = "https://rally1.rallydev.com/slm/webservice/v2.0/user/1234";
+		/// string relativeRef = Ref.GetOidFromRef(fullyQualifiedRef);
+		/// 
+		/// // returns "1234"
+		/// </code>
+		/// </example>
 		public static string GetOidFromRef(string reference)
 		{
 			Match m = GetMatch(reference);

@@ -136,6 +136,15 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Create a new empty query
 		/// </summary>
+		/// <example>
+		/// This constructor can be used if you want to build your query on your own.
+		/// <code language="C#">
+		/// Query query = new Query();
+		/// query.Attribute = "Name";
+		/// query.QueryOperator = Query.Operator.Contains;
+		/// query.Value = "My Item";
+		/// </code>
+		/// </example>
 		public Query()
 		{
 		}
@@ -146,6 +155,11 @@ namespace Rally.RestApi
 		/// <param name="attribute">The attribute to be filtered by</param>
 		/// <param name="op">The filter operator</param>
 		/// <param name="value">The value to be filtered on</param>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = new Query("Name", Query.Operator.Contains, "My Item");
+		/// </code>
+		/// </example>
 		public Query(string attribute, Operator op, string value)
 		{
 			Attribute = attribute;
@@ -156,6 +170,11 @@ namespace Rally.RestApi
 		/// Create a new query from the specified string.
 		/// </summary>
 		/// <param name="queryClause">The query string</param>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = new Query("(Iteration.StartDate > Today+3)");
+		/// </code>
+		/// </example>
 		public Query(string queryClause)
 		{
 			this.queryClause = queryClause;
@@ -182,6 +201,11 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="op">The operator to translate</param>
 		/// <returns>The string version of the specified operator</returns>
+		/// <example>
+		/// <code language="C#">
+		/// string operatorValue = Query.GetOperator(Query.Operator.Contains);
+		/// </code>
+		/// </example>
 		public static string GetOperator(Operator op)
 		{
 			return OpMap[op];
@@ -192,6 +216,11 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="op">The operator to translate</param>
 		/// <returns>The matching Operator value</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query.Operator operatorValue = Query.GetOperator("equals");
+		/// </code>
+		/// </example>
 		public static Operator GetOperator(string op)
 		{
 			return OpMap.Single(k => k.Value == op).Key;
@@ -205,6 +234,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="q">The query to be joined</param>
 		/// <returns>The joined query</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = new Query("Release.Name", Query.Operator.Equals, "My Release");
+		/// Query finalQuery = query.And(new Query("Iteration.Name", Query.Operator.Equals, "My Iteration"));
+		/// </code>
+		/// </example>
 		public Query And(Query q)
 		{
 			return Join(this, q, ClauseOperator.And);
@@ -215,6 +250,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="queries">The queries to be joined</param>
 		/// <returns>The joined query</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = Query.And(new Query("Release.Name", Query.Operator.Equals, "My Release"),
+		///                         new Query("Iteration.Name", Query.Operator.Equals, "My Iteration")
+		/// </code>
+		/// </example>
 		public static Query And(params Query[] queries)
 		{
 			Query result = null;
@@ -237,6 +278,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="q">The query to be joined</param>
 		/// <returns>The joined query</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = new Query("Release.Name", Query.Operator.Equals, "My Release");
+		/// Query finalQuery = query.Or(new Query("Iteration.Name", Query.Operator.Equals, "My Iteration"));
+		/// </code>
+		/// </example>
 		public Query Or(Query q)
 		{
 			return Join(this, q, ClauseOperator.Or);
@@ -247,6 +294,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="queries">The queries to be joined</param>
 		/// <returns>The joined query</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = Query.Or(new Query("Release.Name", Query.Operator.Equals, "My Release"),
+		///                        new Query("Iteration.Name", Query.Operator.Equals, "My Iteration")
+		/// </code>
+		/// </example>
 		public static Query Or(params Query[] queries)
 		{
 			Query result = null;
@@ -268,6 +321,11 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="query">The query string to be parsed</param>
 		/// <returns>A query object, or null if the string could not be parsed</returns>
+		/// <example>
+		/// <code language="C#">
+		/// Query query = Query.Parse("(Name = Value)");
+		/// </code>
+		/// </example>
 		public static Query Parse(string query)
 		{
 			try
@@ -292,6 +350,14 @@ namespace Rally.RestApi
 		/// <param name="operatorString">The string to parse.</param>
 		/// <param name="queryOperator">The operator that was found.</param>
 		/// <returns>If the parsing was successful. If not, the operator is set to Equals.</returns>
+		/// <example>
+		/// string operatorValue = "!=";
+		/// Query.Operator foundQueryOperator;
+		/// if (Query.TryParseQueryOperator(operatorValue, out foundQueryOperator))
+		/// {
+		/// // Do work
+		/// }
+		/// </example>
 		public static bool TryParseQueryOperator(string operatorString, out Operator queryOperator)
 		{
 			queryOperator = Operator.Equals;

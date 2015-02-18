@@ -29,7 +29,7 @@
     <input type="hidden" id="userDataCache" class="userDataStyle" />
     <div class="pageHeader" id="PageHeader">Rally Rest API for .Net<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
     <div class="pageBody">
-      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8499e6ce-0e71-6421-5dcd-8f6714a4f1ea.htm" title="Rally.RestApi.UiForWinforms" tocid="8499e6ce-0e71-6421-5dcd-8f6714a4f1ea">Rally.RestApi.UiForWinforms</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ae6b801e-1452-946e-3e1b-136c1d965246.htm" title="LoginWindow Class" tocid="ae6b801e-1452-946e-3e1b-136c1d965246">LoginWindow Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="70964b1c-6b84-4870-006e-c2ce9f6531e8.htm" title="RestApiAuthMgrWinforms Class" tocid="70964b1c-6b84-4870-006e-c2ce9f6531e8">RestApiAuthMgrWinforms Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="20d1f4bb-9338-3df4-680a-acae9fba7a27.htm" title="SsoWindow Class" tocid="20d1f4bb-9338-3df4-680a-acae9fba7a27">SsoWindow Class</a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div></div><div class="topicContent" id="TopicContent">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8499e6ce-0e71-6421-5dcd-8f6714a4f1ea.htm" title="Rally.RestApi.UiForWinforms" tocid="8499e6ce-0e71-6421-5dcd-8f6714a4f1ea">Rally.RestApi.UiForWinforms</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="70964b1c-6b84-4870-006e-c2ce9f6531e8.htm" title="RestApiAuthMgrWinforms Class" tocid="70964b1c-6b84-4870-006e-c2ce9f6531e8">RestApiAuthMgrWinforms Class</a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div></div><div class="topicContent" id="TopicContent">
         <table class="titleTable">
           <tr>
             <td class="titleColumn">Rally.RestApi.UiForWinforms Namespace</td>
@@ -43,6 +43,9 @@
           </p>
           <p>This pseudo code example shows how to use the UI for Winforms. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.</p>
           <div class="codeSnippetContainer">
+            <div class="codeSnippetContainerTabs">
+              <div id="ID0EAAABA_tab1" class="codeSnippetContainerTabSingle">C#</div>
+            </div>
             <div class="codeSnippetContainerCodeContainer">
               <div class="codeSnippetToolBar">
                 <div class="codeSnippetToolBarText">
@@ -67,7 +70,7 @@
     winFormsAuthMgr = <span class="highlight-keyword">new</span> RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
 
     <span class="highlight-comment">// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.</span>
-    <span class="highlight-comment">// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.</span>
+    <span class="highlight-comment">// If this is not called, the default labels will be used. In this sample we are changing a label and the default server URL.</span>
     ApiAuthManager.Configure(loginWindowServerLabelText: <span class="highlight-literal">"My Updated Server Label"</span>, loginWindowDefaultServer: <span class="highlight-keyword">new</span> Uri(<span class="highlight-literal">"http://onprem-url"</span>));
 
     <span class="highlight-comment">// HELP: Set the logo that is shown in the login window</span>
@@ -125,15 +128,6 @@
                 <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
               </td>
               <td>
-                <a href="ae6b801e-1452-946e-3e1b-136c1d965246.htm">LoginWindow</a>
-              </td>
-              <td />
-            </tr>
-            <tr data="class; public">
-              <td>
-                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
-              </td>
-              <td>
                 <a href="70964b1c-6b84-4870-006e-c2ce9f6531e8.htm">RestApiAuthMgrWinforms</a>
               </td>
               <td>
@@ -141,15 +135,6 @@
             A Winforms based authentication manager.
             </div>
               </td>
-            </tr>
-            <tr data="class; public">
-              <td>
-                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
-              </td>
-              <td>
-                <a href="20d1f4bb-9338-3df4-680a-acae9fba7a27.htm">SsoWindow</a>
-              </td>
-              <td />
             </tr>
           </table>
         </div>

@@ -22,7 +22,7 @@ namespace Rally.RestApi.UiForWpf
 	/// <summary>
 	/// Interaction logic for SsoWindow.xaml
 	/// </summary>
-	public partial class SsoWindow : Window
+	internal partial class SsoWindow : Window
 	{
 		bool ssoReported = false;
 		RestApiAuthMgrWpf authMgr;
@@ -107,7 +107,7 @@ namespace Rally.RestApi.UiForWpf
 							if (idpUrl != null)
 								authMgr.Api.CreateIdpAuthentication(idpUrl, idpProxy);
 
-							authMgr.ReportSsoResults(true, rallyServer, currentCookie.Value);
+							authMgr.ReportSsoResultsToMgr(true, rallyServer, currentCookie.Value);
 							ssoReported = true;
 							Close();
 						}
@@ -174,7 +174,7 @@ namespace Rally.RestApi.UiForWpf
 		protected override void OnClosed(EventArgs e)
 		{
 			if (!ssoReported)
-				authMgr.ReportSsoResults(false, String.Empty, String.Empty);
+				authMgr.ReportSsoResultsToMgr(false, String.Empty, String.Empty);
 
 			base.OnClosed(e);
 		}

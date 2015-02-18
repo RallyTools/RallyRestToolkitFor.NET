@@ -14,6 +14,7 @@ namespace Rally.RestApi.Response
 		/// <summary>
 		/// Constructor
 		/// </summary>
+		/// <param name="obj">The data that was returned for the query against Rally.</param>
 		public QueryResult(DynamicJsonObject obj)
 		{
 			Errors = GetCollection<string>(obj["Errors"]);

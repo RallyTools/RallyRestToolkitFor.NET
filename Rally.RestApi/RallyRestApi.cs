@@ -12,6 +12,7 @@ using Rally.RestApi.Web;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
 using Rally.RestApi.Auth;
+using Rally.RestApi.Exceptions;
 
 namespace Rally.RestApi
 {
@@ -164,8 +165,31 @@ namespace Rally.RestApi
 		/// <param name="authManger">The authorization manager to use when authentication requires it. If no driver is 
 		/// provided a console authentication manager will be used which does not allow SSO authentication.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
+		/// <example>
+		/// For a console application, no authentication manager is needed as shown in this example.
+		/// <code language="C#">
+		/// RallyRestApi restApi = new RallyRestApi();
+		/// </code>
+		/// For UI applications, an authentication manager must be provided. The authentication providers will 
+		/// configure the API and create the linkages as part of the constructor. Please see the documentation for 
+		/// the RestApiAuthMgrWpf and RestApiAuthMgrWinforms for more information.
+		/// <code language="C#">
+		/// // You must define your own private application token. This ensures that your login details are not overwritten by someone else.
+		/// string applicationToken = "RallyRestAPISample";
+		/// // You must set a user specific salt for encryption.
+		/// string encryptionKey = "UserSpecificSaltForEncryption";
+		/// // You must define your own encryption routines.
+		/// IEncryptionRoutines encryptionUtilities = new EncryptionUtilities();
+		/// 
+		/// // Instantiate authorization manager
+		/// wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
+		/// </code>
+		/// </example>
 		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
 		{
+			// NOTE: The example for using the RestApiAuthMgrWpf is also shown there. Make sure you 
+			// update both if you change it.
+
 			if (authManger == null)
 				authManger = new ApiConsoleAuthManager();
 
@@ -189,8 +213,10 @@ namespace Rally.RestApi
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
 		/// <returns>An <see cref="AuthenticationResult"/> that indicates the current state of the authentication process.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.AuthenticateWithZSessionID("myuser@company.com", "zSessionID", proxy: myProxy);
@@ -221,8 +247,10 @@ namespace Rally.RestApi
 		/// <param name="rallyServer">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <returns>An <see cref="AuthenticationResult"/> that indicates the current state of the authentication process.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.AuthenticateWithApiKey("ApiKeyFromRally", proxy: myProxy);
@@ -248,8 +276,10 @@ namespace Rally.RestApi
 		/// <param name="serverUrl">The Rally server to use (defaults to DEFAULT_SERVER)</param>
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.AuthenticateWithApiKey("ApiKeyFromRally", new Uri("https://myserverurl"), proxy: myProxy);
@@ -276,8 +306,10 @@ namespace Rally.RestApi
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
 		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.Authenticate("myuser@company.com", "password", proxy: myProxy);
@@ -305,8 +337,10 @@ namespace Rally.RestApi
 		/// <param name="proxy">Optional proxy configuration</param>
 		/// <param name="allowSSO">Is SSO authentication allowed for this call? It can be useful to disable this during startup processes.</param>
 		/// <returns>The current state of the authentication process. <see cref="AuthenticationResult"/></returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.Authenticate("myuser@company.com", "password", new Uri("https://myserverurl"), proxy: myProxy);
@@ -329,6 +363,8 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Authenticates against Rally with the specified credentials
 		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo, bool allowSSO)
 		{
 			this.ConnectionInfo = connectionInfo;
@@ -395,7 +431,7 @@ namespace Rally.RestApi
 		/// Logs this API out from any connection to Rally and clears the authentication configuration.
 		/// </summary>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi restApi = new RallyRestApi();
 		/// WebProxy myProxy = new WebProxy();
 		/// restApi.AuthenticateWithZSessionID("myuser@company.com", "zSessionID", proxy: myProxy);
@@ -418,7 +454,7 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="maxConnections">The maximum number of concurrent connections. Allowed values are between 1 and 25.</param>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// RallyRestApi.SetDefaultConnectionLimit(10);
 		/// </code>
 		/// </example>
@@ -438,8 +474,10 @@ namespace Rally.RestApi
 		/// <param name="relativeUri">The relative URI to post the data to.</param>
 		/// <param name="data">The data to submit to Rally.</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> with information on the response from Rally.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject data = objectToPost;
 		/// restApi.Post("defect/12345", data)
 		/// </code>
@@ -456,6 +494,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region DoDelete
+		/// <summary>
+		/// Performs a delete action.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoDelete(Uri uri, bool retry = true)
 		{
 			if (ConnectionInfo == null)
@@ -478,8 +521,10 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="request">The request configuration</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> with the response from Rally.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// // Build request
 		/// Request request = new Request("defect");
 		/// request.Fetch = new List&lt;string&gt;() { "Name", "Description", "FormattedID" };
@@ -557,8 +602,10 @@ namespace Rally.RestApi
 		/// <param name="fetchedFields">The fields that should be retrieved for the user.
 		/// If no fields are specified, a * wild card will be used.</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> that contains the currently logged in user.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject user = restApi.GetCurrentUser("Name", "FormattedID");
 		/// string user = user["Name"];
 		/// string userID = user["FormattedID"];
@@ -576,8 +623,10 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="fetchedFields">An optional list of fields to be fetched</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> that contains the currently logged in user.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject subscription = restApi.GetSubscription("Name", "FormattedID");
 		/// string subscriptionName = subscription["Name"];
 		/// string subscriptionFormattedID = subscription["FormattedID"];
@@ -600,8 +649,10 @@ namespace Rally.RestApi
 		/// <param name="oid">the object id</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject item = restApi.GetByReference("defect", 12345, "Name", "FormattedID");
 		/// string itemName = item["Name"];
 		/// string itemFormattedID = item["FormattedID"];
@@ -618,8 +669,10 @@ namespace Rally.RestApi
 		/// <param name="aRef">the reference</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string aRef = "https://preview.rallydev.com/slm/webservice/v2.0/defect/12345.js"
 		/// DynamicJsonObject item = restApi.GetByReference(aRef, "Name", "FormattedID");
 		/// string itemName = item["Name"];
@@ -653,8 +706,10 @@ namespace Rally.RestApi
 		/// <param name="workspaceRef">workspace scope</param>
 		/// <param name="fetchedFields">the list of object fields to be fetched</param>
 		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string aRef = "https://preview.rallydev.com/slm/webservice/v2.0/defect/12345.js"
 		/// string workspaceRef = "/workspace/12345678910";
 		/// DynamicJsonObject item = restApi.GetByReference(aRef, workspaceRef, "Name", "FormattedID");
@@ -693,8 +748,10 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="oid">the object id</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string workspaceRef = "/workspace/12345678910";
 		/// long objectID = 12345678912L;
 		/// OperationResult deleteResult = restApi.Delete(workspaceRef, "Defect", objectID);
@@ -711,8 +768,10 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="oid">the object id</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// long objectID = 12345678912L;
 		/// OperationResult deleteResult = restApi.Delete("Defect", objectID);
 		/// </code>
@@ -727,8 +786,10 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="aRef">the reference</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string objectRef = "/defect/12345678912";
 		/// OperationResult deleteResult = restApi.Delete(objectRef);
 		///</code>
@@ -744,8 +805,10 @@ namespace Rally.RestApi
 		/// <param name="workspaceRef">the workspace from which the object will be deleted.  Null means that the server will pick a workspace.</param>
 		/// <param name="aRef">the reference</param>
 		/// <returns>An OperationResult with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string workspaceRef = "/workspace/12345678910";;
 		/// string objectRef = "/defect/12345678912";
 		/// OperationResult deleteResult = restApi.Delete(workspaceRef, objectRef);
@@ -776,8 +839,10 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type to be created</param>
 		/// <param name="obj">the object to be created</param>
 		/// <returns>A <see cref="CreateResult"/> with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject toCreate = new DynamicJsonObject();
 		/// toCreate["Name"] = "My Defect";
 		/// CreateResult createResult = restApi.Create("defect", toCreate);
@@ -795,8 +860,10 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type to be created</param>
 		/// <param name="obj">the object to be created</param>
 		/// <returns>A <see cref="CreateResult"/> with information on the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string workspaceRef = "/workspace/12345678910";
 		/// DynamicJsonObject toCreate = new DynamicJsonObject();
 		/// toCreate["Name"] = "My Defect";
@@ -832,8 +899,10 @@ namespace Rally.RestApi
 		/// <param name="reference">the reference to be updated</param>
 		/// <param name="obj">the object fields to update</param>
 		/// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string rallyRef = "https://preview.rallydev.com/slm/webservice/1.40/defect/12345.js";
 		/// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
 		/// toUpdate["Description"] = "This is my defect."; 
@@ -853,8 +922,10 @@ namespace Rally.RestApi
 		/// <param name="oid">the object id of the item to be updated</param>
 		/// <param name="obj">the object fields to update</param>
 		/// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
 		/// toUpdate["Description"] = "This is my defect."; 
 		/// OperationResult updateResult = restApi.Update("defect", "12345", toUpdate);
@@ -885,8 +956,10 @@ namespace Rally.RestApi
 		/// <param name="typePath">the type</param>
 		/// <param name="attributeName">the attribute to retrieve allowed values for</param>
 		/// <returns>Returns a <see cref="DynamicJsonObject"/> containing the allowed values for the specified type and attribute.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
 		/// </code>
 		/// </example>
@@ -928,6 +1001,8 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="queryString">The query string to get types for</param>
 		/// <returns>The type definitions for the specified query</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
 		/// <para><b>Unsupported - DO NOT USE</b></para>
 		/// <note>This uses an unpublished/unsupported endpoint and should NOT be used by non-Rally applications. 
@@ -955,8 +1030,10 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="type">The type to get attributes for</param>
 		/// <returns>Returns a <see cref="QueryResult"/> object containing the attribute definitions for the specified type.</returns>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
 		/// </code>
 		/// </example>
@@ -998,7 +1075,7 @@ namespace Rally.RestApi
 		/// <param name="relativeUrl">The relative URL to the attachment.</param>
 		/// <returns>The result of the request.</returns>
 		/// <example>
-		/// <code>
+		/// <code language="C#">
 		/// string relativeUrl = "/slm/attachment/12345678900/image_file_name.jpg"
 		/// AttachmentResult attachmentResult = DownloadAttachment(relativeUrl);
 		/// </code>
@@ -1036,6 +1113,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region DoGetCacheable
+		/// <summary>
+		/// Gets a cacheable response.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
 		{
 			return httpService.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
@@ -1043,6 +1125,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region DoGetAsPost
+		/// <summary>
+		/// Performs get as a post action.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoGetAsPost(Request request)
 		{
 			Dictionary<string, string> data = request.GetDataToSend();
@@ -1054,6 +1141,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region DoGet
+		/// <summary>
+		/// Performs a get action.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoGet(Uri uri)
 		{
 			return serializer.Deserialize(httpService.Get(uri, GetProcessedHeaders()));
@@ -1061,6 +1153,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region DoPost
+		/// <summary>
+		/// Performs a post action.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry = true)
 		{
 			var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
@@ -1104,6 +1201,11 @@ namespace Rally.RestApi
 		#endregion
 
 		#region GetSecurityToken
+		/// <summary>
+		/// Gets a security token from Rally.
+		/// </summary>
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private string GetSecurityToken()
 		{
 			try

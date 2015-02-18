@@ -46,11 +46,13 @@ Add a reference to the Rally.RestApi.dll library or libraries from a new or exis
 
 <table width="550"><tr><th>Library</th><th>Required</th><th>Used For</th></tr><tr><td>Rally.RestApi.dll</td><td>Yes</td><td>Communication with Rally</td></tr><tr><td>Rally.RestApi.UiForWinforms.dll</td><td>No</td><td>Provides a UI for Winforms applications</td></tr><tr><td>Rally.RestApi.UiForWpf.dll</td><td>No</td><td>Provides a UI for WPF applications<br />
 Can be used by Winforms applications that need IDP based SSO
-</td></tr></table><h3>Sample Usage</h3><p>This sample code snippet shows how the Rally Rest API can be used by a console application:</p><div class="codeSnippetContainer"><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAHABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAHABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAHABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="highlight-keyword">string</span> username = <span class="highlight-literal">"paul@acme.com"</span>;
+</td></tr></table><h3>Sample Usage</h3><p>This sample code snippet shows how the Rally Rest API can be used by a console application:</p><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EAIABA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAIABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAIABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAIABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="highlight-keyword">string</span> username = <span class="highlight-literal">"paul@acme.com"</span>;
 <span class="highlight-keyword">string</span> password = <span class="highlight-literal">"Just4Rally"</span>;
+<span class="highlight-keyword">string</span> serverUrl = <span class="highlight-literal">"https://preview.rallydev.com"</span>;
+
 <span class="highlight-comment">// Initialize the REST API. You can specify a web service version if needed in the constructor.</span>
 RallyRestApi restApi = <span class="highlight-keyword">new</span> RallyRestApi();
-restApi.Authenticate(username, password, <span class="highlight-literal">"https://preview.rallydev.com"</span>, proxy: <span class="highlight-keyword">null</span>, allowSSO: <span class="highlight-keyword">false</span>);
+restApi.Authenticate(username, password, serverUrl, proxy: <span class="highlight-keyword">null</span>, allowSSO: <span class="highlight-keyword">false</span>);
 
 <span class="highlight-comment">//Create an item</span>
 DynamicJsonObject toCreate = <span class="highlight-keyword">new</span> DynamicJsonObject();
@@ -76,30 +78,29 @@ QueryResult queryResult = restApi.Query(request);
 }
 
 <span class="highlight-comment">//Delete the item</span>
-OperationResult deleteResult = restApi.Delete(createResult.Reference);</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EAHABA");</script><h3>Logging</h3>
+OperationResult deleteResult = restApi.Delete(createResult.Reference);</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EAIABA");</script><h3>Logging</h3>
 The Rally REST API for .NET provides the ability to log all requests and responses to aid in troubleshooting.
 
 To enable this behavior simply configure one or more trace listeners at the Information level.
 
 Below is an example App.config which will enable this:
-<div class="codeSnippetContainer"><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAEABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAEABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAEABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">&lt;?xml version=<span class="highlight-literal">"1.0"</span> encoding=<span class="highlight-literal">"utf-8"</span> ?&gt;
-&lt;configuration&gt;
-    &lt;startup&gt;
-        &lt;supportedRuntime version=<span class="highlight-literal">"v4.0"</span> sku=<span class="highlight-literal">".NETFramework,Version=v4.5"</span> /&gt;
-    &lt;/startup&gt;
-    &lt;system.diagnostics&gt;
-        &lt;trace autoflush=<span class="highlight-literal">"true"</span> indentsize=<span class="highlight-literal">"2"</span>&gt;
-            &lt;listeners&gt;
-                &lt;add name=<span class="highlight-literal">"RallyRestApiUiSample"</span> type="System.Diagnostics.TextWriterTraceListener
-                    initializeData=<span class="highlight-literal">"RallyRestApiUiSample.log"</span> /&gt;
-                &lt;remove name=<span class="highlight-literal">"Default"</span> /&gt;
-            &lt;/listeners&gt;
-        &lt;/trace&gt;
-    &lt;/system.diagnostics&gt;
-&lt;/configuration&gt;</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EAEABA");</script><h3>Upgrading from Rally Rest API 2.x</h3><p>If you are upgrading from the 2.x series of the Rally Rest API for DotNet, the following major changes are known:</p><ul><li />Reorganization of Namespaces - Moved many classes into sub-namespaces for better organization of code
+<div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EAFABA_tab1" class="codeSnippetContainerTabSingle">Example App.config</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAFABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAFABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAFABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="highlight-xml-bracket">&lt;?</span><span class="highlight-xml-tag">xml</span> <span class="highlight-xml-attribute-name">version</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"1.0"</span> <span class="highlight-xml-attribute-name">encoding</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"utf-8"</span> <span class="highlight-xml-bracket">?&gt;</span>
+<span class="highlight-xml-bracket">&lt;</span><span class="highlight-xml-tag">configuration</span><span class="highlight-xml-bracket">&gt;</span>
+  <span class="highlight-xml-bracket">&lt;</span><span class="highlight-xml-tag">system.diagnostics</span><span class="highlight-xml-bracket">&gt;</span>
+    <span class="highlight-xml-bracket">&lt;</span><span class="highlight-xml-tag">trace</span> <span class="highlight-xml-attribute-name">autoflush</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"true"</span> <span class="highlight-xml-attribute-name">indentsize</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"2"</span><span class="highlight-xml-bracket">&gt;</span>
+      <span class="highlight-xml-bracket">&lt;</span><span class="highlight-xml-tag">listeners</span><span class="highlight-xml-bracket">&gt;</span>
+        <span class="highlight-xml-bracket">&lt;</span><span class="highlight-xml-tag">add</span> <span class="highlight-xml-attribute-name">name</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"RallyRestApiUiSample"</span> <span class="highlight-xml-attribute-name">type</span><span class="highlight-xml-attribute-equal">=</span><span class="highlight-xml-attribute-value">"System.Diagnostics.TextWriterTraceListener
+          initializeData="</span><span class="highlight-xml-attribute-name">RallyRestApiUiSample.log</span><span class="highlight-xml-attribute-value">" /&gt;
+        &lt;remove name="</span><span class="highlight-xml-attribute-name">Default</span><span class="highlight-xml-attribute-value">listeners</span><span class="highlight-xml-bracket">&gt;</span>
+    <span class="highlight-xml-bracket">&lt;/</span><span class="highlight-xml-tag">trace</span><span class="highlight-xml-bracket">&gt;</span>
+  <span class="highlight-xml-bracket">&lt;/</span><span class="highlight-xml-tag">system.diagnostics</span><span class="highlight-xml-bracket">&gt;</span>
+<span class="highlight-xml-bracket">&lt;/</span><span class="highlight-xml-tag">configuration</span><span class="highlight-xml-bracket">&gt;</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EAFABA");</script><h3>Upgrading from Rally Rest API 2.x</h3><p>If you are upgrading from the 2.x series of the Rally Rest API for DotNet, the following major changes are known:</p><ul><li />Reorganization of Namespaces - Moved many classes into sub-namespaces for better organization of code
+<li />Changes to Visibility - Many classes and methods had their visibility changed to make it easier to find the methods that a user should be calling, instead of internal helper functions.
 <li />Authenication sequence - Constructor no longer performs authentication
 <li />Reusable UI Layer - We added components for standardized login windows throughout all applications using the toolkit, including support for SSO
-</ul><div class="codeSnippetContainer"><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAAABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAAABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAAABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="highlight-comment">// Old authentication in constructor</span>
+<li />Exceptions - We added custom exceptions for Rally being unavailable (returning HTML error page), or JSON data being unable to be deserialized.
+<li />Code Comments - We greatly expanded on the code header comments that generate this help documentation.
+</ul><p>This example shows the changes to authentication for a console application. For UI based applications, please see the documentation for the Rally.RestApi.UiForWpf Namespace for extended examples.</p><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EAAABA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAAABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAAABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAAABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="highlight-comment">// Old authentication in constructor</span>
 RallyRestApi restApi = <span class="highlight-keyword">new</span> RallyRestApi(<span class="highlight-literal">"user@sandbox.com"</span>, <span class="highlight-literal">"secret"</span>, <span class="highlight-literal">"https://sandbox.rallydev.com"</span>, <span class="highlight-literal">"v2.0"</span>);
 
 <span class="highlight-comment">// New authentication method</span>

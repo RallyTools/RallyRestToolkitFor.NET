@@ -40,6 +40,13 @@ namespace Rally.RestApi.UiForWinforms
 		/// <summary>
 		/// Sets the logo used in the user controls.
 		/// </summary>
+		/// <param name="logo">The image to use as a logo.</param>
+		/// <example>
+		/// <code language="C#">
+		/// // ImageResources is a resource file that the logo has been added to.
+		/// RestApiAuthMgrWpf.SetLogo(ImageResources.Logo);
+		/// </code>
+		/// </example>
 		public static void SetLogo(Image logo)
 		{
 			logoForUi = logo;
@@ -81,10 +88,25 @@ namespace Rally.RestApi.UiForWinforms
 		}
 		#endregion
 
+		#region ReportSsoResults
+		/// <summary>
+		/// Reports the results of an SSO action.
+		/// </summary>
+		/// <param name="success">Was SSO authentication completed successfully?</param>
+		/// <param name="rallyServer">The server that the ZSessionID is for.</param>
+		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
+		internal void ReportSsoResultsToMgr(bool success, string rallyServer, string zSessionID)
+		{
+			ReportSsoResults(success, rallyServer, zSessionID);
+		}
+		#endregion
+
 		#region NotifyLoginWindowSsoComplete
 		/// <summary>
 		/// Notifies the login window that SSO has been completed.
 		/// </summary>
+		/// <param name="authenticationResult">The current state of the authentication process. <see cref="RallyRestApi.AuthenticationResult"/></param>
+		/// <param name="api">The API that was authenticated against.</param>
 		protected override void NotifyLoginWindowSsoComplete(
 			RallyRestApi.AuthenticationResult authenticationResult, RallyRestApi api)
 		{
@@ -107,7 +129,7 @@ namespace Rally.RestApi.UiForWinforms
 		/// </summary>
 		internal RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
 		{
-			return PerformAuthenticationCheckAgainstRally(out errorMessage, true);
+			return base.PerformAuthenticationCheck(out errorMessage, true);
 		}
 		#endregion
 

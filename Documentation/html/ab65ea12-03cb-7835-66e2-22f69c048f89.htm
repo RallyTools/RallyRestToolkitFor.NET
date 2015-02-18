@@ -29,7 +29,7 @@
     <input type="hidden" id="userDataCache" class="userDataStyle" />
     <div class="pageHeader" id="PageHeader">Rally Rest API for .Net<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
     <div class="pageBody">
-      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ab65ea12-03cb-7835-66e2-22f69c048f89.htm" title="Rally.RestApi.UiForWpf" tocid="ab65ea12-03cb-7835-66e2-22f69c048f89">Rally.RestApi.UiForWpf</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="af235596-d3fb-8e2c-e0de-bc5aaa2183d9.htm" title="CustomWpfControlType Enumeration" tocid="af235596-d3fb-8e2c-e0de-bc5aaa2183d9">CustomWpfControlType Enumeration</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ebd36b2b-948b-4e4e-fab8-e4a5345fbfa1.htm" title="LoginWindow Class" tocid="ebd36b2b-948b-4e4e-fab8-e4a5345fbfa1">LoginWindow Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4ccefc1c-c4e2-c2c5-7094-a5a79862f56d.htm" title="RestApiAuthMgrWpf Class" tocid="4ccefc1c-c4e2-c2c5-7094-a5a79862f56d">RestApiAuthMgrWpf Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f53e0259-c245-d28b-8cd4-635951b7143a.htm" title="SsoWindow Class" tocid="f53e0259-c245-d28b-8cd4-635951b7143a">SsoWindow Class</a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div></div><div class="topicContent" id="TopicContent">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ab65ea12-03cb-7835-66e2-22f69c048f89.htm" title="Rally.RestApi.UiForWpf" tocid="ab65ea12-03cb-7835-66e2-22f69c048f89">Rally.RestApi.UiForWpf</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="af235596-d3fb-8e2c-e0de-bc5aaa2183d9.htm" title="CustomWpfControlType Enumeration" tocid="af235596-d3fb-8e2c-e0de-bc5aaa2183d9">CustomWpfControlType Enumeration</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4ccefc1c-c4e2-c2c5-7094-a5a79862f56d.htm" title="RestApiAuthMgrWpf Class" tocid="4ccefc1c-c4e2-c2c5-7094-a5a79862f56d">RestApiAuthMgrWpf Class</a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div></div><div class="topicContent" id="TopicContent">
         <table class="titleTable">
           <tr>
             <td class="titleColumn">Rally.RestApi.UiForWpf Namespace</td>
@@ -40,6 +40,9 @@
           <p>This library provides a reusable UI for WPF to provide common authentication.</p>
           <p>This pseudo code example shows how to use the UI for WPF. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.</p>
           <div class="codeSnippetContainer">
+            <div class="codeSnippetContainerTabs">
+              <div id="ID0EAAABA_tab1" class="codeSnippetContainerTabSingle">C#</div>
+            </div>
             <div class="codeSnippetContainerCodeContainer">
               <div class="codeSnippetToolBar">
                 <div class="codeSnippetToolBarText">
@@ -64,7 +67,7 @@
     wpfAuthMgr = <span class="highlight-keyword">new</span> RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
     <span class="highlight-comment">// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.</span>
-    <span class="highlight-comment">// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.</span>
+    <span class="highlight-comment">// If this is not called, the default labels will be used. In this sample we are changing a label and the default server URL.</span>
     ApiAuthManager.Configure(loginWindowServerLabelText: <span class="highlight-literal">"My Updated Server Label"</span>, loginWindowDefaultServer: <span class="highlight-keyword">new</span> Uri(<span class="highlight-literal">"http://onprem-url"</span>));
 
     <span class="highlight-comment">// HELP: Set the logo that is shown in the login window</span>
@@ -122,37 +125,11 @@
                 <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
               </td>
               <td>
-                <a href="ebd36b2b-948b-4e4e-fab8-e4a5345fbfa1.htm">LoginWindow</a>
-              </td>
-              <td>
-                <div class="summary">
-            Interaction logic for LoginWindow.xaml
-            </div>
-              </td>
-            </tr>
-            <tr data="class; public">
-              <td>
-                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
-              </td>
-              <td>
                 <a href="4ccefc1c-c4e2-c2c5-7094-a5a79862f56d.htm">RestApiAuthMgrWpf</a>
               </td>
               <td>
                 <div class="summary">
             A WPF based authentication manager.
-            </div>
-              </td>
-            </tr>
-            <tr data="class; public">
-              <td>
-                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
-              </td>
-              <td>
-                <a href="f53e0259-c245-d28b-8cd4-635951b7143a.htm">SsoWindow</a>
-              </td>
-              <td>
-                <div class="summary">
-            Interaction logic for SsoWindow.xaml
             </div>
               </td>
             </tr>

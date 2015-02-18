@@ -19,6 +19,11 @@ namespace Rally.RestApi
 		/// Create a new Request with the specified artifact type
 		/// </summary>
 		/// <param name="artifactName">The Rally artifact type being requested</param>
+		/// <example>
+		/// <code>
+		/// Request request = new Request("PortfolioItem/Feature");
+		/// </code>
+		/// </example>
 		public Request(string artifactName)
 		{
 			Configure(artifactName: artifactName);
@@ -28,6 +33,13 @@ namespace Rally.RestApi
 		/// The collection should have a _ref property.
 		/// </summary>
 		/// <param name="collection">The object containing the collection ref</param>
+		/// <example>
+		/// <code>
+		/// DynamicJsonObject collection = new DynamicJsonObject();
+		/// collection["_ref"] = "/hierarchicalrequirement/12345/defect.js";
+		/// Request request = new Request(collection);
+		/// </code>
+		/// </example>
 		public Request(DynamicJsonObject collection)
 		{
 			Configure(collection: collection);
@@ -35,6 +47,11 @@ namespace Rally.RestApi
 		/// <summary>
 		/// Create a new empty Request.
 		/// </summary>
+		/// <example>
+		/// <code>
+		/// Request request = new Request();
+		/// </code>
+		/// </example>
 		public Request()
 		{
 			Configure();
@@ -321,6 +338,12 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <param name="url">the url we are creating from</param>
 		/// <returns>A request object that represents the reference string.</returns>
+		/// <example>
+		/// <code>
+		/// string url = "https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement/12345/defect.js?pagesize=172&amp;fetch=Name&amp;order=ObjectID&amp;start=57";
+		/// Request request = Request.CreateFromUrl(url);
+		/// </code>
+		/// </example>
 		public static Request CreateFromUrl(string url)
 		{
 			Request request = new Request();
@@ -401,6 +424,14 @@ namespace Rally.RestApi
 		/// Perform a deep clone of this request and all its parameters.
 		/// </summary>
 		/// <returns>The clone request</returns>
+		/// <example>
+		/// <code>
+		/// Request request = new Request("Defect");
+		/// request.Fetch = new List&lt;string&gt;() { "Name", "FormattedID" };
+		/// 
+		/// Request clonedRequest = request.Clone();
+		/// </code>
+		/// </example>
 		public Request Clone()
 		{
 			Request request;

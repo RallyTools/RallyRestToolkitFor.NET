@@ -81,6 +81,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Constructor
 		/// </summary>
+		/// <param name="authMgr">The authorization manager that owns these login details.</param>
 		public LoginDetails(ApiAuthManager authMgr)
 		{
 			ConnectionType = ConnectionType.BasicAuth;
@@ -100,6 +101,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Gets the decrypted password for this user.
 		/// </summary>
+		/// <returns>The password after it was decrypted.</returns>
 		public string GetPassword()
 		{
 			return authMgr.EncryptionRoutines.DecryptString(authMgr.EncryptionKey, password);
@@ -115,6 +117,7 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Gets the decrypted proxy password for this user.
 		/// </summary>
+		/// <returns>The password after it was decrypted.</returns>
 		public string GetProxyPassword()
 		{
 			return authMgr.EncryptionRoutines.DecryptString(authMgr.EncryptionKey, proxyPassword);
@@ -204,7 +207,8 @@ namespace Rally.RestApi.Auth
 		/// <summary>
 		/// Deletes any cached login credentials from disk.
 		/// </summary>
-		public bool DeleteCachedLoginDetailsFromDisk()
+		/// <returns>If the files were successfully deleted or not.</returns>
+		internal bool DeleteCachedLoginDetailsFromDisk()
 		{
 			FileInfo fileOnDisk = GetFileOnDisk();
 			if (fileOnDisk.Exists)

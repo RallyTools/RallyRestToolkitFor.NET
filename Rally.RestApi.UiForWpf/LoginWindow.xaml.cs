@@ -23,7 +23,7 @@ namespace Rally.RestApi.UiForWpf
 	/// <summary>
 	/// Interaction logic for LoginWindow.xaml
 	/// </summary>
-	public partial class LoginWindow : Window
+	internal partial class LoginWindow : Window
 	{
 		#region Enum: TabType
 		private enum TabType

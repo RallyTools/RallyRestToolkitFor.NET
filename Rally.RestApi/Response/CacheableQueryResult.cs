@@ -18,6 +18,8 @@ namespace Rally.RestApi.Response
 		/// <summary>
 		/// Constructor
 		/// </summary>
+		/// <param name="obj">The data that was returned for the query against Rally.</param>
+		/// <param name="isCachedResult">Is this a cached response?</param>
 		public CacheableQueryResult(DynamicJsonObject obj, bool isCachedResult)
 			: base(obj)
 		{

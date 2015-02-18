@@ -10,13 +10,13 @@ namespace Rally.RestApi.Json
 	/// <summary>
 	/// A class for serializing/deserizalizing dynamic JSON objects.
 	/// </summary>
-	public class DynamicJsonSerializer
+	internal class DynamicJsonSerializer
 	{
 		readonly JavaScriptSerializer deSerializer;
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public DynamicJsonSerializer()
+		internal DynamicJsonSerializer()
 		{
 			deSerializer = new JavaScriptSerializer();
 			deSerializer.MaxJsonLength = int.MaxValue;
@@ -26,7 +26,9 @@ namespace Rally.RestApi.Json
 		/// <summary>
 		/// Deserializes a JSON data string into a dynamic JSON Object.
 		/// </summary>
-		public DynamicJsonObject Deserialize(string json)
+		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+		internal DynamicJsonObject Deserialize(string json)
 		{
 			try
 			{
@@ -44,7 +46,7 @@ namespace Rally.RestApi.Json
 		/// <summary>
 		/// Serializes a dynamic JSON Object into a string.
 		/// </summary>
-		public string Serialize(DynamicJsonObject value)
+		internal string Serialize(DynamicJsonObject value)
 		{
 			return SerializeDictionary(value.Dictionary);
 		}
@@ -52,7 +54,7 @@ namespace Rally.RestApi.Json
 		/// <summary>
 		/// Serializes a dictionary into a string.
 		/// </summary>
-		public string SerializeDictionary(IDictionary<string, object> dictionary)
+		internal string SerializeDictionary(IDictionary<string, object> dictionary)
 		{
 			var builder = new StringBuilder();
 			builder.Append("{");

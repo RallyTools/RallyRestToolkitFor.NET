@@ -51,7 +51,7 @@
 
 &lt;p&gt;This pseudo code example shows how to use the UI for Winforms. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.&lt;/p&gt;
 
-&lt;code&gt;
+&lt;code language="C#"&gt;
 public static RestApiAuthMgrWinforms winFormsAuthMgr { get; set; }
 
 public static void PrimaryEntryMethod()
@@ -68,7 +68,7 @@ public static void PrimaryEntryMethod()
 	winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
 
 	// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.
-	// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.
+	// If this is not called, the default labels will be used. In this sample we are changing a label and the default server URL.
 	ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label", loginWindowDefaultServer: new Uri("http://onprem-url"));
 
 	// HELP: Set the logo that is shown in the login window
@@ -109,7 +109,7 @@ private void UpdateAuthenticationResults(RallyRestApi.AuthenticationResult authe
 
 &lt;p&gt;This pseudo code example shows how to use the UI for WPF. For a full working sample, please see the code in Test.Rally.RestApi.UiSample within the repository.&lt;/p&gt;
 
-&lt;code&gt;
+&lt;code language="C#"&gt;
 public static RestApiAuthMgrWpf wpfAuthMgr { get; set; }
 
 public static void PrimaryEntryMethod()
@@ -126,7 +126,7 @@ public static void PrimaryEntryMethod()
 	wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
 	// HELP: Configure labels for UI. These are global and used by the authentication manager to build their UI.
-	// If this is not called, the default labels will be used. In this sample we are changin a label and the default server URL.
+	// If this is not called, the default labels will be used. In this sample we are changing a label and the default server URL.
 	ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label", loginWindowDefaultServer: new Uri("http://onprem-url"));
 
 	// HELP: Set the logo that is shown in the login window
@@ -205,11 +205,13 @@ Can be used by Winforms applications that need IDP based SSO
 &lt;h3&gt;Sample Usage&lt;/h3&gt;
 &lt;p&gt;This sample code snippet shows how the Rally Rest API can be used by a console application:&lt;/p&gt;
 
-&lt;code&gt;string username = "paul@acme.com";
+&lt;code language="C#"&gt;string username = "paul@acme.com";
 string password = "Just4Rally";
+string serverUrl = "https://preview.rallydev.com";
+
 // Initialize the REST API. You can specify a web service version if needed in the constructor.
 RallyRestApi restApi = new RallyRestApi();
-restApi.Authenticate(username, password, "https://preview.rallydev.com", proxy: null, allowSSO: false);
+restApi.Authenticate(username, password, serverUrl, proxy: null, allowSSO: false);
 
 //Create an item
 DynamicJsonObject toCreate = new DynamicJsonObject();
@@ -245,12 +247,9 @@ The Rally REST API for .NET provides the ability to log all requests and respons
 To enable this behavior simply configure one or more trace listeners at the Information level.
 
 Below is an example App.config which will enable this:
-&lt;code&gt;
+&lt;code language="xml" title="Example App.config"&gt;
 &amp;lt;?xml version="1.0" encoding="utf-8" ?&amp;gt;
 &amp;lt;configuration&amp;gt;
-	&amp;lt;startup&amp;gt;
-		&amp;lt;supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" /&amp;gt;
-	&amp;lt;/startup&amp;gt;
 	&amp;lt;system.diagnostics&amp;gt;
 		&amp;lt;trace autoflush="true" indentsize="2"&amp;gt;
 			&amp;lt;listeners&amp;gt;
@@ -267,11 +266,15 @@ Below is an example App.config which will enable this:
 &lt;p&gt;If you are upgrading from the 2.x series of the Rally Rest API for DotNet, the following major changes are known:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li/&gt;Reorganization of Namespaces - Moved many classes into sub-namespaces for better organization of code
+&lt;li/&gt;Changes to Visibility - Many classes and methods had their visibility changed to make it easier to find the methods that a user should be calling, instead of internal helper functions.
 &lt;li/&gt;Authenication sequence - Constructor no longer performs authentication
 &lt;li/&gt;Reusable UI Layer - We added components for standardized login windows throughout all applications using the toolkit, including support for SSO
+&lt;li/&gt;Exceptions - We added custom exceptions for Rally being unavailable (returning HTML error page), or JSON data being unable to be deserialized.
+&lt;li/&gt;Code Comments - We greatly expanded on the code header comments that generate this help documentation.
 &lt;/ul&gt;
 
-&lt;code&gt;
+&lt;p&gt;This example shows the changes to authentication for a console application. For UI based applications, please see the documentation for the Rally.RestApi.UiForWpf Namespace for extended examples.&lt;/p&gt;
+&lt;code language="C#"&gt;
 // Old authentication in constructor
 RallyRestApi restApi = new RallyRestApi("user@sandbox.com", "secret", "https://sandbox.rallydev.com", "v2.0");
 
