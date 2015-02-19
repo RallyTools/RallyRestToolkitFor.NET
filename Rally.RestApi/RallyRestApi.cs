@@ -651,6 +651,7 @@ namespace Rally.RestApi
 		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+		/// <exception cref="InvalidOperationException">Occurs if authentication is not completed prior to calling this method.</exception>
 		/// <example>
 		/// <code language="C#">
 		/// DynamicJsonObject item = restApi.GetByReference("defect", 12345, "Name", "FormattedID");
@@ -671,6 +672,8 @@ namespace Rally.RestApi
 		/// <returns>A <see cref="DynamicJsonObject"/> containing the requested object.</returns>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+		/// <exception cref="InvalidOperationException">Occurs if authentication is not completed prior to calling this method.</exception>
+		/// <exception cref="ArgumentNullException">Occurs if the passed in aRef parameter is null.</exception>
 		/// <example>
 		/// <code language="C#">
 		/// string aRef = "https://preview.rallydev.com/slm/webservice/v2.0/defect/12345.js"
@@ -682,6 +685,9 @@ namespace Rally.RestApi
 		{
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+
+			if (aRef == null)
+				throw new ArgumentNullException("aRef", "You must provide a reference to retrieve data from Rally.");
 
 			if (fetchedFields.Length == 0)
 			{
