@@ -168,6 +168,50 @@ namespace Rally.RestApi.Test
 			Assert.AreEqual(val2.obj1.decimal1, obj1.decimal1);
 		}
 
+		#region RoundDeserializeBadJsonTest
+		/// <summary>
+		///A test for deserializing bad JSON data
+		///</summary>
+		[TestMethod]
+		public void RoundDeserializeBadJsonTest()
+		{
+			DynamicJsonSerializer target = new DynamicJsonSerializer();
+			string json = "bad json";
+			try
+			{
+				target.Deserialize(json);
+			}
+			catch (RallyFailedToDeserializeJson ex)
+			{
+				Assert.AreEqual(json, ex.JsonData);
+				return;
+			}
 
+			Assert.Fail("Failed to receive a RallyFailedToDeserializeJson with the JSON data in it.");
+		}
+		#endregion
+
+		#region RoundDeserializeBadJsonTest
+		/// <summary>
+		///A test for deserializing when Rally is offline
+		///</summary>
+		[TestMethod]
+		public void RoundDeserializeRallyUnavailableTest()
+		{
+			DynamicJsonSerializer target = new DynamicJsonSerializer();
+			string json = "<!DOCTYPE HTML> Rally is unavailable</HTML>";
+			try
+			{
+				target.Deserialize(json);
+			}
+			catch (RallyUnavailableException ex)
+			{
+				Assert.AreEqual(json, ex.ErrorMessage);
+				return;
+			}
+
+			Assert.Fail("Failed to receive a RallyUnavailableException with the JSON data in it.");
+		}
+		#endregion
 	}
 }

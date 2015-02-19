@@ -18,8 +18,10 @@ namespace Rally.RestApi.Exceptions
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="errorMessage">The error message that was returned from Rally.</param>
-		internal RallyUnavailableException(string errorMessage)
+		/// <param name="innerException">The exception that is the cause of the current exception.</param>
+		/// <param name="errorMessage">The HTML error message that was returned from Rally.</param>
+		internal RallyUnavailableException(Exception innerException, string errorMessage)
+			: base("Rally Unavailable", innerException)
 		{
 			ErrorMessage = errorMessage;
 		}

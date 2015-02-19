@@ -37,9 +37,13 @@ namespace Rally.RestApi.Json
 			catch (Exception e)
 			{
 				if ((!String.IsNullOrWhiteSpace(json)) && (json.StartsWith("<!DOCTYPE HTML")))
-					throw new RallyUnavailableException(json);
+				{
+					throw new RallyUnavailableException(e, json);
+				}
 				else
+				{
 					throw new RallyFailedToDeserializeJson(e, json);
+				}
 			}
 		}
 
