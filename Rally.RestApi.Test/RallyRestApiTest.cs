@@ -52,7 +52,8 @@ namespace Rally.RestApi.Test
 			}
 
 			RallyRestApi api = new RallyRestApi(webServiceVersion: wsapiVersion);
-			api.AuthenticateWithApiKey(apiKey, server);
+			RallyRestApi.AuthenticationResult authResult = api.AuthenticateWithApiKey(apiKey, server);
+			Assert.AreEqual(RallyRestApi.AuthenticationResult.Authenticated, authResult);
 			return api;
 		}
 
