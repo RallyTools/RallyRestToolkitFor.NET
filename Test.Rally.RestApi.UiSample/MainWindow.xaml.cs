@@ -85,7 +85,8 @@ namespace Test.Rally.RestApi.UiSample
 				loginButtonLabel.Text, logoutButtonLabel.Text, cancelButtonLabel.Text);
 
 			RestApiAuthMgrWinforms.SetLogo(ImageResources.RallyLogo40x40);
-			RestApiAuthMgrWpf.SetLogo(GetImageSource(ImageResources.RallyLogo40x40));
+			RestApiAuthMgrWpf.SetLogo(GetImageSource(ImageResources.RallyLogo40x40),
+				GetImageSource(ImageResources.RallyLogo40x40));
 
 			// HELP: If you need to use custom controls (Ex: from a third party vendor), you can set them using this code snippet.
 			// This triggers a global change for the next time a window is created.

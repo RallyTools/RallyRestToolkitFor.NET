@@ -162,10 +162,15 @@ namespace Rally.RestApi.Test
 			AssertCanDelete(restApi);
 		}
 
-		private void AssertCanDelete(RallyRestApi restApi)
+		private void AssertCanDelete(RallyRestApi restApi, bool includeFullData = false)
 		{
 			var dynamicJson = new DynamicJsonObject();
 			dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
+			if (includeFullData)
+			{
+				dynamicJson["Owner"] = restApi.GetCurrentUser()["_ref"];
+				dynamicJson["Package"] = "Package A";
+			}
 			CreateResult response = restApi.Create("defect", dynamicJson);
 			Assert.AreEqual(0, response.Errors.Count);
 			Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
@@ -308,7 +313,7 @@ namespace Rally.RestApi.Test
 		public void ApiKeyCanDelete()
 		{
 			RallyRestApi restApi = GetRallyRestApiWithApiKey();
-			AssertCanDelete(restApi);
+			AssertCanDelete(restApi, true);
 		}
 
 		[TestMethod]

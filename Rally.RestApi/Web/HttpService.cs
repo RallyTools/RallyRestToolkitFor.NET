@@ -71,7 +71,7 @@ namespace Rally.RestApi.Web
 				webClient = new CookieAwareWebClient(cookies);
 
 			if (connectionInfo.AuthType == AuthorizationType.ApiKey)
-				webClient.AddCookie(connectionInfo.Server, "ZSESSIONID", connectionInfo.ApiKey);
+				webClient.Headers.Add("ZSESSIONID", connectionInfo.ApiKey);
 			else if (connectionInfo.AuthType == AuthorizationType.ZSessionID)
 				webClient.AddCookie(connectionInfo.Server, "ZSESSIONID", connectionInfo.ZSessionID);
 
@@ -326,6 +326,9 @@ namespace Rally.RestApi.Web
 				request.Method = "DELETE";
 				request.CookieContainer = cookies;
 				request.Credentials = credentials;
+				if (connectionInfo.AuthType == AuthorizationType.ApiKey)
+					request.Headers.Add("ZSESSIONID", connectionInfo.ApiKey);
+
 				if (headers != null)
 				{
 					foreach (var pairs in headers)
