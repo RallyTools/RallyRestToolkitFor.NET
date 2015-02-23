@@ -19,6 +19,7 @@ namespace Rally.RestApi.UiForWpf
 	{
 		static Dictionary<CustomWpfControlType, Type> customControlTypes = new Dictionary<CustomWpfControlType, Type>();
 		static ImageSource logoForUi = null;
+		static ImageSource iconForUi = null;
 		LoginWindow loginControl = null;
 		internal SsoAuthenticationComplete LoginWindowSsoAuthenticationComplete;
 
@@ -61,6 +62,7 @@ namespace Rally.RestApi.UiForWpf
 		/// Sets the logo used in the user controls.
 		/// </summary>
 		/// <param name="logo">The image to use as a logo.</param>
+		/// <param name="icon">The image to use as a window icon.</param>
 		/// <example>
 		/// <code language="C#">
 		/// // ImageResources is a resource file that the logo has been added to.
@@ -79,9 +81,10 @@ namespace Rally.RestApi.UiForWpf
 		/// }
 		/// </code>
 		/// </example>
-		public static void SetLogo(ImageSource logo)
+		public static void SetLogo(ImageSource logo, ImageSource icon)
 		{
 			logoForUi = logo;
+			iconForUi = icon;
 		}
 		#endregion
 
@@ -100,7 +103,7 @@ namespace Rally.RestApi.UiForWpf
 				LoginWindowSsoAuthenticationComplete += loginControl.SsoAuthenticationComplete;
 			}
 
-			loginControl.SetLogo(logoForUi);
+			loginControl.SetLogo(logoForUi, iconForUi);
 			loginControl.UpdateLoginState();
 			loginControl.Show();
 			loginControl.Focus();

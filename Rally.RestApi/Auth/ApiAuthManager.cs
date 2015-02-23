@@ -559,7 +559,10 @@ namespace Rally.RestApi.Auth
 			Uri serverUri = null;
 			try
 			{
-				serverUri = new Uri(LoginDetails.RallyServer);
+				if (String.IsNullOrWhiteSpace(LoginDetails.RallyServer))
+					errorMessage = "Bad URI format for Rally Server";
+				else
+					serverUri = new Uri(LoginDetails.RallyServer);
 			}
 			catch
 			{

@@ -85,9 +85,13 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 
-		internal void SetLogo(ImageSource logo)
+		internal void SetLogo(ImageSource logo, ImageSource iconForUi)
 		{
-			Logo.Source = logo;
+			if (logo != null)
+				Logo.Source = logo;
+
+			if (iconForUi != null)
+				Icon = iconForUi;
 		}
 
 		#region UpdateLoginState

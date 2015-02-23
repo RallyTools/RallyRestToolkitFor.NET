@@ -6,18 +6,18 @@
 				Width="450" MinWidth="350" WindowStartupLocation="CenterScreen">
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="layoutGrid">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="50" />
+			<ColumnDefinition Width="40" />
 			<ColumnDefinition Width="80" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="50" />
+			<RowDefinition Height="40" />
 			<RowDefinition Height="*" x:Name="inputRow"/>
 			<RowDefinition Height="28" />
 			<RowDefinition Height="28" />
 		</Grid.RowDefinitions>
 		<Image x:Name="Logo" Grid.Column="0" Grid.Row="0" 
-               VerticalAlignment="Stretch" HorizontalAlignment="Center" />
+               VerticalAlignment="Stretch" HorizontalAlignment="Left" />
 		<Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="18" FontFamily="Arial" x:Name="headerLabel" VerticalAlignment="Center" />
 		<Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" x:Name="userMessages" Foreground="Red" FontSize="12" />
 	</Grid>
