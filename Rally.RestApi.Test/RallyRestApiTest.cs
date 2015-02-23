@@ -304,6 +304,12 @@ namespace Rally.RestApi.Test
 			Assert.AreEqual("user", Ref.GetTypeFromRef(user._ref), "Type test");
 		}
 
+		[TestMethod]
+		public void ApiKeyCanDelete()
+		{
+			RallyRestApi restApi = GetRallyRestApiWithApiKey();
+			AssertCanDelete(restApi);
+		}
 
 		[TestMethod]
 		public void GetSubscription()
