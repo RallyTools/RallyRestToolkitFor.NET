@@ -94,6 +94,9 @@ namespace Rally.RestApi.UiForWpf
 		/// </summary>
 		protected override void ShowUserLoginWindowInternal()
 		{
+			if (Api.AuthenticationState == RallyRestApi.AuthenticationResult.PendingSSO)
+				PerformLogoutFromRally();
+
 			// If the login control exists, don't open a new one.
 			if (loginControl == null)
 			{

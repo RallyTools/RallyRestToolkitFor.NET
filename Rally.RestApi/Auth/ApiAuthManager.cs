@@ -528,6 +528,12 @@ namespace Rally.RestApi.Auth
 				case ConnectionType.SpBasedSso:
 					return PerformAuthenticationCheckAgainstRally(out errorMessage, allowSso);
 				case ConnectionType.IdpBasedSso:
+					if (!allowSso)
+					{
+						errorMessage = "IDP based authorization disabled by calling sequence.";
+						return RallyRestApi.AuthenticationResult.NotAuthorized;
+					}
+
 					return PerformAuthenticationCheckAgainstIdp(out errorMessage);
 				default:
 					throw new NotImplementedException();
