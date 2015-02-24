@@ -51,6 +51,12 @@ namespace Test.Rally.RestApi.UiSample
 			winFormsAuthMgr = new RestApiAuthMgrWinforms(applicationToken, encryptionKey, encryptionUtilities);
 			wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 
+			// Help: Set logos. Any use of Rally's Logo is governed by your agreements with Rally.
+			RestApiAuthMgrWinforms.SetLogo(ImageResources.RallyLogo40x40);
+			RestApiAuthMgrWpf.SetLogo(GetImageSource(ImageResources.RallyLogo40x40),
+				GetImageSource(ImageResources.RallyLogo40x40));
+
+
 			// Help: You can auto-authenticate if you want. We do not have it enabled for this application.
 			// wpfAuthMgr.AutoAuthenticate(true);
 
@@ -76,17 +82,18 @@ namespace Test.Rally.RestApi.UiSample
 			// If this is not called, the default labels will be used.
 			ApiAuthManager.Configure(loginWindowServerLabelText: "My Updated Server Label",
 				loginWindowDefaultServer: new Uri("http://onprem.rally.url"));
+
+			Uri defaultServer = null;
+			if (!String.IsNullOrWhiteSpace(defaultServerUri.Text))
+				defaultServer = new Uri(defaultServerUri.Text);
+
 			ApiAuthManager.Configure(windowTitleLabel.Text, headerLabel.Text,
 				credentialsTabLabel.Text, usernameLabel.Text, passwordLabel.Text,
-				serverTabLabel.Text, String.Empty, serverLabel.Text, String.Empty, new Uri(defaultServerUri.Text),
+				serverTabLabel.Text, String.Empty, serverLabel.Text, String.Empty, defaultServer,
 				proxyTabLabel.Text, proxyServerLabel.Text, proxyUsernameLabel.Text,
 				proxyPasswordLabel.Text, defaultProxyServer,
 				loginWindowSsoInProgressLabel.Text,
 				loginButtonLabel.Text, logoutButtonLabel.Text, cancelButtonLabel.Text);
-
-			RestApiAuthMgrWinforms.SetLogo(ImageResources.RallyLogo40x40);
-			RestApiAuthMgrWpf.SetLogo(GetImageSource(ImageResources.RallyLogo40x40),
-				GetImageSource(ImageResources.RallyLogo40x40));
 
 			// HELP: If you need to use custom controls (Ex: from a third party vendor), you can set them using this code snippet.
 			// This triggers a global change for the next time a window is created.
