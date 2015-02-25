@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shfbBuild product="Sandcastle Help File Builder" version="2015.1.12.0" projectFile="C:\CodeRally\RallyRestToolkitFor.NET\DocumentationGeneration.shfbproj" started="2/18/2015 3:08:17 PM">
+<shfbBuild product="Sandcastle Help File Builder" version="2015.1.12.0" projectFile="C:\CodeRally\RallyRestToolkitFor.NET\DocumentationGeneration.shfbproj" started="2/24/2015 10:06:53 AM">
 <buildStep step="Initializing">
 Finding tools...
 The Sandcastle tools are located in &#39;C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\&#39;
@@ -31,16 +31,16 @@ Copying XML comments files
 <buildStep step="GenerateSharedContent">
 Generating shared content files (en-US, English (United States))...
 <plugIn name="Lightweight Website Style" behavior="After" priority="1000">
-</plugIn>    Last step completed in 00:00:00.0701
+</plugIn>    Last step completed in 00:00:00.0167
 </buildStep>
 <buildStep step="GenerateApiFilter">
 Generating API filter for MRefBuilder...
-    Last step completed in 00:00:00.0050
+    Last step completed in 00:00:00.0055
 </buildStep>
 <buildStep step="GenerateReflectionInfo">
 Generating reflection information...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 2/18/2015 3:08:18 PM.
+Build started 2/24/2015 10:06:55 AM.
 Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\GenerateRefInfo.proj&quot; on node 1 (default targets).
 PrepareForBuild:
   Creating directory &quot;obj\Debug\&quot;.
@@ -59,13 +59,13 @@ Done Building Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\W
 
 Build succeeded.
 
-Time Elapsed 00:00:01.76
-    Last step completed in 00:00:02.2374
+Time Elapsed 00:00:00.75
+    Last step completed in 00:00:00.8598
 </buildStep>
 <buildStep step="TransformReflectionInfo">
 Transforming reflection output...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 2/18/2015 3:08:21 PM.
+Build started 2/24/2015 10:06:55 AM.
 Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\TransformManifest.proj&quot; on node 1 (default targets).
 TransformManifest:
   XslTransform (v2015.1.12.0)
@@ -85,17 +85,17 @@ Done Building Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\W
 
 Build succeeded.
 
-Time Elapsed 00:00:01.28
-    Last step completed in 00:00:01.6931
+Time Elapsed 00:00:00.50
+    Last step completed in 00:00:00.6062
 </buildStep>
 <buildStep step="GenerateNamespaceSummaries">
 Generating namespace summary information...
-    Last step completed in 00:00:00.0385
+    Last step completed in 00:00:00.0381
 </buildStep>
 <buildStep step="CopyAdditionalContent">
 Copying additional content files...
 No additional content to copy
-    Last step completed in 00:00:00.0070
+    Last step completed in 00:00:00.0060
 </buildStep>
 <buildStep step="MergeTablesOfContents">
 Merging conceptual and additional tables of contents...
@@ -104,7 +104,7 @@ Merging conceptual and additional tables of contents...
 <buildStep step="GenerateIntermediateTableOfContents">
 Generating intermediate table of contents file...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 2/18/2015 3:08:22 PM.
+Build started 2/24/2015 10:06:56 AM.
 Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\GenerateIntermediateTOC.proj&quot; on node 1 (default targets).
 GenerateIntermediateTOC:
   XslTransform (v2015.1.12.0)
@@ -115,24 +115,24 @@ Done Building Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\W
 
 Build succeeded.
 
-Time Elapsed 00:00:00.83
+Time Elapsed 00:00:00.11
 Generating conceptual content intermediate TOC file...
-    Last step completed in 00:00:01.2584
+    Last step completed in 00:00:00.2226
 </buildStep>
 <buildStep step="CreateBuildAssemblerConfigs">
 Creating Sandcastle configuration files...
     sandcastle.config
-    Last step completed in 00:00:00.2343
+    Last step completed in 00:00:00.2515
 </buildStep>
 <buildStep step="MergeCustomConfigs">
 Merging custom build component configurations
 C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\sandcastle.config
-    Last step completed in 00:00:00.0235
+    Last step completed in 00:00:00.0241
 </buildStep>
 <buildStep step="BuildReferenceTopics">
 Building reference help topics...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 2/18/2015 3:08:24 PM.
+Build started 2/24/2015 10:06:57 AM.
 Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\BuildReferenceTopics.proj&quot; on node 1 (default targets).
 BuildReferenceTopics:
   BuildAssembler (v2015.1.12.0)
@@ -143,18 +143,19 @@ BuildReferenceTopics:
   Processed 270 topic(s)
   CopyFromIndexComponent: &quot;reflection&quot; in-memory cache entries used: 7 of 15.
   CopyFromIndexComponent: &quot;comments&quot; in-memory cache entries used: 6 of 30.
+  ResolveReferenceLinksComponent: New MSDN content ID cache size: 1184 entries
 Done Building Project &quot;C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\BuildReferenceTopics.proj&quot; (default targets).
 
 Build succeeded.
 
-Time Elapsed 00:00:10.69
-    Last step completed in 00:00:11.1642
+Time Elapsed 00:00:10.83
+    Last step completed in 00:00:11.0078
 </buildStep>
 <buildStep step="CombiningIntermediateTocFiles">
 Combining conceptual and API intermediate TOC files...
 
 Clearing any prior web output
-    Last step completed in 00:00:00.1562
+    Last step completed in 00:00:00.1329
 </buildStep>
 <buildStep step="ExtractingHtmlInfo">
 Extracting HTML info for HTML Help 1 and/or website...
@@ -170,7 +171,7 @@ Processed 270 HTML files
 Sorting keywords and generating See Also indices
 Saving website keyword index to C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\WebKI.xml
 Saving website table of contents to C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\WebTOC.xml
-    Last step completed in 00:00:01.8088
+    Last step completed in 00:00:00.5691
 </buildStep>
 <buildStep step="CopyStandardHelpContent">
 Copying standard help content...
@@ -250,18 +251,18 @@ C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyle
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\icons\TocOpen.gif -&gt; C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\Output\Website\icons\TocOpen.gif
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\scripts\branding-Website.js -&gt; C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\Output\Website\scripts\branding-Website.js
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\scripts\jquery-1.11.0.min.js -&gt; C:\CodeRally\RallyRestToolkitFor.NET\Documentation\Working\Output\Website\scripts\jquery-1.11.0.min.js
-    Last step completed in 00:00:00.2404
+    Last step completed in 00:00:00.2008
 </buildStep>
 <buildStep step="GenerateHelpFormatTableOfContents">
 Generating website table of contents file...
-    Last step completed in 00:00:00.0035
+    Last step completed in 00:00:00.0025
 </buildStep>
 <buildStep step="GenerateFullTextIndex">
 Generating full-text index for the website...
 
 <plugIn name="Lightweight Website Style" behavior="After" priority="1000">
 Adding lightweight search and TOC elements to each topic...
-</plugIn>    Last step completed in 00:00:02.7532
+</plugIn>    Last step completed in 00:00:02.1521
 </buildStep>
 <buildStep step="CopyingWebsiteFiles">
 Copying website files to output folder...
@@ -271,15 +272,15 @@ Copied 200 files
 Copied 300 files
 Copied 400 files
 Copied 443 files for the website content
-    Last step completed in 00:00:00.4412
+    Last step completed in 00:00:00.3054
 </buildStep>
 <buildStep step="CleanIntermediates">
 Removing intermediate files...
-    Last step completed in 00:00:00.1703
+    Last step completed in 00:00:00.1240
 </buildStep>
 <buildStep step="Completed">
 
-Build completed successfully at 2/18/2015 3:08:40 PM.  Total time: 00:00:23.4000
+Build completed successfully at 2/24/2015 10:07:11 AM.  Total time: 00:00:17.5061
 
 </buildStep>
 </shfbBuild>
