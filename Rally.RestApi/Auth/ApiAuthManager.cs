@@ -406,7 +406,7 @@ namespace Rally.RestApi.Auth
 
 		#region ShowUserLoginWindow
 		/// <summary>
-		/// Authenticates the user against Rally.
+		/// Authenticates the user against Rally. This must be called from the UI thread.
 		/// </summary>
 		/// <param name="authenticationStateChange">The delegate to call when an authentication state change occurs.</param>
 		/// <param name="ssoAuthenticationComplete">The delegate to call when an authentication state change occurs due to SSO.</param>
