@@ -703,7 +703,6 @@ namespace Rally.RestApi.Auth
 				{
 					case RallyRestApi.AuthenticationResult.Authenticated:
 						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
-						LoginDetails.SaveToDisk();
 						break;
 					case RallyRestApi.AuthenticationResult.PendingSSO:
 					case RallyRestApi.AuthenticationResult.NotAuthorized:
@@ -713,6 +712,9 @@ namespace Rally.RestApi.Auth
 						throw new NotImplementedException();
 				}
 			}
+
+			if (Api.AuthenticationState == RallyRestApi.AuthenticationResult.Authenticated)
+				LoginDetails.SaveToDisk();
 		}
 		#endregion
 
