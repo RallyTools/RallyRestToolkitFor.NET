@@ -62,7 +62,8 @@ namespace Rally.RestApi.UiForWpf
 					idpProxy = authMgr.Api.ConnectionInfo.Proxy;
 				}
 
-				browser.Source = ssoUrl;
+				this.ssoUrl = ssoUrl;
+				SetUrl();
 				Show();
 			}
 			catch

@@ -176,7 +176,7 @@ namespace Rally.RestApi.UiForWpf
 		/// <summary>
 		/// Performs an authentication check against Rally with the specified credentials
 		/// </summary>
-		internal new RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
+		internal RallyRestApi.AuthenticationResult PerformAuthenticationCheck(out string errorMessage)
 		{
 			return base.PerformAuthenticationCheck(out errorMessage);
 		}
