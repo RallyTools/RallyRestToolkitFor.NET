@@ -22,6 +22,17 @@ namespace Rally.RestApi.UiForWpf
 		static ImageSource iconForUi = null;
 		LoginWindow loginControl = null;
 		internal SsoAuthenticationComplete LoginWindowSsoAuthenticationComplete;
+		/// <summary>
+		/// An event that notifies when a window has changed state.
+		/// <para>You will need to listen to this event if you need to notify your parent application 
+		/// that you have windows open, such as if you are developing an Office plug-in and need to 
+		/// set the application interactive mode.</para>
+		/// <code>
+		/// bool isWindowOpen;
+		/// Globals.ThisAddIn.Application.Interactive = isWindowOpen;
+		/// </code>
+		/// </summary>
+		public event WindowStateChangedEvent WindowStateChanged;
 
 		#region Constructor
 		/// <summary>
@@ -108,6 +119,10 @@ namespace Rally.RestApi.UiForWpf
 
 			loginControl.SetLogo(logoForUi, iconForUi);
 			loginControl.UpdateLoginState();
+
+			if (WindowStateChanged != null)
+				WindowStateChanged.Invoke(WindowTypeOption.Login, WindowStateOption.Open);
+
 			loginControl.Show();
 			loginControl.Focus();
 		}
@@ -134,6 +149,9 @@ namespace Rally.RestApi.UiForWpf
 					Application.Current.Dispatcher.Invoke(delegate() { window.ShowSsoPage(this, ssoUrl); });
 				}
 			}
+
+			if (WindowStateChanged != null)
+				WindowStateChanged.Invoke(WindowTypeOption.SsoLogin, WindowStateOption.Open);
 		}
 		#endregion
 
@@ -146,6 +164,9 @@ namespace Rally.RestApi.UiForWpf
 		/// <param name="zSessionID">The zSessionID that was returned from Rally.</param>
 		internal void ReportSsoResultsToMgr(bool success, string rallyServer, string zSessionID)
 		{
+			if (WindowStateChanged != null)
+				WindowStateChanged.Invoke(WindowTypeOption.SsoLogin, WindowStateOption.Closed);
+
 			ReportSsoResults(success, rallyServer, zSessionID);
 		}
 		#endregion
@@ -167,6 +188,9 @@ namespace Rally.RestApi.UiForWpf
 		#region loginControl_Closed
 		void loginControl_Closed(object sender, EventArgs e)
 		{
+			if (WindowStateChanged != null)
+				WindowStateChanged.Invoke(WindowTypeOption.Login, WindowStateOption.Closed);
+
 			LoginWindowSsoAuthenticationComplete = null;
 			loginControl = null;
 		}
@@ -226,4 +250,43 @@ namespace Rally.RestApi.UiForWpf
 		}
 		#endregion
 	}
+
+	#region Enumeration: WindowTypeOption
+	/// <summary>
+	/// The type of window that we are sending information about.
+	/// </summary>
+	public enum WindowTypeOption
+	{
+		/// <summary>
+		/// The login window.
+		/// </summary>
+		Login,
+		/// <summary>
+		/// The SSO login window.
+		/// </summary>
+		SsoLogin,
+	}
+	#endregion
+
+	#region Enumeration: WindowStateOption
+	/// <summary>
+	/// Shows the state of a window.
+	/// </summary>
+	public enum WindowStateOption
+	{
+		/// <summary>
+		/// The window is open.
+		/// </summary>
+		Open,
+		/// <summary>
+		/// The window is closed.
+		/// </summary>
+		Closed,
+	}
+	#endregion
+
+	/// <summary>
+	/// A delegate to indicate that the state of a window has been changed.
+	/// </summary>
+	public delegate void WindowStateChangedEvent(WindowTypeOption windowType, WindowStateOption windowState);
 }
