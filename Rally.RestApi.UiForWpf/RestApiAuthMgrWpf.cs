@@ -17,6 +17,11 @@ namespace Rally.RestApi.UiForWpf
 	/// </summary>
 	public class RestApiAuthMgrWpf : ApiAuthManager
 	{
+		/// <summary>
+		/// Should IDP Based SSO be allowed? This is known to have quite a few JavaScript 
+		/// errors and is therefore defaulted to off.
+		/// </summary>
+		public static bool AllowIdpBasedSso { get; set; }
 		static Dictionary<CustomWpfControlType, Type> customControlTypes = new Dictionary<CustomWpfControlType, Type>();
 		static ImageSource logoForUi = null;
 		static ImageSource iconForUi = null;

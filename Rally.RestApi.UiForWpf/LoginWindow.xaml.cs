@@ -439,6 +439,13 @@ namespace Rally.RestApi.UiForWpf
 						ComboBox comboBox = new ComboBox();
 						comboBox.SelectedValuePath = "Key";
 						comboBox.DisplayMemberPath = "Value";
+
+						if ((!RestApiAuthMgrWpf.AllowIdpBasedSso) &&
+							(connectionTypes.ContainsKey(ConnectionType.IdpBasedSso)))
+						{
+							connectionTypes.Remove(ConnectionType.IdpBasedSso);
+						}
+
 						comboBox.ItemsSource = connectionTypes;
 						comboBox.SelectionChanged += ConnectionTypeChanged;
 						control = comboBox;
