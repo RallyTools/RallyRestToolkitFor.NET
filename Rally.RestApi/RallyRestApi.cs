@@ -1230,17 +1230,25 @@ namespace Rally.RestApi
 		internal Dictionary<string, string> GetProcessedHeaders()
 		{
 			var result = new Dictionary<string, string>();
-			foreach (HeaderType headerType in Headers.Keys)
+			try
 			{
-				string output = null;
-				string value = Headers[headerType];
-				FieldInfo fieldInfo = headerType.GetType().GetField(headerType.ToString());
-				StringValue[] attrs = fieldInfo.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
-				if (attrs.Length > 0)
-					output = attrs[0].Value;
+				foreach (HeaderType headerType in Headers.Keys)
+				{
+					string output = null;
+					string value = Headers[headerType];
+					FieldInfo fieldInfo = headerType.GetType().GetField(headerType.ToString());
+					StringValue[] attrs = fieldInfo.GetCustomAttributes(typeof(StringValue), false) as StringValue[];
+					if (attrs.Length > 0)
+						output = attrs[0].Value;
 
-				result.Add(output, value);
+					result.Add(output, value);
+				}
 			}
+			catch
+			{
+				// Swallow exception for headers.
+			}
+
 			return result;
 		}
 		#endregion
