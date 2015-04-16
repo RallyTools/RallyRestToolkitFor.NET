@@ -1197,7 +1197,7 @@ namespace Rally.RestApi
 				}
 				else
 				{
-					builder.Query += "&" + csrfToken;
+					builder.Query = builder.Query.Substring(1) + "&" + csrfToken;
 				}
 
 				return builder.Uri;
