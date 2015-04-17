@@ -120,10 +120,10 @@ namespace Rally.RestApi.Json
 			{
 				return value;
 			}
-		    if (value is DateTime)
-		    {
-                return ((DateTime)value).ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-		    }
+			if (value is DateTime)
+			{
+				return ((DateTime)value).ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+			}
 			throw new ArgumentException("Attempt to set property to an unsupported type.");
 		}
 
@@ -162,7 +162,6 @@ namespace Rally.RestApi.Json
 			{
 				Dictionary.Add(name, FormatSetValue(value));
 			}
-
 		}
 
 		/// <summary>
