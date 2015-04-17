@@ -122,7 +122,7 @@ namespace Rally.RestApi.Json
 			}
 		    if (value is DateTime)
 		    {
-                return ((DateTime)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                return ((DateTime)value).ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
 		    }
 			throw new ArgumentException("Attempt to set property to an unsupported type.");
 		}
