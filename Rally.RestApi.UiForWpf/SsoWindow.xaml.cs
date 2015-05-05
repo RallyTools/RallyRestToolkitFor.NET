@@ -40,6 +40,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 			browser.LoadCompleted += browser_LoadCompleted;
+			browser.Navigating += browser_Navigating;
 			//browser.Navigated += (a, b) => HideScriptErrors(browser, true);
 		}
 
@@ -134,6 +135,35 @@ namespace Rally.RestApi.UiForWpf
 			}
 			catch
 			{ }
+		}
+		#endregion
+
+		#region browser_Navigating
+		/// <summary>
+		/// WARNING **HACK** In reference to DE22791 these redirects are to avoid the JS errors
+		/// thrown by the root rally login page, and redirect to the empty.sp endpoint which
+		/// auths if the request already contains a valid ZSESSION id
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void browser_Navigating(object sender, NavigatingCancelEventArgs e)
+		{
+			var f = e.Uri.AbsolutePath;
+			if (e.Uri.AbsolutePath.Equals("/")
+					|| e.Uri.AbsolutePath.Equals(""))
+			{
+				Uri redirectUrl = null;
+				Uri.TryCreate(e.Uri.AbsoluteUri, UriKind.Absolute, out redirectUrl);
+
+				var uriBuilder = new UriBuilder(e.Uri.AbsoluteUri + RallyRestApi.IDP_SSO_ENDPOINT);
+
+				browser.Navigate(uriBuilder.Uri.AbsoluteUri);
+			}
+			//else if (e.Uri.AbsoluteUri.Equals("https://rally1.rallydev.com/")
+			//		|| e.Uri.AbsoluteUri.Equals("https://rally1.rallydev.com"))
+			//{
+			//	browser.Navigate("https://rally1.rallydev.com/slm/empty.sp");
+			//}
 		}
 		#endregion
 

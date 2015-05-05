@@ -116,6 +116,10 @@ namespace Rally.RestApi
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
+		/// <summary>
+		/// The empty idp endpoint path for identity provider sso
+		/// </summary>
+		public const string IDP_SSO_ENDPOINT = "slm/empty.sp";
 		#endregion
 
 		#region Properties and Fields
@@ -542,7 +546,8 @@ namespace Rally.RestApi
 		public QueryResult Query(Request request)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+				throw new InvalidOperationException(
+						"You must authenticate against Rally prior to performing any data operations.");
 
 			DynamicJsonObject response;
 			if (IsWsapi2)
@@ -550,7 +555,12 @@ namespace Rally.RestApi
 			else
 				response = DoGet(GetFullyQualifiedUri(request.RequestUrl));
 
-			var result = new QueryResult(response["QueryResult"]);
+			if (response == null)
+			{
+				throw new RallyUnavailableException(new NullReferenceException(), "fuck off");
+			}
+			QueryResult result = new QueryResult(response["QueryResult"]);
+
 			int maxResultsAllowed = Math.Min(request.Limit, result.TotalResultCount);
 			int alreadyDownloadedItems = request.Start - 1 + request.PageSize;
 			var subsequentQueries = new List<Request>();
@@ -572,14 +582,15 @@ namespace Rally.RestApi
 			Trace.TraceInformation("The number of threaded requests is : {0}", subsequentQueries.Count);
 
 			var resultDictionary = new Dictionary<int, QueryResult>();
-			Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>
-			{
-				var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
-				lock (resultDictionary)
-				{
-					resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
-				}
-			});
+			Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED },
+					request1 =>
+					{
+						var response1 = DoGet(GetFullyQualifiedUri(request1.RequestUrl));
+						lock (resultDictionary)
+						{
+							resultDictionary[request1.Start] = new QueryResult(response1["QueryResult"]);
+						}
+					});
 
 			var allResults = new List<object>(result.Results);
 			foreach (var sortedResult in resultDictionary.ToList()
