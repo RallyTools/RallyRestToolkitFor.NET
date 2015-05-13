@@ -129,5 +129,24 @@ namespace Rally.RestApi.Test
 			else
 				Assert.AreEqual(finalUrlToCheck, request.Endpoint);
 		}
+
+
+	    [TestMethod]
+	    public void TestAddParameter()
+	    {
+	        var request = new Request();
+	        var count = request.Parameters.Count;
+	        var result = request.AddParameter("something", "somethingValue");
+	        Assert.IsTrue(result);
+	        Assert.AreEqual(count + 1, request.Parameters.Count);
+            Assert.IsTrue(request.Parameters.ContainsKey("something"));
+            Assert.AreEqual("somethingValue", request.Parameters["something"]);
+
+            //doesn't overwrite
+            result = request.AddParameter("something", "somethingElse");
+            Assert.IsFalse(result);
+            Assert.AreNotEqual("somethingElse", request.Parameters["something"]);
+            Assert.AreEqual("somethingValue", request.Parameters["something"]);
+	    }
 	}
 }
