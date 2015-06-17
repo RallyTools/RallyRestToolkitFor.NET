@@ -199,6 +199,22 @@ namespace Rally.RestApi
 
 		#endregion
 
+        #region AddParameter
+	    /// <summary>
+	    /// Ability to add parameters other than the ones explicitly exposed.
+	    /// </summary>
+	    /// <param name="key"></param>
+	    /// <param name="value"></param>
+	    /// <returns>true if added. false if the key already existed</returns>
+	    public bool AddParameter(string key, string value)
+	    {
+	        if (GetParameterValue(key, null) != null)
+	            return false;
+	        Parameters[key] = value;
+	        return true;
+	    }
+	    #endregion
+
 		#region Helper: GetParameterValue
 		private dynamic GetParameterValue(string keyValue, object defaultValue = null)
 		{
