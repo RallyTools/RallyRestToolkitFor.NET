@@ -31,6 +31,7 @@ namespace Rally.RestApi.UiForWpf
 		private Uri ssoUrl;
 		private Uri idpUrl = null;
 		private WebProxy idpProxy = null;
+        private bool idpRedirectFlag;
 
 		#region Constructor
 		/// <summary>
@@ -41,7 +42,8 @@ namespace Rally.RestApi.UiForWpf
 			InitializeComponent();
 			browser.LoadCompleted += browser_LoadCompleted;
 			browser.Navigating += browser_Navigating;
-			//browser.Navigated += (a, b) => HideScriptErrors(browser, true);
+		    idpRedirectFlag = true;
+		    //browser.Navigated += (a, b) => HideScriptErrors(browser, true);
 		}
 
 		private void HideScriptErrors(WebBrowser browser, bool hide)
@@ -148,24 +150,43 @@ namespace Rally.RestApi.UiForWpf
 		/// <param name="e"></param>
 		private void browser_Navigating(object sender, NavigatingCancelEventArgs e)
 		{
-			var f = e.Uri.AbsolutePath;
-			if (e.Uri.AbsolutePath.Equals("/")
-					|| e.Uri.AbsolutePath.Equals(""))
-			{
-				Uri redirectUrl = null;
-				Uri.TryCreate(e.Uri.AbsoluteUri, UriKind.Absolute, out redirectUrl);
-
-				var uriBuilder = new UriBuilder(e.Uri.AbsoluteUri + RallyRestApi.IDP_SSO_ENDPOINT);
-
-				browser.Navigate(uriBuilder.Uri.AbsoluteUri);
-			}
-			//else if (e.Uri.AbsoluteUri.Equals("https://rally1.rallydev.com/")
-			//		|| e.Uri.AbsoluteUri.Equals("https://rally1.rallydev.com"))
-			//{
-			//	browser.Navigate("https://rally1.rallydev.com/slm/empty.sp");
-			//}
+		    if (idpRedirectFlag)
+		    {
+		        string redirectUri = String.Empty;
+                UriBuilder redirectUriBuilder = idpSsoRedirectBuilder(e.Uri);
+		        while (redirectUriBuilder != null)
+		        {
+                    redirectUri = redirectUriBuilder.Uri.AbsoluteUri;
+                    browser.Navigate(redirectUri);
+		        }
+            }
 		}
 		#endregion
+
+        /// <summary>
+        /// When attempting to navigate to the base rally url redirect to the IDP_SSO_ENDPOINT instead
+        /// Also including test2cluster for testing
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        #region idpSsoRedirectBuilder
+        private UriBuilder idpSsoRedirectBuilder(Uri uri)
+        {
+            if (uri.ToString().Equals(RallyRestApi.DEFAULT_SERVER)
+                    || uri.ToString().Equals(RallyRestApi.DEFAULT_TEST2_SERVER)
+                    || uri.ToString().Equals(""))
+            {
+                Uri redirectUrl = null;
+                Uri.TryCreate(uri.AbsolutePath, UriKind.Absolute, out redirectUrl);
+
+                var uriBuilder = new UriBuilder(uri + RallyRestApi.IDP_SSO_ENDPOINT);
+
+                return uriBuilder;
+            }
+
+            return null;
+        } 
+        #endregion
 
 		#region InternetGetCookieEx
 		[System.Runtime.InteropServices.DllImport("wininet.dll", SetLastError = true)]

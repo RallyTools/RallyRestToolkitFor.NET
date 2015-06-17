@@ -115,7 +115,11 @@ namespace Rally.RestApi
 		/// <summary>
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
-		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
+        public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
+        /// <summary>
+        /// The default server to use: (https://test2cluster.rallydev.com)
+        /// </summary>
+        public const string DEFAULT_TEST2_SERVER = "https://test2cluster.rallydev.com";
 		/// <summary>
 		/// The empty idp endpoint path for identity provider sso
 		/// </summary>
