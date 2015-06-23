@@ -172,6 +172,15 @@ namespace Rally.RestApi.UiForWpf
         #region idpSsoRedirectBuilder
         private UriBuilder idpSsoRedirectBuilder(Uri uri)
         {
+            string[] parseUri = uri.ToString().Split(new Char[] {'?', '&'});
+            string targetResource = string.Empty;
+            foreach (var param in parseUri)
+            {
+                if (param.Contains("TargetResource"))
+                    targetResource = param;
+            }
+            //Dictionary<String, String> uriDict = parseUri.ToDictionary();
+
             if (uri.ToString().Equals(RallyRestApi.DEFAULT_SERVER)
                     || uri.ToString().Equals(RallyRestApi.DEFAULT_TEST2_SERVER)
                     || uri.ToString().Equals(""))
