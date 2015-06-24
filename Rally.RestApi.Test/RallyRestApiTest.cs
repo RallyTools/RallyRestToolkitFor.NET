@@ -404,7 +404,7 @@ namespace Rally.RestApi.Test
 																	select i["Name"] as string;
 			string[] expectedNames;
 			if (forWsapi2)
-				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace", "ObjectUUID", "Type" };
 			else
 				expectedNames = new string[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
 
