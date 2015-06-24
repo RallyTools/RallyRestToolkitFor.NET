@@ -72,6 +72,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 
+		    RestApiAuthMgrWpf.AllowIdpBasedSso = true;
 			headerLabel.Content = ApiAuthManager.LoginWindowHeaderLabelText;
 			controls = new Dictionary<EditorControlType, Control>();
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
