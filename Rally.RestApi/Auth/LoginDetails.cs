@@ -247,7 +247,7 @@ namespace Rally.RestApi.Auth
 			foreach (XmlElement node in childNodes)
 			{
 				if (node.Name.Equals(childNodeName, StringComparison.InvariantCultureIgnoreCase))
-					return node.InnerXml;
+					return node.InnerText;
 			}
 
 			return null;
@@ -275,6 +275,27 @@ namespace Rally.RestApi.Auth
 			Username = String.Empty;
 			password = String.Empty;
 			SaveToDisk();
+		}
+		#endregion
+
+		#region RedirectIfIDPPointsAtLoginSSO
+		/// <summary>
+		/// HACK: Redirect to custom SSO page if attempting to connect to /login/sso
+		/// This workaround is for internet explorer 7 compatability due to excel and VSP
+		/// relying on IE7 as its embedded browser
+		/// </summary>
+		/// <returns></returns>
+		public string RedirectIfIdpPointsAtLoginSso(string idpServer)
+		{
+			String[] parseIdpServer = idpServer.Split('&');
+			for (int i = 0; i < parseIdpServer.Length; i++)
+			{
+				if (parseIdpServer[i].Contains("TargetResource") && parseIdpServer[i].Contains("/login/sso"))
+				{
+					parseIdpServer[i] = parseIdpServer[i].Replace("/login/sso", "/slm/empty.sp");
+				}
+			}
+			return String.Join("&", parseIdpServer);
 		}
 		#endregion
 	}

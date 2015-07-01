@@ -347,7 +347,7 @@ namespace Rally.RestApi.Web
 				if (obj is CachedResult)
 					typedObj = (CachedResult)obj;
 				else
-					throw new InvalidDataException("Data sent to deserialization is not of type DynamicJsonObject.");
+					throw new InvalidDataException(String.Format("Data sent to deserialization is not of type DynamicJsonObject: {0}", obj.GetType()));
 			}
 			return typedObj;
 		}

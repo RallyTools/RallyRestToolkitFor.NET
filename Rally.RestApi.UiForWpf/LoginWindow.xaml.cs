@@ -1,20 +1,13 @@
-﻿using Rally.RestApi.Auth;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Rally.RestApi.Auth;
 using Rally.RestApi.Connection;
 
 namespace Rally.RestApi.UiForWpf
@@ -30,7 +23,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			Credentials,
 			Rally,
-			Proxy,
+			Proxy
 		}
 		#endregion
 
@@ -45,7 +38,7 @@ namespace Rally.RestApi.UiForWpf
 			TrustAllCertificates,
 			ProxyServer,
 			ProxyUsername,
-			ProxyPassword,
+			ProxyPassword
 		}
 		#endregion
 
@@ -72,7 +65,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 
-		    RestApiAuthMgrWpf.AllowIdpBasedSso = true;
+			RestApiAuthMgrWpf.AllowIdpBasedSso = true;
 			headerLabel.Content = ApiAuthManager.LoginWindowHeaderLabelText;
 			controls = new Dictionary<EditorControlType, Control>();
 			controlReadOnlyLabels = new Dictionary<Control, Label>();
@@ -149,9 +142,9 @@ namespace Rally.RestApi.UiForWpf
 			inputRow.Height = new GridLength(tabControl.Height + 20, GridUnitType.Pixel);
 			inputRow.MinHeight = inputRow.Height.Value;
 
-			this.Height = inputRow.Height.Value + (28 * 2) + 100;
-			this.MinHeight = this.Height;
-			this.MaxHeight = this.Height;
+			Height = inputRow.Height.Value + (28 * 2) + 100;
+			MinHeight = Height;
+			MaxHeight = Height;
 
 			SetDefaultValues();
 			ConnectionTypeChanged(GetEditor(EditorControlType.ConnectionType), null);
@@ -544,13 +537,15 @@ namespace Rally.RestApi.UiForWpf
 				return null;
 
 			TextBox textBox = control as TextBox;
+			if (textBox != null && controlType == EditorControlType.IdpServer)
+				return AuthMgr.LoginDetails.RedirectIfIdpPointsAtLoginSso(textBox.Text);
+
 			if (textBox != null)
 				return textBox.Text;
 
 			PasswordBox passwordBox = control as PasswordBox;
 			if (passwordBox != null)
 				return passwordBox.Password;
-
 			return null;
 		}
 		#endregion
@@ -586,8 +581,6 @@ namespace Rally.RestApi.UiForWpf
 			AddColumnDefinition(buttonGrid, 70);
 			AddColumnDefinition(buttonGrid, 70);
 			AddColumnDefinition(buttonGrid);
-
-
 
 			loginButton = GetButton();
 			loginButton.IsDefault = true;
@@ -738,7 +731,7 @@ namespace Rally.RestApi.UiForWpf
 		#endregion
 
 		#region OnClosing
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		protected override void OnClosing(CancelEventArgs e)
 		{
 			AuthMgr.LoginWindowSsoAuthenticationComplete = null;
 			base.OnClosing(e);
