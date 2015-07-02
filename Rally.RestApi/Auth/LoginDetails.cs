@@ -285,7 +285,7 @@ namespace Rally.RestApi.Auth
 		/// relying on IE7 as its embedded browser
 		/// </summary>
 		/// <returns></returns>
-		public string RedirectIfIdpPointsAtLoginSso(string idpServer)
+		internal string RedirectIfIdpPointsAtLoginSso(string idpServer)
 		{
 			String[] parseIdpServer = idpServer.Split('&', '?');
 			for (int i = 0; i < parseIdpServer.Length; i++)
