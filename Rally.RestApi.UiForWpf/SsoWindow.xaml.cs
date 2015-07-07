@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using mshtml;
+﻿using mshtml;
 using Rally.RestApi.Auth;
 using System;
 using System.Collections.Generic;
@@ -40,21 +39,6 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 			browser.LoadCompleted += browser_LoadCompleted;
-			//browser.Navigated += (a, b) => HideScriptErrors(browser, true);
-		}
-
-		private void HideScriptErrors(WebBrowser browser, bool hide)
-		{
-			var fiComWebBrowser = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
-			if (fiComWebBrowser == null) return;
-			var objComWebBrowser = fiComWebBrowser.GetValue(browser);
-			if (objComWebBrowser == null)
-			{
-				browser.Navigated += (o, s) => HideScriptErrors(browser, hide);
-				return;
-			}
-			objComWebBrowser.GetType()
-				.InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { hide });
 		}
 		#endregion
 
