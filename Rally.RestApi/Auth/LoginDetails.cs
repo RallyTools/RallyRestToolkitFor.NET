@@ -287,7 +287,7 @@ namespace Rally.RestApi.Auth
 		/// <returns></returns>
 		internal string RedirectIfIdpPointsAtLoginSso(string idpServer)
 		{
-			String[] parseIdpServer = idpServer.Split('&', '?');
+			String[] parseIdpServer = idpServer.Split('&');
 			for (int i = 0; i < parseIdpServer.Length; i++)
 			{
 				if (parseIdpServer[i].StartsWith("TargetResource") && parseIdpServer[i].Contains("/login/sso"))
