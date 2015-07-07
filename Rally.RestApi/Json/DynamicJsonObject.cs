@@ -17,6 +17,15 @@ namespace Rally.RestApi.Json
 		internal IDictionary<string, object> Dictionary { get; set; }
 
 		/// <summary>
+        /// Convert this object to a dictionary.
+        /// </summary>
+        /// <returns>this object as a dictionary</returns>
+        public IDictionary<string, object> ToDictionary()
+        {
+            return new Dictionary<string, object>(Dictionary);
+        }
+
+	    /// <summary>
 		/// Create a new object from the specified dictionary
 		/// </summary>
 		/// <param name="dictionary">A dictionary of members and values

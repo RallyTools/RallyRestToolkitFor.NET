@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CachedRequestTest.cs" />
+    <Compile Include="DynamicJsonObjectTest.cs" />
     <Compile Include="Example.cs" />
     <Compile Include="OperationResultTest.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
