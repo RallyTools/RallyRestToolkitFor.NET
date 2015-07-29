@@ -537,8 +537,8 @@ namespace Rally.RestApi.UiForWpf
 				return null;
 
 			TextBox textBox = control as TextBox;
-			if (textBox != null && controlType == EditorControlType.IdpServer)
-				return AuthMgr.LoginDetails.RedirectIfIdpPointsAtLoginSso(textBox.Text);
+            //if (textBox != null && controlType == EditorControlType.IdpServer)
+            //    return AuthMgr.LoginDetails.RedirectIfIdpPointsAtLoginSso(textBox.Text);
 
 			if (textBox != null)
 				return textBox.Text;
