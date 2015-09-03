@@ -488,7 +488,7 @@ namespace Rally.RestApi
 				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
 
 			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, WsapiVersion, relativeUri));
-            return DoPost(uri, data, false);
+            return DoPost(uri, data, true);
 		}
 		#endregion
 
