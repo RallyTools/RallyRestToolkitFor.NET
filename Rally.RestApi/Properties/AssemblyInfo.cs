@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Rally Rest API for .NET")]
+[assembly: AssemblyTitle("CA Agile Central Rest API for .NET")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Rally Software, Inc.")]
-[assembly: AssemblyProduct("Rally Rest API for .NET")]
-[assembly: AssemblyCopyright("Copyright © Rally Software 2013")]
+[assembly: AssemblyCompany("CA Technologies")]
+[assembly: AssemblyProduct("CA Agile Central Rest API for .NET")]
+[assembly: AssemblyCopyright("Copyright © CA Technologie 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

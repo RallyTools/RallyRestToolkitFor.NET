@@ -73,8 +73,8 @@ namespace Rally.RestApi.UiForWpf
 			controlRowElements = new Dictionary<EditorControlType, RowDefinition>();
 
 			connectionTypes = new Dictionary<ConnectionType, string>();
-			connectionTypes.Add(ConnectionType.BasicAuth, "Basic Authentication (will try Rally SSO if it fails)");
-			connectionTypes.Add(ConnectionType.SpBasedSso, "Rally based SSO Authentication");
+            connectionTypes.Add(ConnectionType.BasicAuth, "Basic Authentication (will try CA Agile Central SSO if it fails)");
+            connectionTypes.Add(ConnectionType.SpBasedSso, "CA Agile Central based SSO Authentication");
 			connectionTypes.Add(ConnectionType.IdpBasedSso, "IDP Based SSO Authentication");
 		}
 		#endregion
@@ -673,7 +673,7 @@ namespace Rally.RestApi.UiForWpf
 		void loginButton_Click(object sender, RoutedEventArgs e)
 		{
 			string errorMessage;
-			ShowMessage("Logging into Rally");
+            ShowMessage("Logging into CA Agile Central");
 
 			AuthMgr.LoginDetails.Username = GetEditorValue(EditorControlType.Username);
 			AuthMgr.LoginDetails.SetPassword(GetEditorValue(EditorControlType.Password));

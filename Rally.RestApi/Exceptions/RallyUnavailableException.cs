@@ -21,7 +21,7 @@ namespace Rally.RestApi.Exceptions
 		/// <param name="innerException">The exception that is the cause of the current exception.</param>
 		/// <param name="errorMessage">The HTML error message that was returned from Rally.</param>
 		internal RallyUnavailableException(Exception innerException, string errorMessage)
-			: base("Rally Unavailable", innerException)
+            : base("CA Agile Central Unavailable", innerException)
 		{
 			ErrorMessage = errorMessage;
 		}

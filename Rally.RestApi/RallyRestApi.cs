@@ -116,6 +116,10 @@ namespace Rally.RestApi
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
+        /// <summary>
+        /// /// The default auth arror
+        /// </summary>
+        public const string AUTH_ERROR = "You must authenticate against CA Agile Central prior to performing any data operations.";
 		#endregion
 
 		#region Properties and Fields
@@ -485,7 +489,7 @@ namespace Rally.RestApi
 		public DynamicJsonObject Post(String relativeUri, DynamicJsonObject data)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, WsapiVersion, relativeUri));
 			string postData = serializer.Serialize(data);
@@ -502,7 +506,7 @@ namespace Rally.RestApi
 		private DynamicJsonObject DoDelete(Uri uri, bool retry = true)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			var response = serializer.Deserialize(httpService.Delete(GetSecuredUri(uri), GetProcessedHeaders()));
 			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0)
@@ -542,7 +546,7 @@ namespace Rally.RestApi
 		public QueryResult Query(Request request)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			DynamicJsonObject response;
 			if (IsWsapi2)
@@ -635,7 +639,7 @@ namespace Rally.RestApi
 		public dynamic GetSubscription(params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			return GetByReference("/subscription.js", fetchedFields);
 		}
@@ -684,10 +688,10 @@ namespace Rally.RestApi
 		public dynamic GetByReference(string aRef, params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			if (aRef == null)
-				throw new ArgumentNullException("aRef", "You must provide a reference to retrieve data from Rally.");
+                throw new ArgumentNullException("aRef", "You must provide a reference to retrieve data from CA Agile Central.");
 
 			if (fetchedFields.Length == 0)
 			{
@@ -725,7 +729,7 @@ namespace Rally.RestApi
 		public dynamic GetByReferenceAndWorkspace(string aRef, string workspaceRef, params string[] fetchedFields)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			if (fetchedFields.Length == 0)
 			{
@@ -823,7 +827,7 @@ namespace Rally.RestApi
 		public OperationResult Delete(string workspaceRef, string aRef)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			var result = new OperationResult();
 			if (!aRef.Contains(".js"))
@@ -879,7 +883,7 @@ namespace Rally.RestApi
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
@@ -940,7 +944,7 @@ namespace Rally.RestApi
 		public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			var result = new OperationResult();
 			var data = new DynamicJsonObject();
@@ -972,7 +976,7 @@ namespace Rally.RestApi
 		public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			QueryResult attributes = GetAttributesByType(typePath);
 			var attribute = attributes.Results.SingleOrDefault(a => a.ElementName.ToLower() == attributeName.ToLower().Replace(" ", ""));
@@ -1017,7 +1021,7 @@ namespace Rally.RestApi
 		public CacheableQueryResult GetTypes(string queryString)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			if (!IsWsapi2)
 				throw new InvalidOperationException("This method requires WSAPI 2.0");
@@ -1046,7 +1050,7 @@ namespace Rally.RestApi
 		public QueryResult GetAttributesByType(string type)
 		{
 			if (ConnectionInfo == null)
-				throw new InvalidOperationException("You must authenticate against Rally prior to performing any data operations.");
+                throw new InvalidOperationException(AUTH_ERROR);
 
 			var typeDefRequest = new Request("TypeDefinition");
 			typeDefRequest.Fetch = new List<string>() { "Attributes" };

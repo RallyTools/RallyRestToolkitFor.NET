@@ -293,11 +293,11 @@ namespace Rally.RestApi.Auth
 		{
 			LoginWindowTitle = loginWindowTitle;
 			if (String.IsNullOrWhiteSpace(LoginWindowTitle))
-				LoginWindowTitle = "Login to Rally";
+                LoginWindowTitle = "Login to CA Agile Central";
 
 			LoginWindowHeaderLabelText = loginWindowHeaderLabelText;
 			if (String.IsNullOrWhiteSpace(LoginWindowHeaderLabelText))
-				LoginWindowHeaderLabelText = "Login to Rally";
+                LoginWindowHeaderLabelText = "Login to CA Agile Central";
 
 			LoginWindowDefaultServer = loginWindowDefaultServer;
 			if (LoginWindowDefaultServer == null)
@@ -325,7 +325,7 @@ namespace Rally.RestApi.Auth
 
 			LoginWindowRallyServerTabText = loginWindowServerTabText;
 			if (String.IsNullOrWhiteSpace(LoginWindowRallyServerTabText))
-				LoginWindowRallyServerTabText = "Rally";
+                LoginWindowRallyServerTabText = "CA Agile Central";
 
 			LoginWindowServerLabelText = loginWindowServerLabelText;
 			if (String.IsNullOrWhiteSpace(LoginWindowServerLabelText))
@@ -391,11 +391,11 @@ namespace Rally.RestApi.Auth
 
 			LoginFailureServerEmpty = loginFailureServerEmpty;
 			if (String.IsNullOrWhiteSpace(LoginFailureServerEmpty))
-				LoginFailureServerEmpty = "Rally Server is a required field.";
+                LoginFailureServerEmpty = "CA Agile Central Server is a required field.";
 
 			LoginFailureBadConnection = loginFailureBadConnection;
 			if (String.IsNullOrWhiteSpace(LoginFailureBadConnection))
-				LoginFailureBadConnection = "Failed to connect to the Rally server or proxy.";
+                LoginFailureBadConnection = "Failed to connect to the CA Agile Central server or proxy.";
 
 			LoginFailureUnknown = loginFailureUnknown;
 			if (String.IsNullOrWhiteSpace(LoginFailureUnknown))
@@ -566,13 +566,13 @@ namespace Rally.RestApi.Auth
 			try
 			{
 				if (String.IsNullOrWhiteSpace(LoginDetails.RallyServer))
-					errorMessage = "Bad URI format for Rally Server";
+                    errorMessage = "Bad URI format for CA Agile Central Server";
 				else
 					serverUri = new Uri(LoginDetails.RallyServer);
 			}
 			catch
 			{
-				errorMessage = "Bad URI format for Rally Server";
+                errorMessage = "Bad URI format for CA Agile Central Server";
 			}
 
 			try
@@ -585,7 +585,7 @@ namespace Rally.RestApi.Auth
 			}
 			catch (RallyUnavailableException)
 			{
-				errorMessage = "Rally is currently unavailable.";
+                errorMessage = "CA Agile Central is currently unavailable.";
 			}
 			catch (WebException e)
 			{
@@ -645,7 +645,7 @@ namespace Rally.RestApi.Auth
 			}
 			catch
 			{
-				errorMessage = "Bad URI format for Rally Server";
+                errorMessage = "Bad URI format for CA Agile Central Server";
 			}
 
 			try
@@ -658,7 +658,7 @@ namespace Rally.RestApi.Auth
 			}
 			catch (RallyUnavailableException)
 			{
-				errorMessage = "Rally is currently unavailable.";
+                errorMessage = "CA Agile Central is currently unavailable.";
 			}
 			catch (WebException e)
 			{
