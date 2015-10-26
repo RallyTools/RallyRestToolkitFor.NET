@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rally.RestApi.Auth;
 using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
+using Rally.RestApi.Web;
 
 namespace Rally.RestApi.Test
 {
@@ -405,6 +408,18 @@ namespace Rally.RestApi.Test
 			LoginDetails login = new LoginDetails(new ApiConsoleAuthManager());
 			string redirectUrl = login.RedirectIfIdpPointsAtLoginSso("your-idp-url&TargetResource=https://rally1.rallydev.com/login/sso");
 			Assert.AreEqual(redirectUrl, "your-idp-url&TargetResource=https://rally1.rallydev.com/slm/empty.sp");
+		}
+
+		[TestMethod]
+		public void TestIdpLogin()
+		{
+			Uri idpUrl =
+				new Uri("https://pingidp.f4tech.com/idp/startSSO.ping?PartnerSpId=https://pingsp.f4tech.com&TargetResource=https://test2cluster.f4tech.com/login/sso?redirect=https://test2cluster.f4tech.com");
+			SsoWebClient client = new SsoWebClient();
+			WebRequest request = client.GetRequest(idpUrl);
+			WebResponse response = client.GetResponse(request);
+
+			SamlSecurityToken samlToken = new SamlSecurityToken();
 		}
 
 		private static void VerifyAttributes(QueryResult result, bool forWsapi2)
