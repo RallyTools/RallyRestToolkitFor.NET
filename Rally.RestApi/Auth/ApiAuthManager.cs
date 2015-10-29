@@ -2,6 +2,8 @@
 using Rally.RestApi.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -616,7 +618,7 @@ namespace Rally.RestApi.Auth
 					errorMessage = LoginFailureUnknown;
 			}
 
-			UpdateAuthenticationState();
+			UpdateAuthenticationState(errorMessage);
 			return Api.AuthenticationState;
 		}
 		#endregion
@@ -695,17 +697,23 @@ namespace Rally.RestApi.Auth
 		#endregion
 
 		#region UpdateAuthenticationState
-		private void UpdateAuthenticationState()
-		{
+		private void UpdateAuthenticationState(String errorMessage = "")
+        {
 			if (AuthenticationStateChange != null)
 			{
 				switch (Api.AuthenticationState)
 				{
-					case RallyRestApi.AuthenticationResult.Authenticated:
+                    case RallyRestApi.AuthenticationResult.Authenticated:
+                        File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: Authenticated - {1}\n", DateTime.Now, errorMessage));
+                        AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
 						AuthenticationStateChange.Invoke(Api.AuthenticationState, Api);
 						break;
-					case RallyRestApi.AuthenticationResult.PendingSSO:
-					case RallyRestApi.AuthenticationResult.NotAuthorized:
+                    case RallyRestApi.AuthenticationResult.PendingSSO:
+                        File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: PendingSSO - {1}\n", DateTime.Now, errorMessage));
+                        AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
+                        break;
+                    case RallyRestApi.AuthenticationResult.NotAuthorized:
+                        File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: NotAuthorized - {1}\n", DateTime.Now, errorMessage));
 						AuthenticationStateChange.Invoke(Api.AuthenticationState, null);
 						break;
 					default:

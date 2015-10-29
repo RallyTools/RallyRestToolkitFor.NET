@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Rally.RestApi.Response;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Rally.RestApi.Web;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
@@ -262,9 +264,10 @@ namespace Rally.RestApi
 		/// </example>
 		public AuthenticationResult AuthenticateWithApiKey(string apiKey,
 			string rallyServer = DEFAULT_SERVER, WebProxy proxy = null)
-		{
+        {
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
+
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
 			connectionInfo.AuthType = AuthorizationType.ApiKey;
@@ -290,9 +293,9 @@ namespace Rally.RestApi
 		/// </code>
 		/// </example>
 		public AuthenticationResult AuthenticateWithApiKey(string apiKey, Uri serverUrl, WebProxy proxy = null)
-		{
+        {
 			if (serverUrl == null)
-				serverUrl = new Uri(DEFAULT_SERVER);
+                serverUrl = new Uri(DEFAULT_SERVER);
 
 			ConnectionInfo connectionInfo = new ConnectionInfo();
 			connectionInfo.AuthType = AuthorizationType.ApiKey;
@@ -320,7 +323,7 @@ namespace Rally.RestApi
 		/// </code>
 		/// </example>
 		public AuthenticationResult Authenticate(string username, string password, string rallyServer = DEFAULT_SERVER, WebProxy proxy = null, bool allowSSO = true)
-		{
+        {
 			if (String.IsNullOrWhiteSpace(rallyServer))
 				rallyServer = DEFAULT_SERVER;
 
@@ -351,7 +354,7 @@ namespace Rally.RestApi
 		/// </code>
 		/// </example>
 		public AuthenticationResult Authenticate(string username, string password, Uri serverUrl, WebProxy proxy = null, bool allowSSO = true)
-		{
+        {
 			if (serverUrl == null)
 				serverUrl = new Uri(DEFAULT_SERVER);
 
@@ -371,46 +374,61 @@ namespace Rally.RestApi
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private AuthenticationResult AuthenticateWithConnectionInfo(ConnectionInfo connectionInfo, bool allowSSO)
 		{
-			this.ConnectionInfo = connectionInfo;
-			httpService = new HttpService(authManger, connectionInfo);
-
-			Headers = new Dictionary<HeaderType, string>();
-			Assembly assembly = typeof(RallyRestApi).Assembly;
-			Headers.Add(HeaderType.Library, String.Format("{0} v{1}",
-				((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
-				typeof(AssemblyTitleAttribute), false)).Title, assembly.GetName().Version.ToString()));
-			Headers.Add(HeaderType.Vendor,
-				((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly,
-				typeof(AssemblyCompanyAttribute), false)).Company);
-			Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
-				typeof(AssemblyTitleAttribute), false)).Title);
-			Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
-
-			try
-			{
-				dynamic userObject = GetCurrentUser("UserName");
-				ConnectionInfo.UserName = userObject["UserName"];
-				AuthenticationState = AuthenticationResult.Authenticated;
-			}
-			catch (Exception e)
-			{
-				if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
-				{
-					throw;
-				}
-
-				if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
-				{
-					Logout();
-					throw;
-				}
-
-				AuthenticationState = AuthenticationResult.PendingSSO;
-			}
-
-			return AuthenticationState;
+		    string exceptionMessage = "";
+            AuthenticationResult authWithConnection = AuthenticateWithConnectionInfoBaseMethod(connectionInfo, allowSSO, out exceptionMessage);
+            File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", DateTime.Now, exceptionMessage));
+		    return authWithConnection;
 		}
 		#endregion
+
+	    private AuthenticationResult AuthenticateWithConnectionInfoBaseMethod(ConnectionInfo connectionInfo, bool allowSSO,
+	        out string exceptionMessage)
+	    {
+	        exceptionMessage = "";
+
+            this.ConnectionInfo = connectionInfo;
+            httpService = new HttpService(authManger, connectionInfo);
+
+            Headers = new Dictionary<HeaderType, string>();
+            Assembly assembly = typeof(RallyRestApi).Assembly;
+            Headers.Add(HeaderType.Library, String.Format("{0} v{1}",
+                ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+                typeof(AssemblyTitleAttribute), false)).Title, assembly.GetName().Version.ToString()));
+            Headers.Add(HeaderType.Vendor,
+                ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly,
+                typeof(AssemblyCompanyAttribute), false)).Company);
+            Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+                typeof(AssemblyTitleAttribute), false)).Title);
+            Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
+
+            try
+            {
+                File.AppendAllText(@"C:\temp\sso.txt", "AuthenticateWithConnectionInfo\n");
+                dynamic userObject = GetCurrentUser("UserName");
+                ConnectionInfo.UserName = userObject["UserName"];
+                AuthenticationState = AuthenticationResult.Authenticated;
+            }
+            catch (Exception e)
+            {
+                File.AppendAllText(@"C:\temp\sso.txt", "Exception Caught!\n");
+                File.AppendAllText(@"C:\temp\sso.txt", e.Message);
+                if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+                {
+                    throw;
+                }
+
+                if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
+                {
+                    Logout();
+                    throw;
+                }
+
+                AuthenticationState = AuthenticationResult.NotAuthorized;
+                exceptionMessage = e.Message;
+            }
+
+            return AuthenticationState;
+	    }
 
 		#region CreateIdpAuthentication
 		/// <summary>
@@ -1140,13 +1158,24 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
-		private DynamicJsonObject DoGetAsPost(Request request)
-		{
+		private DynamicJsonObject DoGetAsPost(Request request, bool retry = true, int retryCounter = 1)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                | SecurityProtocolType.Ssl3;
+            ServicePointManager.Expect100Continue = true;
 			Dictionary<string, string> data = request.GetDataToSend();
 
 			Uri uri = GetFullyQualifiedUri(request.ShortRequestUrl);
-			string response = httpService.GetAsPost(GetSecuredUri(uri), data, GetProcessedHeaders());
-			return serializer.Deserialize(response);
+			DynamicJsonObject response = serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, GetProcessedHeaders()));
+
+		    if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+		    {
+		        Thread.Sleep(1000);
+		        ConnectionInfo.SecurityToken = null;
+		        return DoGetAsPost(request, true, retryCounter++);
+		    }
+
+			return response;
 		}
 		#endregion
 
@@ -1156,10 +1185,21 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
-		private DynamicJsonObject DoGet(Uri uri)
+		private DynamicJsonObject DoGet(Uri uri, bool retry = true, int retryCounter = 1)
 		{
-			return serializer.Deserialize(httpService.Get(uri, GetProcessedHeaders()));
-		}
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                | SecurityProtocolType.Ssl3;
+            ServicePointManager.Expect100Continue = true;
+			DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, GetProcessedHeaders()));
+            if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+            {
+                Thread.Sleep(1000);
+                ConnectionInfo.SecurityToken = null;
+                return DoGet(uri, true, retryCounter++);
+            }
+
+            return response;
+        }
 		#endregion
 
 		#region DoPost
@@ -1168,13 +1208,17 @@ namespace Rally.RestApi
 		/// </summary>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
-		private DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry = true)
-		{
+		private DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry = true, int retryCounter = 1)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                | SecurityProtocolType.Ssl3;
+            ServicePointManager.Expect100Continue = true;
 			var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), GetProcessedHeaders()));
-			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0)
-			{
+			if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+            {
+                Thread.Sleep(1000);
 				ConnectionInfo.SecurityToken = null;
-				return DoPost(uri, data, false);
+				return DoPost(uri, data, true, retryCounter++);
 			}
 			return response;
 		}
