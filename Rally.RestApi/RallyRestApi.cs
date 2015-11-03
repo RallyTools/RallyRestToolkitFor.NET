@@ -1164,7 +1164,6 @@ namespace Rally.RestApi
 		private DynamicJsonObject DoGetAsPost(Request request, bool retry = true, int retryCounter = 1)
 		{
 			int retrySleepTime = 1000;
-
 			try
 			{
 				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
@@ -1173,31 +1172,15 @@ namespace Rally.RestApi
 																							 | SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> data = request.GetDataToSend();
-
 				Uri uri = GetFullyQualifiedUri(request.ShortRequestUrl);
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
+				DynamicJsonObject response = serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
 
-				foreach (string key in processedHeaders.Keys)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-				}
-				DynamicJsonObject response =
-						serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
-
-				int sleepyTime = 1000;
-
-				if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 &&
-						retryCounter < 10)
-				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-					foreach (string s in response[response.Fields.First()].Errors)
-					{
-						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-					}
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
-					Thread.Sleep(sleepyTime * retryCounter);
+					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoGetAsPost(request, true, retryCounter++);
 				}
 
@@ -1205,11 +1188,8 @@ namespace Rally.RestApi
 			}
 			catch (Exception)
 			{
-				// If exception detected retry!
 				if (retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoGetAsPost(request, true, retryCounter++);
 				}
@@ -1235,27 +1215,10 @@ namespace Rally.RestApi
 																							 | SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
-				foreach (string key in processedHeaders.Keys)
-				{
-					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-				}
-
 				DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, processedHeaders));
-				foreach (String s in response[response.Fields.First()].Errors)
-				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Old HttpClient response: {1}\n", DateTime.Now, s));
-				}
 
-				if (response[response.Fields.First()].Errors.Count > 0 &&
-						retryCounter < 10)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-					foreach (string s in response[response.Fields.First()].Errors)
-					{
-						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-					}
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
 					Thread.Sleep(retrySleepTime * retryCounter);
@@ -1268,8 +1231,6 @@ namespace Rally.RestApi
 			{
 				if (retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoGet(uri, true, retryCounter++);
 				}
@@ -1280,7 +1241,8 @@ namespace Rally.RestApi
 
 		#region DoPost
 		/// <summary>
-		/// Performs a post action.
+		/// Performs a post action.  If first action fails there will occur up to 10 retries each backing off an incrementing number of seconds (wait 1 second, retry, wait 2 seconds, retry, etc).
+		/// 
 		/// </summary>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
@@ -1295,35 +1257,22 @@ namespace Rally.RestApi
 																								| SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
-				foreach (string key in processedHeaders.Keys)
-				{
-					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-				}
-				var response =
-						serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data),
-								processedHeaders));
+				var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), processedHeaders));
 
-				if (response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-					foreach (string s in response[response.Fields.First()].Errors)
-					{
-						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-					}
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoPost(uri, data, true, retryCounter++);
 				}
+
 				return response;
 			}
 			catch (Exception)
 			{
 				if (retryCounter < 10)
 				{
-					File.AppendAllText(@"C:\temp\sso.txt",
-							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoPost(uri, data, true, retryCounter++);
 				}
