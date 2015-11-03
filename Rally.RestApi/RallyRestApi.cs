@@ -383,55 +383,55 @@ namespace Rally.RestApi
 		}
 		#endregion
 
-	    private AuthenticationResult AuthenticateWithConnectionInfoBaseMethod(ConnectionInfo connectionInfo, bool allowSSO,
-	        out string exceptionMessage)
-	    {
-	        exceptionMessage = "";
+		private AuthenticationResult AuthenticateWithConnectionInfoBaseMethod(ConnectionInfo connectionInfo, bool allowSSO,
+				out string exceptionMessage)
+		{
+			exceptionMessage = "";
 
-            this.ConnectionInfo = connectionInfo;
-            httpService = new HttpService(authManger, connectionInfo);
+			this.ConnectionInfo = connectionInfo;
+			httpService = new HttpService(authManger, connectionInfo);
 
-            Headers = new Dictionary<HeaderType, string>();
-            Assembly assembly = typeof(RallyRestApi).Assembly;
-            Headers.Add(HeaderType.Library, String.Format("{0} v{1}",
-                ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
-                typeof(AssemblyTitleAttribute), false)).Title, assembly.GetName().Version.ToString()));
-            Headers.Add(HeaderType.Vendor,
-                ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly,
-                typeof(AssemblyCompanyAttribute), false)).Company);
-            Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
-                typeof(AssemblyTitleAttribute), false)).Title);
-            Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
-            Headers.Add(HeaderType.Guid, Guid.NewGuid().ToString());
+			Headers = new Dictionary<HeaderType, string>();
+			Assembly assembly = typeof(RallyRestApi).Assembly;
+			Headers.Add(HeaderType.Library, String.Format("{0} v{1}",
+					((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+					typeof(AssemblyTitleAttribute), false)).Title, assembly.GetName().Version.ToString()));
+			Headers.Add(HeaderType.Vendor,
+					((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly,
+					typeof(AssemblyCompanyAttribute), false)).Company);
+			Headers.Add(HeaderType.Name, ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly,
+					typeof(AssemblyTitleAttribute), false)).Title);
+			Headers.Add(HeaderType.Version, assembly.GetName().Version.ToString());
+			Headers.Add(HeaderType.Guid, Guid.NewGuid().ToString());
 
-            try
-            {
-                File.AppendAllText(@"C:\temp\sso.txt", "AuthenticateWithConnectionInfo\n");
-                dynamic userObject = GetCurrentUser("UserName");
-                ConnectionInfo.UserName = userObject["UserName"];
-                AuthenticationState = AuthenticationResult.Authenticated;
-            }
-            catch (Exception e)
-            {
-                File.AppendAllText(@"C:\temp\sso.txt", "Exception Caught!\n");
-                File.AppendAllText(@"C:\temp\sso.txt", e.Message);
-                if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
-                {
-                    throw;
-                }
+			try
+			{
+				File.AppendAllText(@"C:\temp\sso.txt", "AuthenticateWithConnectionInfo\n");
+				dynamic userObject = GetCurrentUser("UserName");
+				ConnectionInfo.UserName = userObject["UserName"];
+				AuthenticationState = AuthenticationResult.Authenticated;
+			}
+			catch (Exception e)
+			{
+				File.AppendAllText(@"C:\temp\sso.txt", "Exception Caught!\n");
+				File.AppendAllText(@"C:\temp\sso.txt", e.Message);
+				if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
+				{
+					throw;
+				}
 
-                if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
-                {
-                    Logout();
-                    throw;
-                }
+				if ((allowSSO) && (!httpService.PerformSsoAuthentication()))
+				{
+					Logout();
+					throw;
+				}
 
-                AuthenticationState = AuthenticationResult.NotAuthorized;
-                exceptionMessage = e.Message;
-            }
+				AuthenticationState = AuthenticationResult.NotAuthorized;
+				exceptionMessage = e.Message;
+			}
 
-            return AuthenticationState;
-	    }
+			return AuthenticationState;
+		}
 
 		#region CreateIdpAuthentication
 		/// <summary>
@@ -1163,58 +1163,58 @@ namespace Rally.RestApi
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoGetAsPost(Request request, bool retry = true, int retryCounter = 1)
 		{
-		    int retrySleepTime = 1000;
+			int retrySleepTime = 1000;
 
-		    try
-		    {
-		        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-		                                               | SecurityProtocolType.Ssl3
-		                                               | SecurityProtocolType.Tls11
-		                                               | SecurityProtocolType.Tls12;
-		        ServicePointManager.Expect100Continue = true;
-		        Dictionary<string, string> data = request.GetDataToSend();
+			try
+			{
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+																							 | SecurityProtocolType.Ssl3
+																							 | SecurityProtocolType.Tls11
+																							 | SecurityProtocolType.Tls12;
+				ServicePointManager.Expect100Continue = true;
+				Dictionary<string, string> data = request.GetDataToSend();
 
-		        Uri uri = GetFullyQualifiedUri(request.ShortRequestUrl);
-		        Dictionary<string, string> processedHeaders = GetProcessedHeaders();
+				Uri uri = GetFullyQualifiedUri(request.ShortRequestUrl);
+				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 
-		        foreach (string key in processedHeaders.Keys)
-		        {
-		            File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-		        }
-		        DynamicJsonObject response =
-		            serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
+				foreach (string key in processedHeaders.Keys)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
+				}
+				DynamicJsonObject response =
+						serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
 
-		        int sleepyTime = 1000;
+				int sleepyTime = 1000;
 
-		        if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 &&
-		            retryCounter < 10)
-		        {
-		            File.AppendAllText(@"C:\temp\sso.txt",
-		                String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-		            foreach (string s in response[response.Fields.First()].Errors)
-		            {
-		                File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-		            }
-		            ConnectionInfo.SecurityToken = GetSecurityToken();
-		            httpService = new HttpService(authManger, ConnectionInfo);
-		            Thread.Sleep(sleepyTime*retryCounter);
-		            return DoGetAsPost(request, true, retryCounter++);
-		        }
+				if (retry && ConnectionInfo.SecurityToken != null && response[response.Fields.First()].Errors.Count > 0 &&
+						retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					foreach (string s in response[response.Fields.First()].Errors)
+					{
+						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
+					}
+					ConnectionInfo.SecurityToken = GetSecurityToken();
+					httpService = new HttpService(authManger, ConnectionInfo);
+					Thread.Sleep(sleepyTime * retryCounter);
+					return DoGetAsPost(request, true, retryCounter++);
+				}
 
-		        return response;
-		    }
-		    catch (Exception)
-            {
-                // If exception detected retry!
-                if (retryCounter < 10)
-                {
-                    File.AppendAllText(@"C:\temp\sso.txt",
-                        String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-                    Thread.Sleep(retrySleepTime*retryCounter);
-                    return DoGetAsPost(request, true, retryCounter++);
-                }
-                throw;
-		    }
+				return response;
+			}
+			catch (Exception)
+			{
+				// If exception detected retry!
+				if (retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					Thread.Sleep(retrySleepTime * retryCounter);
+					return DoGetAsPost(request, true, retryCounter++);
+				}
+				throw;
+			}
 		}
 		#endregion
 
@@ -1226,87 +1226,57 @@ namespace Rally.RestApi
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoGet(Uri uri, bool retry = true, int retryCounter = 1)
 		{
-            int retrySleepTime = 1000;
-		    try
-		    {
-		        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-		                                               | SecurityProtocolType.Ssl3
-		                                               | SecurityProtocolType.Tls11
-		                                               | SecurityProtocolType.Tls12;
-		        ServicePointManager.Expect100Continue = true;
-		        Dictionary<string, string> processedHeaders = GetProcessedHeaders();
-		        foreach (string key in processedHeaders.Keys)
-		        {
-		            File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-		        }
+			int retrySleepTime = 1000;
+			try
+			{
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+																							 | SecurityProtocolType.Ssl3
+																							 | SecurityProtocolType.Tls11
+																							 | SecurityProtocolType.Tls12;
+				ServicePointManager.Expect100Continue = true;
+				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
+				foreach (string key in processedHeaders.Keys)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
+				}
 
-		        // Handle webapi attempt
-                //HttpResponseMessage webapiResponse = DoGetAsync(uri, processedHeaders).Result;
-                //File.AppendAllText(@"C:\temp\sso.txt",
-                //    String.Format("{0}: WebApi response: {1}\n", DateTime.Now, webapiResponse.StatusCode));
-                //if (!webapiResponse.IsSuccessStatusCode)
-                //{
-                //    File.AppendAllText(@"C:\temp\sso.txt",
-                //        String.Format("{0}: WebApi response: {1}\n", DateTime.Now, webapiResponse.Content));
-                //}
-		        //
+				DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, processedHeaders));
+				foreach (String s in response[response.Fields.First()].Errors)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Old HttpClient response: {1}\n", DateTime.Now, s));
+				}
 
-		        // Handle old http client attempt
-		        DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, processedHeaders));
-		        foreach (String s in response[response.Fields.First()].Errors)
-		        {
-		            File.AppendAllText(@"C:\temp\sso.txt",
-		                String.Format("{0}: Old HttpClient response: {1}\n", DateTime.Now, s));
-		        }
-		        //
+				if (response[response.Fields.First()].Errors.Count > 0 &&
+						retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					foreach (string s in response[response.Fields.First()].Errors)
+					{
+						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
+					}
+					ConnectionInfo.SecurityToken = GetSecurityToken();
+					httpService = new HttpService(authManger, ConnectionInfo);
+					Thread.Sleep(retrySleepTime * retryCounter);
+					return DoGet(uri, true, retryCounter++);
+				}
 
-		        if (response[response.Fields.First()].Errors.Count > 0 &&
-		            retryCounter < 10)
-		        {
-		            File.AppendAllText(@"C:\temp\sso.txt",
-		                String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-		            foreach (string s in response[response.Fields.First()].Errors)
-		            {
-		                File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-                    }
-                    ConnectionInfo.SecurityToken = GetSecurityToken();
-                    httpService = new HttpService(authManger, ConnectionInfo);
-		            Thread.Sleep(retrySleepTime*retryCounter);
-		            return DoGet(uri, true, retryCounter++);
-		        }
-
-		        return response;
-		    }
-		    catch (Exception)
-		    {
-		        if (retryCounter < 10)
-                {
-                    File.AppendAllText(@"C:\temp\sso.txt",
-                        String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-                    Thread.Sleep(retrySleepTime*retryCounter);
-		            return DoGet(uri, true, retryCounter++);
-		        }
-		        throw;
-		    }
-
+				return response;
+			}
+			catch (Exception)
+			{
+				if (retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					Thread.Sleep(retrySleepTime * retryCounter);
+					return DoGet(uri, true, retryCounter++);
+				}
+				throw;
+			}
 		}
 		#endregion
-
-	    private async Task<HttpResponseMessage> DoGetAsync(Uri uri, Dictionary<string, string> headers)
-	    {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = uri;
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                foreach (string key in headers.Keys)
-                {
-                    client.DefaultRequestHeaders.Add(key, headers[key]);
-                }
-                client.DefaultRequestHeaders.Add("zsessionid", "_Dp7Pwm5EQtCxwPTh6IdIYxufhF1eMUn3ls3YBYixTG0");
-                return await client.GetAsync(uri);
-            }
-        }
 
 		#region DoPost
 		/// <summary>
@@ -1316,49 +1286,49 @@ namespace Rally.RestApi
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		private DynamicJsonObject DoPost(Uri uri, DynamicJsonObject data, bool retry = true, int retryCounter = 1)
 		{
-		    int retrySleepTime = 1000;
-            try
-            {
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-                                                       | SecurityProtocolType.Ssl3
-                                                       | SecurityProtocolType.Tls11
-                                                       | SecurityProtocolType.Tls12;
-                ServicePointManager.Expect100Continue = true;
-                Dictionary<string, string> processedHeaders = GetProcessedHeaders();
-                foreach (string key in processedHeaders.Keys)
-                {
-                    File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
-                }
-                var response =
-                    serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data),
-                        processedHeaders));
+			int retrySleepTime = 1000;
+			try
+			{
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+																								| SecurityProtocolType.Ssl3
+																								| SecurityProtocolType.Tls11
+																								| SecurityProtocolType.Tls12;
+				ServicePointManager.Expect100Continue = true;
+				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
+				foreach (string key in processedHeaders.Keys)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", key, processedHeaders[key]));
+				}
+				var response =
+						serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data),
+								processedHeaders));
 
-                if (response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
-                {
-                    File.AppendAllText(@"C:\temp\sso.txt",
-                        String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-                    foreach (string s in response[response.Fields.First()].Errors)
-                    {
-                        File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
-                    }
-                    ConnectionInfo.SecurityToken = GetSecurityToken();
-                    httpService = new HttpService(authManger, ConnectionInfo);
-                    Thread.Sleep(retrySleepTime * retryCounter);
-                    return DoPost(uri, data, true, retryCounter++);
-                }
-                return response;
-            }
-            catch (Exception)
-            {
-                if (retryCounter < 10)
-                {
-                    File.AppendAllText(@"C:\temp\sso.txt",
-                        String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
-                    Thread.Sleep(retrySleepTime*retryCounter);
-                    return DoPost(uri, data, true, retryCounter++);
-                }
-                throw;
-            }
+				if (response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					foreach (string s in response[response.Fields.First()].Errors)
+					{
+						File.AppendAllText(@"C:\temp\sso.txt", String.Format("Error: {0}", s));
+					}
+					ConnectionInfo.SecurityToken = GetSecurityToken();
+					httpService = new HttpService(authManger, ConnectionInfo);
+					Thread.Sleep(retrySleepTime * retryCounter);
+					return DoPost(uri, data, true, retryCounter++);
+				}
+				return response;
+			}
+			catch (Exception)
+			{
+				if (retryCounter < 10)
+				{
+					File.AppendAllText(@"C:\temp\sso.txt",
+							String.Format("{0}: Errors detected! Retry on request failure", DateTime.Now));
+					Thread.Sleep(retrySleepTime * retryCounter);
+					return DoPost(uri, data, true, retryCounter++);
+				}
+				throw;
+			}
 		}
 		#endregion
 
