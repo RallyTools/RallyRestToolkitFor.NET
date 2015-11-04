@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rally.RestApi.Auth;
 using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
 using Rally.RestApi.Connection;
@@ -397,6 +399,14 @@ namespace Rally.RestApi.Test
 			Assert.IsFalse(restApi.IsWsapi2);
 		}
 
+		[TestMethod]
+		public void TestIdpLoginEndpointRedirect()
+		{
+			LoginDetails login = new LoginDetails(new ApiConsoleAuthManager());
+			string redirectUrl = login.RedirectIfIdpPointsAtLoginSso("your-idp-url&TargetResource=https://rally1.rallydev.com/login/sso");
+			Assert.AreEqual(redirectUrl, "your-idp-url&TargetResource=https://rally1.rallydev.com/slm/empty.sp");
+		}
+
 		private static void VerifyAttributes(QueryResult result, bool forWsapi2)
 		{
 			var list = (IEnumerable<object>)result.Results;
@@ -404,7 +414,7 @@ namespace Rally.RestApi.Test
 																	select i["Name"] as string;
 			string[] expectedNames;
 			if (forWsapi2)
-				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
+				expectedNames = new string[] { "App Id", "Creation Date", "VersionId", "Object ID", "Name", "Project", "User", "Value", "Workspace", "ObjectUUID", "Type" };
 			else
 				expectedNames = new string[] { "App Id", "Creation Date", "Object ID", "Name", "Project", "User", "Value", "Workspace" };
 

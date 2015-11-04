@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 				x:ClassModifier="internal"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Topmost="True"
-        Title="Single Sign On for Rally" Height="700" Width="800">
+        Title="Single Sign On for CA Agile Central" Height="700" Width="800">
 	<Grid>
 		<WebBrowser x:Name="browser" Margin="2 2 2 2" />
 	</Grid>
