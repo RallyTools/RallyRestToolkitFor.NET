@@ -378,7 +378,6 @@ namespace Rally.RestApi
 		{
 			string exceptionMessage = "";
 			AuthenticationResult authWithConnection = AuthenticateWithConnectionInfoBaseMethod(connectionInfo, allowSSO, out exceptionMessage);
-			File.AppendAllText(@"C:\temp\sso.txt", String.Format("{0}: {1}\n", DateTime.Now, exceptionMessage));
 			return authWithConnection;
 		}
 		#endregion
@@ -406,15 +405,12 @@ namespace Rally.RestApi
 
 			try
 			{
-				File.AppendAllText(@"C:\temp\sso.txt", "AuthenticateWithConnectionInfo\n");
 				dynamic userObject = GetCurrentUser("UserName");
 				ConnectionInfo.UserName = userObject["UserName"];
 				AuthenticationState = AuthenticationResult.Authenticated;
 			}
 			catch (Exception e)
 			{
-				File.AppendAllText(@"C:\temp\sso.txt", "Exception Caught!\n");
-				File.AppendAllText(@"C:\temp\sso.txt", e.Message);
 				if ((e is WebException) && (((WebException)e).Status == WebExceptionStatus.ConnectFailure))
 				{
 					throw;
