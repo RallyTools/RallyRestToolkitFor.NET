@@ -39,7 +39,7 @@ namespace Rally.RestApi.UiForWpf
 		{
 			InitializeComponent();
 			browser.LoadCompleted += browser_LoadCompleted;
-			//browser.Navigated += (a, b) => HideScriptErrors(browser, true);
+			browser.Navigated += (a, b) => HideScriptErrors(browser, true);
 		}
 		#endregion
 
