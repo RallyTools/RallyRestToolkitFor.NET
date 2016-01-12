@@ -1162,9 +1162,7 @@ namespace Rally.RestApi
 			int retrySleepTime = 1000;
 			try
 			{
-				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-																							 | SecurityProtocolType.Ssl3
-																							 | SecurityProtocolType.Tls11
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11
 																							 | SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> data = request.GetDataToSend();
@@ -1205,9 +1203,7 @@ namespace Rally.RestApi
 			int retrySleepTime = 1000;
 			try
 			{
-				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-																							 | SecurityProtocolType.Ssl3
-																							 | SecurityProtocolType.Tls11
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11
 																							 | SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
@@ -1247,9 +1243,7 @@ namespace Rally.RestApi
 			int retrySleepTime = 1000;
 			try
 			{
-				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-																								| SecurityProtocolType.Ssl3
-																								| SecurityProtocolType.Tls11
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11
 																								| SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
