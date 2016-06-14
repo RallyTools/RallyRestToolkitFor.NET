@@ -17,6 +17,9 @@ using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
 using Rally.RestApi.Auth;
 using Rally.RestApi.Exceptions;
+using System.Collections.Specialized;
+using System.Text;
+using System.Web;
 
 namespace Rally.RestApi
 {
@@ -898,13 +901,39 @@ namespace Rally.RestApi
 		/// </code>
 		/// </example>
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
-		{
+        {
+            NameValueCollection parameters = new NameValueCollection();
+            parameters["workspace"] = workspaceRef;
+            return Create(typePath, obj, parameters);
+        }
+
+        /// <summary>
+        /// Create an object of the specified type from the specified object
+        /// </summary>
+        /// <param name="typePath">the type to be created</param>
+        /// <param name="obj">the object to be created</param>
+        /// <param name="parameters">additional parameters to include in the create request</param>
+        /// <returns>A <see cref="CreateResult"/> with information on the status of the request</returns>
+        /// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+        /// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+        /// <example>
+        /// <code language="C#">
+        /// string workspaceRef = "/workspace/12345678910";
+        /// DynamicJsonObject toCreate = new DynamicJsonObject();
+        /// toCreate["Name"] = "My Defect";
+        /// NameValueCollection parameters = new NameValueCollection();
+        /// parameters["rankAbove"] = "/defect/12345";
+        /// CreateResult createResult = restApi.Create("defect", toCreate, parameters);
+        /// </code>
+        /// </example>
+        public CreateResult Create(string typePath, DynamicJsonObject obj, NameValueCollection parameters)
+        {
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException(AUTH_ERROR);
 
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
-			DynamicJsonObject response = DoPost(FormatCreateUri(workspaceRef, typePath), data);
+			DynamicJsonObject response = DoPost(FormatCreateUri(typePath, parameters), data);
 			DynamicJsonObject createResult = response["CreateResult"];
 			var createResponse = new CreateResult();
 			if (createResult.HasMember("Object"))
@@ -941,32 +970,82 @@ namespace Rally.RestApi
 			return Update(Ref.GetTypeFromRef(reference), Ref.GetOidFromRef(reference), obj);
 		}
 
-		/// <summary>
-		/// Update the item described by the specified type and object id with
+        /// <summary>
+		/// Update the item described by the specified reference with
 		/// the fields of the specified object
 		/// </summary>
-		/// <param name="typePath">the type of the item to be updated</param>
-		/// <param name="oid">the object id of the item to be updated</param>
+		/// <param name="reference">the reference to be updated</param>
 		/// <param name="obj">the object fields to update</param>
+        /// <param name="parameters">additional query string parameters to be included on the request</param>
 		/// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
 		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
 		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
 		/// <example>
 		/// <code language="C#">
+		/// string rallyRef = "https://preview.rallydev.com/slm/webservice/1.40/defect/12345.js";
 		/// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
 		/// toUpdate["Description"] = "This is my defect."; 
-		/// OperationResult updateResult = restApi.Update("defect", "12345", toUpdate);
+        /// NameValueCollection parameters = new NameValueCollection();
+        /// parameters["rankAbove"] = "/defect/23456";
+		/// OperationResult updateResult = restApi.Update(rallyRef, toUpdate, parameters);
 		/// </code>
 		/// </example>
-		public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
-		{
+		public OperationResult Update(string reference, DynamicJsonObject obj, NameValueCollection parameters)
+        {
+            return Update(Ref.GetTypeFromRef(reference), Ref.GetOidFromRef(reference), obj, parameters);
+        }
+
+        /// <summary>
+        /// Update the item described by the specified type and object id with
+        /// the fields of the specified object
+        /// </summary>
+        /// <param name="typePath">the type of the item to be updated</param>
+        /// <param name="oid">the object id of the item to be updated</param>
+        /// <param name="obj">the object fields to update</param>
+        /// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+        /// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+        /// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+        /// <example>
+        /// <code language="C#">
+        /// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
+        /// toUpdate["Description"] = "This is my defect."; 
+        /// OperationResult updateResult = restApi.Update("defect", "12345", toUpdate);
+        /// </code>
+        /// </example>
+        public OperationResult Update(string typePath, string oid, DynamicJsonObject obj)
+        {
+            return Update(typePath, oid, obj, new NameValueCollection());
+        }
+
+        /// <summary>
+        /// Update the item described by the specified type and object id with
+        /// the fields of the specified object
+        /// </summary>
+        /// <param name="typePath">the type of the item to be updated</param>
+        /// <param name="oid">the object id of the item to be updated</param>
+        /// <param name="obj">the object fields to update</param>
+        /// <param name="parameters">additional query string parameters to be include on the request</param>
+        /// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+        /// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+        /// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+        /// <example>
+        /// <code language="C#">
+        /// DynamicJsonObject toUpdate = new DynamicJsonObject(); 
+        /// toUpdate["Description"] = "This is my defect."; 
+        /// NameValueCollection parameters = new NameValueCollection();
+        /// parameters["rankAbove"] = "/defect/23456";
+        /// OperationResult updateResult = restApi.Update("defect", "12345", toUpdate, parameters);
+        /// </code>
+        /// </example>
+        public OperationResult Update(string typePath, string oid, DynamicJsonObject obj, NameValueCollection parameters)
+        {
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException(AUTH_ERROR);
 
 			var result = new OperationResult();
 			var data = new DynamicJsonObject();
 			data[typePath] = obj;
-			dynamic response = DoPost(FormatUpdateUri(typePath, oid), data);
+			dynamic response = DoPost(FormatUpdateUri(typePath, oid, parameters), data);
 			if (response.OperationResult["Object"] != null)
 				result.Object = response.OperationResult.Object;
 
@@ -1118,24 +1197,30 @@ namespace Rally.RestApi
 			result.FileContents = httpService.Download(uri, GetProcessedHeaders());
 			return result;
 		}
-		#endregion
+        #endregion
 
-		#region Helper Methods
+        #region Helper Methods
 
-		#region FormatCreateUri
-		internal Uri FormatCreateUri(string workspaceRef, string typePath)
+        #region Format Uris
+
+        private string ToQueryString(NameValueCollection parameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string key in parameters.AllKeys)
+            {
+                sb.AppendFormat("{0}={1}&", key, HttpUtility.UrlEncode(parameters[key]));
+            }
+            return sb.ToString().TrimEnd('&');
+        }
+
+        internal Uri FormatCreateUri(string typePath, NameValueCollection parameters)
 		{
-			String workspaceClause = workspaceRef == null ? "" : "?workspace=" + workspaceRef;
-			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/create.js" + workspaceClause);
+            return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/create.js?" + ToQueryString(parameters));
 		}
-		#endregion
 
-		#region FormatUpdateUri
-		internal Uri FormatUpdateUri(string typePath, string objectId)
+		internal Uri FormatUpdateUri(string typePath, string objectId, NameValueCollection parameters)
 		{
-			return
-					new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/" + objectId +
-									".js");
+			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/" + objectId + ".js?" + ToQueryString(parameters));
 		}
 		#endregion
 
@@ -1243,8 +1328,7 @@ namespace Rally.RestApi
 			int retrySleepTime = 1000;
 			try
 			{
-				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11
-																								| SecurityProtocolType.Tls12;
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 				ServicePointManager.Expect100Continue = true;
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), processedHeaders));

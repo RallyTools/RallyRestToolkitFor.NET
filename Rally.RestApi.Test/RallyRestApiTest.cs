@@ -9,6 +9,7 @@ using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
+using System.Collections.Specialized;
 
 namespace Rally.RestApi.Test
 {
@@ -279,8 +280,10 @@ namespace Rally.RestApi.Test
 		public void FormatCreateString()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
-			Uri result = restApi.FormatCreateUri(null, "defect");
-			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
+            NameValueCollection parameters = new NameValueCollection();
+            parameters["fetch"] = "Name";
+			Uri result = restApi.FormatCreateUri("defect", parameters);
+			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js?fetch=Name");
 			Assert.AreEqual(expected, result);
 		}
 
@@ -288,8 +291,10 @@ namespace Rally.RestApi.Test
 		public void FormatUpdateString()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
-			Uri result = restApi.FormatUpdateUri("defect", "2121901027");
-			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js");
+            NameValueCollection parameters = new NameValueCollection();
+            parameters["fetch"] = "Name";
+            Uri result = restApi.FormatUpdateUri("defect", "2121901027", parameters);
+			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js?fetch=Name");
 			Assert.AreEqual(expected, result);
 		}
 
