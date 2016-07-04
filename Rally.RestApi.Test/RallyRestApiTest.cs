@@ -16,8 +16,6 @@ namespace Rally.RestApi.Test
 	[TestClass]
 	public class RallyRestApiTest
 	{
-		private static string defectOid;
-
 		public static RallyRestApi GetRallyRestApi(string userName = "", string password = "",
 			string server = "", string wsapiVersion = "")
 		{
@@ -116,12 +114,16 @@ namespace Rally.RestApi.Test
 
 		private void AssertCanCreate(RallyRestApi restApi)
 		{
-            CreateResult response = CreateDefect(restApi);
-			Assert.AreEqual(0, response.Errors.Count);
-			Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
-			dynamic testDefect = restApi.GetByReference(response.Reference);
-			Assert.AreEqual("C# Json Rest Toolkit Test Defect", testDefect.Name);
-			defectOid = Ref.GetOidFromRef(response.Reference);
+            var dynamicJson = new DynamicJsonObject();
+            dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
+            CreateResult response = restApi.Create("defect", dynamicJson);
+            Assert.AreEqual(0, response.Errors.Count);
+            Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
+            dynamic testDefect = restApi.GetByReference(response.Reference);
+            Assert.AreEqual(dynamicJson["Name"], testDefect.Name);
+            
+			// Now delete it
+			TestHelperDeleteDefect(restApi, response.Reference);
 		}
 
 		[TestMethod]
@@ -153,7 +155,7 @@ namespace Rally.RestApi.Test
         public void AddToCollection2x()
         {
             RallyRestApi restApi = GetRallyRestApi2x();
-            var itemRef = CreateDefect(restApi).Reference;
+            var itemRef = TestHelperCreateDefect(restApi);
             DynamicJsonObject newTask = new DynamicJsonObject();
             newTask["Name"] = "New Task Added via collection";
             NameValueCollection parameters = new NameValueCollection();
@@ -200,29 +202,16 @@ namespace Rally.RestApi.Test
 			AssertCanDelete(restApi);
 		}
 
-        private CreateResult CreateDefect(RallyRestApi restApi)
+        private void AssertCanDelete(RallyRestApi restApi, bool includeFullData = false)
         {
-            var dynamicJson = new DynamicJsonObject();
-            dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-            return restApi.Create("defect", dynamicJson);
-        }
+            // Create test defect
+            var defect = TestHelperCreateDefect(restApi, includeFullData);
+            var defectOid = Ref.GetOidFromRef(defect);
 
-		private void AssertCanDelete(RallyRestApi restApi, bool includeFullData = false)
-		{
-			var dynamicJson = new DynamicJsonObject();
-			dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-			if (includeFullData)
-			{
-				dynamicJson["Owner"] = restApi.GetCurrentUser()["_ref"];
-				dynamicJson["Package"] = "Package A";
-			}
-			CreateResult response = restApi.Create("defect", dynamicJson);
-			Assert.AreEqual(0, response.Errors.Count);
-			Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
-			OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(response.Reference));
-			dynamic testDefectEmpty = restApi.GetByReference(response.Reference);
-			Assert.IsNull(testDefectEmpty);
-		}
+            OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(defect));
+            dynamic testDefectEmpty = restApi.GetByReference(defect);
+            Assert.IsNull(testDefectEmpty);
+        }
 
 		[TestMethod]
 		public void Update1x()
@@ -240,21 +229,59 @@ namespace Rally.RestApi.Test
 
 		private void AssertCanUpdate(RallyRestApi restApi)
 		{
+			// Create test defect
+			var defect = TestHelperCreateDefect(restApi);
+			var defectOid = Ref.GetOidFromRef(defect);
+
 			var dynamicJson = new DynamicJsonObject();
 			dynamicJson["Name"] = "Dont delete me please " + DateTime.Now.Second;
 			OperationResult response = restApi.Update("Defect", defectOid, dynamicJson);
 			Assert.AreEqual(0, response.Errors.Count);
 			dynamic updateDefect = restApi.GetByReference("/Defect/" + defectOid + ".js");
 			Assert.AreEqual(dynamicJson["Name"], updateDefect.Name);
+
+			// Now delete it
+			TestHelperDeleteDefect(restApi, defect);
+		}
+
+		private string TestHelperCreateDefect(RallyRestApi restApi, bool includeFullData = false)
+		{
+			var dynamicJson = new DynamicJsonObject();
+			dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
+			if (includeFullData)
+			{
+				dynamicJson["Owner"] = restApi.GetCurrentUser()["_ref"];
+				dynamicJson["Package"] = "Package A";
+			}
+
+			CreateResult response = restApi.Create("defect", dynamicJson);
+			Assert.AreEqual(0, response.Errors.Count);
+			Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
+
+			return response.Reference;
+		}
+
+		private void TestHelperDeleteDefect(RallyRestApi restApi, string reference)
+		{
+			OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(reference));
+			dynamic testDefectEmpty = restApi.GetByReference(reference);
+			Assert.IsNull(testDefectEmpty);
 		}
 
 		[TestMethod]
 		public void GetByReferenceTest()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
-			AssertCanCreate(restApi);
+
+			// Create test defect
+			var defect = TestHelperCreateDefect(restApi);
+			var defectOid = Ref.GetOidFromRef(defect);
+
 			dynamic response = restApi.GetByReference("/Defect/" + defectOid + ".js");
 			Assert.AreEqual(defectOid, response.ObjectID.ToString());
+
+			// Now delete it
+			TestHelperDeleteDefect(restApi, defect);
 		}
 
 		[TestMethod]
@@ -299,8 +326,6 @@ namespace Rally.RestApi.Test
 			dynamic response = restApi.GetByReference("/subscription.js");
 			Assert.IsNotNull(response.ObjectID);
 		}
-
-
 
 		[TestMethod]
 		public void TestAttribute1x()
