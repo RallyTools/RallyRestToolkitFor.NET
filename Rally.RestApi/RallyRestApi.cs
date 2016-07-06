@@ -120,6 +120,10 @@ namespace Rally.RestApi
 		/// </summary>
 		public const string DEFAULT_WSAPI_VERSION = "v2.0";
 		/// <summary>
+		/// The default Trace fields
+		/// </summary>
+		public const TraceFieldEnum DEFAULT_TRACE_FIELDS = TraceFieldEnum.Data | TraceFieldEnum.Headers | TraceFieldEnum.Cookies;
+		/// <summary>
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
@@ -178,6 +182,7 @@ namespace Rally.RestApi
 		/// provided a console authentication manager will be used which does not allow SSO authentication.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
 		/// <param name="maxRetries">Requests will be attempted a number of times (defaults to 3)</param>
+		/// <param name="traceInfo">Controls diagnostic trace information being logged</param>
 		/// <example>
 		/// For a console application, no authentication manager is needed as shown in this example.
 		/// <code language="C#">
@@ -198,13 +203,15 @@ namespace Rally.RestApi
 		/// wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 		/// </code>
 		/// </example>
-		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION, int maxRetries = 3)
+		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION, int maxRetries = 3, TraceFieldEnum traceInfo = RallyRestApi.DEFAULT_TRACE_FIELDS)
 		{
 			// NOTE: The example for using the RestApiAuthMgrWpf is also shown there. Make sure you 
 			// update both if you change it.
 
+			TraceHelper.TraceFields = traceInfo;
+
 			if (authManger == null)
-				authManger = new ApiConsoleAuthManager();
+				authManger = new ApiConsoleAuthManager(webServiceVersion, traceInfo);
 
 			this.authManger = authManger;
 
@@ -597,7 +604,7 @@ namespace Rally.RestApi
 				alreadyDownloadedItems = request.Start - 1 + request.PageSize;
 			}
 
-			Trace.TraceInformation("The number of threaded requests is : {0}", subsequentQueries.Count);
+			TraceHelper.TraceMessage("The number of threaded requests is : {0}", subsequentQueries.Count);
 
 			var resultDictionary = new Dictionary<int, QueryResult>();
 			Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>

@@ -85,6 +85,7 @@
     <Compile Include="Connection\ConnectionType.cs" />
     <Compile Include="Exceptions\RallyFailedToDeserializeJson.cs" />
     <Compile Include="Response\AttachmentResult.cs" />
+    <Compile Include="TraceHelper.cs" />
     <Compile Include="Web\SsoWebClient.cs" />
     <Compile Include="Web\CookieAwareCacheableWebClient.cs" />
     <Compile Include="Web\CookieAwareWebClient.cs" />
