@@ -47,7 +47,7 @@ namespace Rally.RestApi.Response
 		/// <summary>
 		/// The results of the query
 		/// </summary>
-		public IEnumerable<dynamic> Results { get; internal set; }
+		public new IEnumerable<dynamic> Results { get; internal set; }
 
 		private static IEnumerable<T> GetCollection<T>(object arr)
 		{

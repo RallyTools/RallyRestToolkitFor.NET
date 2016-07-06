@@ -1056,23 +1056,94 @@ namespace Rally.RestApi
 			result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
 			return result;
 		}
-		#endregion
+        #endregion
 
-		#region GetAllowedAttributeValues
-		/// <summary>
-		/// Get the allowed values for the specified type and attribute
-		/// </summary>
-		/// <param name="typePath">the type</param>
-		/// <param name="attributeName">the attribute to retrieve allowed values for</param>
-		/// <returns>Returns a <see cref="DynamicJsonObject"/> containing the allowed values for the specified type and attribute.</returns>
-		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
-		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
-		/// <example>
-		/// <code language="C#">
-		/// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
-		/// </code>
-		/// </example>
-		public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
+        #region Collection Methods
+
+        /// <summary>
+        /// Add items to a collection
+        /// </summary>
+        /// <param name="itemRef">The ref of the object to update e.g. /defect/12345</param>
+        /// <param name="collectionName">The name of the collection to be updated e.g. Tasks</param>
+        /// <param name="items">The items to add.  These can be references to existing objects or new objects to be created.</param>
+        /// <param name="parameters">additional query string parameters to be included on the request</param>
+        /// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+        /// <example>
+        /// <code language="C#">
+        /// DynamicJsonObject existingTask = new DynamicJsonObject(); 
+        /// existingTask["_ref"] = "/task/23456";
+        /// DynamicJsonObject newTask = new DynamicJsonObject();
+        /// newTask["Name"] = "New Task";
+        /// NameValueCollection parameters = new NameValueCollection();
+        /// parameters["fetch"] = "FormattedID";
+        /// List{DynamicJsonObject} newItems = new List{DynamicJsonObject}() { existingTask, newTask };
+        /// OperationResult updateResult = restApi.AddToCollection("/defect/12345", "Tasks", newTasks, parameters);
+        /// </code>
+        /// </example>
+        public OperationResult AddToCollection(string itemRef, string collectionName, List<DynamicJsonObject> items, NameValueCollection parameters)
+        {
+            return UpdateCollection(itemRef, collectionName, items, parameters, true);
+        }
+
+        /// <summary>
+        /// Remove items from a collection
+        /// </summary>
+        /// <param name="itemRef">The ref of the object to update e.g. /defect/12345</param>
+        /// <param name="collectionName">The name of the collection to be updated e.g. Tasks</param>
+        /// <param name="items">The items to remove.</param>
+        /// <param name="parameters">additional query string parameters to be included on the request</param>
+        /// <returns>An <see cref="OperationResult"/> describing the status of the request</returns>
+        /// <example>
+        /// <code language="C#">
+        /// DynamicJsonObject existingTask = new DynamicJsonObject(); 
+        /// existingTask["_ref"] = "/task/23456";
+        /// NameValueCollection parameters = new NameValueCollection();
+        /// List{DynamicJsonObject} itemsToRemove = new List{DynamicJsonObject}() { existingTask };
+        /// OperationResult updateResult = restApi.RemoveFromCollection("/defect/12345", "Tasks", itemsToRemove, parameters);
+        /// </code>
+        /// </example>
+
+        public OperationResult RemoveFromCollection(string itemRef, string collectionName, List<DynamicJsonObject> items, NameValueCollection parameters)
+        {
+            return UpdateCollection(itemRef, collectionName, items, parameters, false);
+        }
+
+        private OperationResult UpdateCollection(string itemRef, string collectionName, List<DynamicJsonObject> items, NameValueCollection parameters, bool adding)
+        {
+            if (ConnectionInfo == null)
+            {
+                throw new InvalidOperationException(AUTH_ERROR);
+            }
+
+            var result = new OperationResult();
+            var data = new DynamicJsonObject();
+            data["CollectionItems"] = items;
+            dynamic response = DoPost(FormatUpdateCollectionUri(adding, itemRef, collectionName, parameters), data);
+            if(response.OperationResult.HasMember("Results")) {
+                result.Results.AddRange((response.OperationResult.Results as ArrayList).Cast<DynamicJsonObject>());
+            }
+            result.Errors.AddRange(DecodeArrayList(response.OperationResult.Errors));
+            result.Warnings.AddRange(DecodeArrayList(response.OperationResult.Warnings));
+            return result;
+        }
+
+        #endregion
+
+        #region GetAllowedAttributeValues
+        /// <summary>
+        /// Get the allowed values for the specified type and attribute
+        /// </summary>
+        /// <param name="typePath">the type</param>
+        /// <param name="attributeName">the attribute to retrieve allowed values for</param>
+        /// <returns>Returns a <see cref="DynamicJsonObject"/> containing the allowed values for the specified type and attribute.</returns>
+        /// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+        /// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+        /// <example>
+        /// <code language="C#">
+        /// DynamicJsonObject allowedValues = restApi.GetAllowedAttributeValues("defect", "severity");
+        /// </code>
+        /// </example>
+        public QueryResult GetAllowedAttributeValues(string typePath, string attributeName)
 		{
 			if (ConnectionInfo == null)
 				throw new InvalidOperationException(AUTH_ERROR);
@@ -1208,7 +1279,12 @@ namespace Rally.RestApi
 
         private string ToQueryString(NameValueCollection parameters)
         {
-            StringBuilder sb = new StringBuilder();
+            if(parameters == null || parameters.Count == 0)
+            {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder("?");
             foreach (string key in parameters.AllKeys)
             {
                 sb.AppendFormat("{0}={1}&", key, HttpUtility.UrlEncode(parameters[key]));
@@ -1218,22 +1294,27 @@ namespace Rally.RestApi
 
         internal Uri FormatCreateUri(string typePath, NameValueCollection parameters)
 		{
-            return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/create.js?" + ToQueryString(parameters));
+            return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/create.js" + ToQueryString(parameters));
 		}
 
 		internal Uri FormatUpdateUri(string typePath, string objectId, NameValueCollection parameters)
 		{
-			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/" + objectId + ".js?" + ToQueryString(parameters));
+			return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + typePath + "/" + objectId + ".js" + ToQueryString(parameters));
 		}
-		#endregion
 
-		#region DoGetCacheable
-		/// <summary>
-		/// Gets a cacheable response.
-		/// </summary>
-		/// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
-		/// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
-		private DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
+        internal Uri FormatUpdateCollectionUri(bool isAdding, string itemRef, string collectionName, NameValueCollection parameters)
+        {
+            return new Uri(httpService.Server.AbsoluteUri + "slm/webservice/" + WsapiVersion + "/" + Ref.GetTypeFromRef(itemRef) + "/" + Ref.GetOidFromRef(itemRef) + "/" + collectionName + (isAdding ? "/add" : "/remove") + ToQueryString(parameters));
+        }
+        #endregion
+
+        #region DoGetCacheable
+        /// <summary>
+        /// Gets a cacheable response.
+        /// </summary>
+        /// <exception cref="RallyUnavailableException">Rally returned an HTML page. This usually occurs when Rally is off-line. Please check the ErrorMessage property for more information.</exception>
+        /// <exception cref="RallyFailedToDeserializeJson">The JSON returned by Rally was not able to be deserialized. Please check the JsonData property for what was returned by Rally.</exception>
+        private DynamicJsonObject DoGetCacheable(Uri uri, out bool isCachedResult)
 		{
 			return httpService.GetCacheable(uri, out isCachedResult, GetProcessedHeaders());
 		}
