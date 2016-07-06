@@ -31,7 +31,7 @@ namespace Rally.RestApi
 		/// <summary>
 		/// The endpoint for getting a CSRF token. This has custom logic in HttpService for SSO users.
 		/// </summary>
-		public const string SECURITY_ENDPOINT = "/security/authorize";
+		public const string SECURITY_ENDPOINT = "/security/authorize.js";
 		TraceSource traceSource = new TraceSource("RallyRestApi");
 
 		#region Enumeration: AuthenticationResult
@@ -903,7 +903,10 @@ namespace Rally.RestApi
 		public CreateResult Create(string workspaceRef, string typePath, DynamicJsonObject obj)
         {
             NameValueCollection parameters = new NameValueCollection();
-            parameters["workspace"] = workspaceRef;
+            if (workspaceRef != null)
+            {
+                parameters["workspace"] = workspaceRef;
+            }
             return Create(typePath, obj, parameters);
         }
 
@@ -1255,22 +1258,22 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				DynamicJsonObject response = serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoGetAsPost(request, true, retryCounter++);
+					return DoGetAsPost(request, true, ++retryCounter);
 				}
 
 				return response;
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 10)
+				if (retryCounter < 3)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoGetAsPost(request, true, retryCounter++);
+					return DoGetAsPost(request, true, ++retryCounter);
 				}
 				throw;
 			}
@@ -1294,22 +1297,22 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoGet(uri, true, retryCounter++);
+					return DoGet(uri, true, ++retryCounter);
 				}
 
 				return response;
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 10)
+				if (retryCounter < 3)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoGet(uri, true, retryCounter++);
+					return DoGet(uri, true, ++retryCounter);
 				}
 				throw;
 			}
@@ -1333,22 +1336,22 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 10)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoPost(uri, data, true, retryCounter++);
+					return DoPost(uri, data, true, ++retryCounter);
 				}
 
 				return response;
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 10)
+				if (retryCounter < 3)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
-					return DoPost(uri, data, true, retryCounter++);
+					return DoPost(uri, data, true, ++retryCounter);
 				}
 				throw;
 			}
