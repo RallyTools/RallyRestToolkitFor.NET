@@ -1,0 +1,583 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>RallyRestApi Methods</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="RallyRestApi class, methods" />
+    <meta name="Microsoft.Help.Id" content="Methods.T:Rally.RestApi.RallyRestApi" />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Rally.RestApi" />
+    <meta name="file" content="b470c5b6-3c09-cd27-f919-eba75a45d913" />
+    <meta name="guid" content="b470c5b6-3c09-cd27-f919-eba75a45d913" />
+    
+    <link type="text/css" rel="stylesheet" href="../styles/highlight.css" />
+    <script type="text/javascript" src="../scripts/highlight.js"> </script>
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Rally Rest API for .Net<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally.RestApi" tocid="3ef29523-65cb-43dc-a962-3690be4915cd">Rally.RestApi</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="a256a81e-6dba-bafb-e2df-d1adbe1a36d2.htm" title="RallyRestApi Class" tocid="a256a81e-6dba-bafb-e2df-d1adbe1a36d2">RallyRestApi Class</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="b470c5b6-3c09-cd27-f919-eba75a45d913.htm" title="RallyRestApi Methods" tocid="b470c5b6-3c09-cd27-f919-eba75a45d913">RallyRestApi Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="efed9f73-559a-3ef8-5cd7-e3039040c87d.htm" title="AddToCollection Method " tocid="efed9f73-559a-3ef8-5cd7-e3039040c87d">AddToCollection Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="57a5e336-c066-296b-b467-f5aa97ddd0de.htm" title="Authenticate Method " tocid="57a5e336-c066-296b-b467-f5aa97ddd0de">Authenticate Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="efa39ace-e4cc-b916-5234-62377bca7bda.htm" title="AuthenticateWithApiKey Method " tocid="efa39ace-e4cc-b916-5234-62377bca7bda">AuthenticateWithApiKey Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="199c5ab8-3432-9bf4-4eb8-cf58e837c4cf.htm" title="AuthenticateWithZSessionID Method " tocid="199c5ab8-3432-9bf4-4eb8-cf58e837c4cf">AuthenticateWithZSessionID Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="76ab5430-a6c7-5148-13df-dd006c85f6f8.htm" title="Create Method " tocid="76ab5430-a6c7-5148-13df-dd006c85f6f8">Create Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="1794c03e-280d-1ef1-b78b-4e69359f22c4.htm" title="Delete Method " tocid="1794c03e-280d-1ef1-b78b-4e69359f22c4">Delete Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="43943c3f-3904-0743-c336-8f872140dc43.htm" title="DownloadAttachment Method " tocid="43943c3f-3904-0743-c336-8f872140dc43">DownloadAttachment Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a0e8abd1-451c-5e53-ea8a-c49faa20b802.htm" title="GetAllowedAttributeValues Method " tocid="a0e8abd1-451c-5e53-ea8a-c49faa20b802">GetAllowedAttributeValues Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="dbc3c330-bd96-0ce2-03da-d5aac778811c.htm" title="GetAttributesByType Method " tocid="dbc3c330-bd96-0ce2-03da-d5aac778811c">GetAttributesByType Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="4de0dcb6-2be2-3eba-4cd7-5bb594f8b2e2.htm" title="GetByReference Method " tocid="4de0dcb6-2be2-3eba-4cd7-5bb594f8b2e2">GetByReference Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="1f856a6c-69dc-5950-05b8-cd48bcefb289.htm" title="GetByReferenceAndWorkspace Method " tocid="1f856a6c-69dc-5950-05b8-cd48bcefb289">GetByReferenceAndWorkspace Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="b410b283-0f61-7be6-fabd-43c1985c7a56.htm" title="GetCurrentUser Method " tocid="b410b283-0f61-7be6-fabd-43c1985c7a56">GetCurrentUser Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="087391bf-87f9-2042-7456-508605d25391.htm" title="GetSubscription Method " tocid="087391bf-87f9-2042-7456-508605d25391">GetSubscription Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="15efbc97-c212-2301-b103-1459b6ed6b78.htm" title="GetTypes Method " tocid="15efbc97-c212-2301-b103-1459b6ed6b78">GetTypes Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="c2f904f6-fbfb-c003-500a-611b02a8fafb.htm" title="Logout Method " tocid="c2f904f6-fbfb-c003-500a-611b02a8fafb">Logout Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2a8ae8aa-a309-607b-153f-8f82170f919d.htm" title="Post Method " tocid="2a8ae8aa-a309-607b-153f-8f82170f919d">Post Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="79b7150e-27e3-4093-00bf-fce8a2630d98.htm" title="Query Method " tocid="79b7150e-27e3-4093-00bf-fce8a2630d98">Query Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2e1823f1-1d03-b78f-66d2-211ed9fcbd18.htm" title="RemoveFromCollection Method " tocid="2e1823f1-1d03-b78f-66d2-211ed9fcbd18">RemoveFromCollection Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="484045a3-7df3-39a4-cd32-4e05046e20d6.htm" title="SetDefaultConnectionLimit Method " tocid="484045a3-7df3-39a4-cd32-4e05046e20d6">SetDefaultConnectionLimit Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="a219b765-536a-0bb2-bf21-a52ba578234e.htm" title="Update Method " tocid="a219b765-536a-0bb2-bf21-a52ba578234e">Update Method </a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize" /><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize" /></div></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">RallyRestApi Methods</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <p>The <a href="a256a81e-6dba-bafb-e2df-d1adbe1a36d2.htm">RallyRestApi</a> type exposes the following members.</p>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="memberList" class="members">
+            <tr>
+              <th class="iconColumn">
+								 
+							</th>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="efed9f73-559a-3ef8-5cd7-e3039040c87d.htm">AddToCollection</a>
+              </td>
+              <td>
+                <div class="summary">
+            Add items to a collection
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="a9fbbb4c-1313-f980-b952-7cb569713a60.htm">Authenticate(String, String, String, WebProxy, Boolean)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Authenticates against Rally with the specified credentials
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="9128a04f-05ad-c0a0-7259-771705205d08.htm">Authenticate(String, String, Uri, WebProxy, Boolean)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Authenticates against Rally with the specified credentials
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="58d966c5-71e8-9b86-55fb-1c28d304c6b6.htm">AuthenticateWithApiKey(String, String, WebProxy)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Authenticates against Rally with the specified credentials
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="10432d20-1eb4-2d65-8544-8520dd71cdb4.htm">AuthenticateWithApiKey(String, Uri, WebProxy)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Authenticates against Rally with the specified credentials
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="199c5ab8-3432-9bf4-4eb8-cf58e837c4cf.htm">AuthenticateWithZSessionID</a>
+              </td>
+              <td>
+                <div class="summary">
+            Authenticates against Rally with the specified credentials
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="6196fb27-a274-0a86-03f4-4fecc89a8a22.htm">Create(String, DynamicJsonObject)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Create an object of the specified type from the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="1ed8c970-1308-7e30-6039-fd33432bb5c1.htm">Create(String, DynamicJsonObject, NameValueCollection)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Create an object of the specified type from the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="3d71befa-b4d6-5cd0-25f2-8722c9fb897a.htm">Create(String, String, DynamicJsonObject)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Create an object of the specified type from the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="7d5fa156-de31-ef92-5bd0-d9a6cc834408.htm">Delete(String)</a>
+              </td>
+              <td>
+                <div class="summary">
+             Delete the object described by the specified reference.
+             </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="c024f971-287b-c2bf-5459-0452b380ad69.htm">Delete(String, Int64)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Delete the object described by the specified type and object id.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="9da8177f-dc54-394b-25a7-cf77dcd7f678.htm">Delete(String, String)</a>
+              </td>
+              <td>
+                <div class="summary">
+             Delete the object described by the specified reference.
+             </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="c57ac87d-a8f9-7ef4-4b60-529f410a3211.htm">Delete(String, String, Int64)</a>
+              </td>
+              <td>
+                <div class="summary">
+             Delete the object described by the specified type and object id.
+             </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="43943c3f-3904-0743-c336-8f872140dc43.htm">DownloadAttachment</a>
+              </td>
+              <td>
+                <div class="summary">
+            Downloads an attachment from Rally.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;inherited;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/bsc2ak47" target="_blank">Equals</a>
+              </td>
+              <td>
+                <div class="summary">Determines whether the specified <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a> is equal to the current <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.</div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="protected;inherited;notNetfw;">
+              <td>
+                <img src="../icons/protmethod.gif" alt="Protected method" title="Protected method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/4k87zsw7" target="_blank">Finalize</a>
+              </td>
+              <td>
+                <div class="summary">Allows an object to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection.</div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="a0e8abd1-451c-5e53-ea8a-c49faa20b802.htm">GetAllowedAttributeValues</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the allowed values for the specified type and attribute
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="dbc3c330-bd96-0ce2-03da-d5aac778811c.htm">GetAttributesByType</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the attribute definitions for the specified type
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="d48a84d4-859f-67c9-584c-12f000a1fe9d.htm">GetByReference(String, <span id="LST4F9AC26C_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST4F9AC26C_0?cpp=array&lt;");</script>String<span id="LST4F9AC26C_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST4F9AC26C_1?cpp=&gt;|cs=[]|vb=()|nu=[]|fs=[]");</script>)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the object described by the specified reference.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="9555e935-3ceb-3d88-defb-5f4fc86b382d.htm">GetByReference(String, Int64, <span id="LST4F9AC26C_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST4F9AC26C_2?cpp=array&lt;");</script>String<span id="LST4F9AC26C_3"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST4F9AC26C_3?cpp=&gt;|cs=[]|vb=()|nu=[]|fs=[]");</script>)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the object described by the specified type and object id.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="1f856a6c-69dc-5950-05b8-cd48bcefb289.htm">GetByReferenceAndWorkspace</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the object described by the specified reference scoped to the provided workspace.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="b410b283-0f61-7be6-fabd-43c1985c7a56.htm">GetCurrentUser</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the current user
+            </div>
+              </td>
+            </tr>
+            <tr data="public;inherited;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/zdee4b3y" target="_blank">GetHashCode</a>
+              </td>
+              <td>
+                <div class="summary">Serves as a hash function for a particular type. </div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="087391bf-87f9-2042-7456-508605d25391.htm">GetSubscription</a>
+              </td>
+              <td>
+                <div class="summary">
+            Get the current subscription
+            </div>
+              </td>
+            </tr>
+            <tr data="public;inherited;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/dfwy45w9" target="_blank">GetType</a>
+              </td>
+              <td>
+                <div class="summary">Gets the <a href="http://msdn2.microsoft.com/en-us/library/42892f65" target="_blank">Type</a> of the current instance.</div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="15efbc97-c212-2301-b103-1459b6ed6b78.htm">GetTypes</a>
+              </td>
+              <td>
+                <div class="summary">
+                  <p>
+                    <b>Unsupported - DO NOT USE</b>
+                  </p>
+            Get the attribute definitions for the specified project or workspace (part of the query string).
+            <div class="alert"><table><tr><th><img src="../icons/AlertNote.png" alt="Note" /> Note</th></tr><tr><td>This uses an unpublished/unsupported endpoint and should NOT be used by non-Rally applications. 
+            This endpoint may alter behavior at any point in time.</td></tr></table></div></div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="c2f904f6-fbfb-c003-500a-611b02a8fafb.htm">Logout</a>
+              </td>
+              <td>
+                <div class="summary">
+            Logs this API out from any connection to Rally and clears the authentication configuration.
+            </div>
+              </td>
+            </tr>
+            <tr data="protected;inherited;notNetfw;">
+              <td>
+                <img src="../icons/protmethod.gif" alt="Protected method" title="Protected method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/57ctke0a" target="_blank">MemberwiseClone</a>
+              </td>
+              <td>
+                <div class="summary">Creates a shallow copy of the current <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.</div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="2a8ae8aa-a309-607b-153f-8f82170f919d.htm">Post</a>
+              </td>
+              <td>
+                <div class="summary">
+            Performs a post of data to the provided URI.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="79b7150e-27e3-4093-00bf-fce8a2630d98.htm">Query</a>
+              </td>
+              <td>
+                <div class="summary">
+            Perform a read against the WSAPI operation based
+            on the data in the specified request
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="2e1823f1-1d03-b78f-66d2-211ed9fcbd18.htm">RemoveFromCollection</a>
+              </td>
+              <td>
+                <div class="summary">
+            Remove items from a collection
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="484045a3-7df3-39a4-cd32-4e05046e20d6.htm">SetDefaultConnectionLimit</a>
+              </td>
+              <td>
+                <div class="summary">
+            Sets the default maximum concurrent connection limit for this application.
+            <div class="alert"><table><tr><th><img src="../icons/AlertNote.png" alt="Note" /> Note</th></tr><tr><td>This will affect all connections that use Service Point.</td></tr></table></div></div>
+              </td>
+            </tr>
+            <tr data="public;inherited;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="http://msdn2.microsoft.com/en-us/library/7bxwbwt2" target="_blank">ToString</a>
+              </td>
+              <td>
+                <div class="summary">Returns a string that represents the current object.</div> (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="5403697b-4d9b-0f1a-db4e-9ff4235ef29d.htm">Update(String, DynamicJsonObject)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Update the item described by the specified reference with
+            the fields of the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="d4b6c3f8-bfc9-7c39-9963-6a138569a3fc.htm">Update(String, DynamicJsonObject, NameValueCollection)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Update the item described by the specified reference with
+            the fields of the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="a4b7a264-37c9-1514-3e1b-b7d16e18034c.htm">Update(String, String, DynamicJsonObject)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Update the item described by the specified type and object id with
+            the fields of the specified object
+            </div>
+              </td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/CodeExample.png" alt="Code example" title="Code example" />
+              </td>
+              <td>
+                <a href="47057c17-e7c6-4386-18ae-907698df2891.htm">Update(String, String, DynamicJsonObject, NameValueCollection)</a>
+              </td>
+              <td>
+                <div class="summary">
+            Update the item described by the specified type and object id with
+            the fields of the specified object
+            </div>
+              </td>
+            </tr>
+          </table>
+          <a href="#PageHeader">Top</a>
+        </div>
+        <div class="collapsibleAreaRegion" id="seeAlsoSection">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <h4 class="subHeading">Reference</h4>
+          <div class="seeAlsoStyle">
+            <a href="a256a81e-6dba-bafb-e2df-d1adbe1a36d2.htm">RallyRestApi Class</a>
+          </div>
+          <div class="seeAlsoStyle">
+            <a href="3ef29523-65cb-43dc-a962-3690be4915cd.htm">Rally.RestApi Namespace</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:support%40rallydev.com?Subject=Rally Rest API for .Net">support@rallydev.com</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

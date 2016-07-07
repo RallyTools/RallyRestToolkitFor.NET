@@ -1,0 +1,73 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ApiAuthManager.ShowUserLoginWindow Method </title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="ShowUserLoginWindow method" />
+    <meta name="System.Keywords" content="ApiAuthManager.ShowUserLoginWindow method" />
+    <meta name="Microsoft.Help.F1" content="Rally.RestApi.Auth.ApiAuthManager.ShowUserLoginWindow" />
+    <meta name="Microsoft.Help.Id" content="M:Rally.RestApi.Auth.ApiAuthManager.ShowUserLoginWindow(Rally.RestApi.Auth.AuthenticationStateChange,Rally.RestApi.Auth.SsoAuthenticationComplete)" />
+    <meta name="Description" content="Authenticates the user against Rally. This must be called from the UI thread." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Rally.RestApi.Auth" />
+    <meta name="file" content="ebfccaef-d809-ac31-01c1-db3b5a3fe58c" />
+    <meta name="guid" content="ebfccaef-d809-ac31-01c1-db3b5a3fe58c" />
+    
+    <link type="text/css" rel="stylesheet" href="../styles/highlight.css" />
+    <script type="text/javascript" src="../scripts/highlight.js"> </script>
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Rally Rest API for .Net<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="3ef29523-65cb-43dc-a962-3690be4915cd.htm" title="Rally Rest API for .Net" tocid="roottoc">Rally Rest API for .Net</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="8cd3c0c5-48bd-d3a9-4a16-9577bade9e07.htm" title="Rally.RestApi.Auth" tocid="8cd3c0c5-48bd-d3a9-4a16-9577bade9e07">Rally.RestApi.Auth</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="28855baf-4c96-79e7-b0d6-2d89f29ed37d.htm" title="ApiAuthManager Class" tocid="28855baf-4c96-79e7-b0d6-2d89f29ed37d">ApiAuthManager Class</a></div><div class="toclevel1" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="21bdc529-2c6d-e801-9480-a89481343e65.htm" title="ApiAuthManager Methods" tocid="21bdc529-2c6d-e801-9480-a89481343e65">ApiAuthManager Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="19efadf5-3db2-1c6a-08bc-c888c112a347.htm" title="AutoAuthenticate Method " tocid="19efadf5-3db2-1c6a-08bc-c888c112a347">AutoAuthenticate Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="9be4c505-717f-19a7-41b0-14b6a2fc09f6.htm" title="Configure Method " tocid="9be4c505-717f-19a7-41b0-14b6a2fc09f6">Configure Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="3fe3333a-ac60-a43f-e213-0ff8266ba62b.htm" title="DeleteCachedLoginDetailsFromDisk Method " tocid="3fe3333a-ac60-a43f-e213-0ff8266ba62b">DeleteCachedLoginDetailsFromDisk Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="eb3b5aee-40c3-6771-9519-c5a5175764b7.htm" title="NotifyLoginWindowSsoComplete Method " tocid="eb3b5aee-40c3-6771-9519-c5a5175764b7">NotifyLoginWindowSsoComplete Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="db7874dc-06cb-a601-9be8-bd64777ab53e.htm" title="OpenSsoPageInternal Method " tocid="db7874dc-06cb-a601-9be8-bd64777ab53e">OpenSsoPageInternal Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="75f86e06-f927-957b-4d58-6c7b4986ee50.htm" title="PerformAuthenticationCheck Method " tocid="75f86e06-f927-957b-4d58-6c7b4986ee50">PerformAuthenticationCheck Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="12b37305-e3fc-cf60-e21f-89c83d677a5a.htm" title="PerformLogoutFromRally Method " tocid="12b37305-e3fc-cf60-e21f-89c83d677a5a">PerformLogoutFromRally Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="d91d9a69-0bea-4b49-ac2c-ed7912538bab.htm" title="ReportSsoResults Method " tocid="d91d9a69-0bea-4b49-ac2c-ed7912538bab">ReportSsoResults Method </a></div><div class="toclevel2 current" data-toclevel="2"><a data-tochassubtree="false" href="ebfccaef-d809-ac31-01c1-db3b5a3fe58c.htm" title="ShowUserLoginWindow Method " tocid="ebfccaef-d809-ac31-01c1-db3b5a3fe58c">ShowUserLoginWindow Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="c57d080e-b11a-5ec3-a894-bc7e2e56941d.htm" title="ShowUserLoginWindowInternal Method " tocid="c57d080e-b11a-5ec3-a894-bc7e2e56941d">ShowUserLoginWindowInternal Method </a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize" /><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize" /></div></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">ApiAuthManager<span id="LSTECE0B605_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTECE0B605_0?cpp=::|nu=.");</script>ShowUserLoginWindow Method </td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="summary">
+            Authenticates the user against Rally. This must be called from the UI thread.
+            </div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="8cd3c0c5-48bd-d3a9-4a16-9577bade9e07.htm">Rally.RestApi.Auth</a><br /><strong>Assembly:</strong> Rally.RestApi (in Rally.RestApi.dll) Version: 3.1.1.0 (3.1.1.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0"><img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID1RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EDCA_tab1" class="codeSnippetContainerTab"><a href="#" onclick="javascript:ChangeTab('ID0EDCA','cs','1','4');return false;">C#</a></div><div id="ID0EDCA_tab2" class="codeSnippetContainerTab"><a href="#" onclick="javascript:ChangeTab('ID0EDCA','vb','2','4');return false;">VB</a></div><div id="ID0EDCA_tab3" class="codeSnippetContainerTab"><a href="#" onclick="javascript:ChangeTab('ID0EDCA','cpp','3','4');return false;">C++</a></div><div id="ID0EDCA_tab4" class="codeSnippetContainerTab"><a href="#" onclick="javascript:ChangeTab('ID0EDCA','fs','4','4');return false;">F#</a></div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EDCA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EDCA');return false;" title="Copy">Copy</a></div></div><div id="ID0EDCA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">ShowUserLoginWindow</span>(
+	<span class="identifier">AuthenticationStateChange</span> <span class="parameter">authenticationStateChange</span>,
+	<span class="identifier">SsoAuthenticationComplete</span> <span class="parameter">ssoAuthenticationComplete</span>
+)</pre></div><div id="ID0EDCA_code_Div2" class="codeSnippetContainerCode" style="display: none"><pre xml:space="preserve"><span class="keyword">Public</span> <span class="keyword">Overridable</span> <span class="keyword">Sub</span> <span class="identifier">ShowUserLoginWindow</span> ( 
+	<span class="parameter">authenticationStateChange</span> <span class="keyword">As</span> <span class="identifier">AuthenticationStateChange</span>,
+	<span class="parameter">ssoAuthenticationComplete</span> <span class="keyword">As</span> <span class="identifier">SsoAuthenticationComplete</span>
+)</pre></div><div id="ID0EDCA_code_Div3" class="codeSnippetContainerCode" style="display: none"><pre xml:space="preserve"><span class="keyword">public</span>:
+<span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">ShowUserLoginWindow</span>(
+	<span class="identifier">AuthenticationStateChange</span>^ <span class="parameter">authenticationStateChange</span>, 
+	<span class="identifier">SsoAuthenticationComplete</span>^ <span class="parameter">ssoAuthenticationComplete</span>
+)</pre></div><div id="ID0EDCA_code_Div4" class="codeSnippetContainerCode" style="display: none"><pre xml:space="preserve"><span class="keyword">abstract</span> <span class="identifier">ShowUserLoginWindow</span> : 
+        <span class="parameter">authenticationStateChange</span> : <span class="identifier">AuthenticationStateChange</span> * 
+        <span class="parameter">ssoAuthenticationComplete</span> : <span class="identifier">SsoAuthenticationComplete</span> <span class="keyword">-&gt;</span> <span class="keyword">unit</span> 
+<span class="keyword">override</span> <span class="identifier">ShowUserLoginWindow</span> : 
+        <span class="parameter">authenticationStateChange</span> : <span class="identifier">AuthenticationStateChange</span> * 
+        <span class="parameter">ssoAuthenticationComplete</span> : <span class="identifier">SsoAuthenticationComplete</span> <span class="keyword">-&gt;</span> <span class="keyword">unit</span> </pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EDCA");</script><h4 class="subHeading">Parameters</h4><dl><dt><span class="parameter">authenticationStateChange</span></dt><dd>Type: <a href="47e99454-ca46-7d29-0e05-c5cee591cc47.htm">Rally.RestApi.Auth<span id="LSTECE0B605_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTECE0B605_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>AuthenticationStateChange</a><br />The delegate to call when an authentication state change occurs.</dd><dt><span class="parameter">ssoAuthenticationComplete</span></dt><dd>Type: <a href="6eba8d67-7b6f-449c-3f69-b7d0eca7e945.htm">Rally.RestApi.Auth<span id="LSTECE0B605_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTECE0B605_2?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>SsoAuthenticationComplete</a><br />The delegate to call when an authentication state change occurs due to SSO.</dd></dl></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Examples</span></div><div id="ID2RBSection" class="collapsibleSection">
+            Opening the login window and passing the two delegates to it.
+            <div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EAAABA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EAAABA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EAAABA');return false;" title="Copy">Copy</a></div></div><div id="ID0EAAABA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">authMgr.ShowUserLoginWindow(authenticationStateChange, ssoAuthenticationComplete);</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EAAABA");</script></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID3RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="28855baf-4c96-79e7-b0d6-2d89f29ed37d.htm">ApiAuthManager Class</a></div><div class="seeAlsoStyle"><a href="8cd3c0c5-48bd-d3a9-4a16-9577bade9e07.htm">Rally.RestApi.Auth Namespace</a></div></div></div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:support%40rallydev.com?Subject=Rally Rest API for .Net">support@rallydev.com</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HelpTOC>
+
+  <HelpTOCNode Id="0f8f99a0-82ee-4c5d-8fec-28884f91ab49" Title="Rally.RestApi" Url="html/3ef29523-65cb-43dc-a962-3690be4915cd.htm">
+    <HelpTOCNode Id="d81f6776-fe23-4e13-ac23-59e12f525837" Title="Query Class" Url="html/52a2bd79-cffd-aa28-9041-e12f1bbd0f43.htm">
+      <HelpTOCNode Id="71aa9366-6335-42d2-9fd3-4db958b6f64f" Title="Query Constructor " Url="html/e7e736a4-18d1-1464-9b68-b79b439202a2.htm">
+        <HelpTOCNode Title="Query Constructor " Url="html/67a9fdbb-f19e-8643-834b-d10254adb418.htm" />
+        <HelpTOCNode Title="Query Constructor (String)" Url="html/33339fa4-4bf4-996d-5ead-1d3e06960839.htm" />
+        <HelpTOCNode Title="Query Constructor (String, Query.Operator, String)" Url="html/0b2eff88-3b4b-f320-cd0b-2e1f65c17389.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="640e5a3f-5b38-4eae-9fb7-7c6b4b0add85" Title="Query Properties" Url="html/d36e94b9-d61f-afbd-5f95-7cbdeeb8d251.htm">
+        <HelpTOCNode Title="Attribute Property " Url="html/de645c2f-cfe8-c837-74b6-acca4d86ba1c.htm" />
+        <HelpTOCNode Title="QueryClause Property " Url="html/8db586b0-d225-f5a4-373d-55f5902be9b5.htm" />
+        <HelpTOCNode Title="QueryOperator Property " Url="html/1fd4cd84-ec03-78d4-a6f6-32659b7ca2ef.htm" />
+        <HelpTOCNode Title="Value Property " Url="html/9cf8fbb3-a805-c167-1c4e-e752d41e29c2.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="3d7b0817-8f2a-4605-949d-7ffb9de408a9" Title="Query Methods" Url="html/506b51c6-e3e8-d9e1-0d08-c55915c0a7fe.htm">
+        <HelpTOCNode Id="caefdb0e-6a2a-4958-aff7-7e5e563ac99a" Title="And Method " Url="html/e0876ec1-7944-0957-139d-3e1b8950f4c7.htm">
+          <HelpTOCNode Title="And Method (Query)" Url="html/00fe34b3-a3f6-c803-e67d-9996819f330f.htm" />
+          <HelpTOCNode Title="And Method (Query[])" Url="html/8f0e5a79-1395-dc91-ddaa-199215c9397c.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="f88e3f31-94b2-4138-a8b5-d111ddadf35c" Title="GetOperator Method " Url="html/6d75cd15-4cb2-f968-1171-7b7722898514.htm">
+          <HelpTOCNode Title="GetOperator Method (String)" Url="html/510c26ba-65f3-18f4-695a-d4193438e4db.htm" />
+          <HelpTOCNode Title="GetOperator Method (Query.Operator)" Url="html/61c1caff-4a6c-4bd7-2bbd-2e1922182da1.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="f42acb3f-7c95-4284-8ba4-1ca5aa08996c" Title="Or Method " Url="html/eeb6a800-778c-3ba7-725e-24e50e0757f9.htm">
+          <HelpTOCNode Title="Or Method (Query)" Url="html/681dcdf6-86c2-d672-755e-0d7b8f593932.htm" />
+          <HelpTOCNode Title="Or Method (Query[])" Url="html/dc5e46ad-484c-ab81-9595-c9b15d79a204.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="Parse Method " Url="html/262753a8-da17-1c34-4091-b87f3c756cc4.htm" />
+        <HelpTOCNode Title="ToString Method " Url="html/4d06f734-e182-f3cb-2c18-8b3f665f7c14.htm" />
+        <HelpTOCNode Title="TryParseQueryOperator Method " Url="html/9d66c58e-7194-2ec2-0fa6-47b0d54919f7.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="Query.Operator Enumeration" Url="html/d4b0caa1-c53a-ee86-5d0b-e4065ca4e9fb.htm" />
+    <HelpTOCNode Id="4c694fe6-3cef-43cc-b1bc-398607fb4e8b" Title="RallyRestApi Class" Url="html/a256a81e-6dba-bafb-e2df-d1adbe1a36d2.htm">
+      <HelpTOCNode Title="RallyRestApi Constructor " Url="html/6cec43f6-9a02-6b50-9134-f6e2ee4641da.htm" />
+      <HelpTOCNode Id="8e3b6f4f-72a3-48b1-9f32-2b9dce80885a" Title="RallyRestApi Properties" Url="html/f7945598-3700-640c-126a-6264d6eb42f3.htm">
+        <HelpTOCNode Title="AuthenticationState Property " Url="html/22dad24e-f9c0-7783-dcc7-f8f8a02abb4e.htm" />
+        <HelpTOCNode Title="ConnectionInfo Property " Url="html/b72167bb-7ec9-48a5-3fe8-4a0cac94291d.htm" />
+        <HelpTOCNode Title="Headers Property " Url="html/f9a419d4-18b7-1f87-a674-d12f05f6af81.htm" />
+        <HelpTOCNode Title="WebServiceUrl Property " Url="html/008f6424-19b5-8562-4839-151b77e68897.htm" />
+        <HelpTOCNode Title="WsapiVersion Property " Url="html/c6fce864-d78d-6099-36ad-c92c565624e3.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="4b278bb7-3aa3-4f9f-ae7a-254d8e58adbe" Title="RallyRestApi Methods" Url="html/b470c5b6-3c09-cd27-f919-eba75a45d913.htm">
+        <HelpTOCNode Title="AddToCollection Method " Url="html/efed9f73-559a-3ef8-5cd7-e3039040c87d.htm" />
+        <HelpTOCNode Id="9a6ea041-fe08-438a-bfcb-c23960239bc1" Title="Authenticate Method " Url="html/57a5e336-c066-296b-b467-f5aa97ddd0de.htm">
+          <HelpTOCNode Title="Authenticate Method (String, String, String, WebProxy, Boolean)" Url="html/a9fbbb4c-1313-f980-b952-7cb569713a60.htm" />
+          <HelpTOCNode Title="Authenticate Method (String, String, Uri, WebProxy, Boolean)" Url="html/9128a04f-05ad-c0a0-7259-771705205d08.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="a665d5d5-35cd-495e-8d63-2daf0f0b081d" Title="AuthenticateWithApiKey Method " Url="html/efa39ace-e4cc-b916-5234-62377bca7bda.htm">
+          <HelpTOCNode Title="AuthenticateWithApiKey Method (String, String, WebProxy)" Url="html/58d966c5-71e8-9b86-55fb-1c28d304c6b6.htm" />
+          <HelpTOCNode Title="AuthenticateWithApiKey Method (String, Uri, WebProxy)" Url="html/10432d20-1eb4-2d65-8544-8520dd71cdb4.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="AuthenticateWithZSessionID Method " Url="html/199c5ab8-3432-9bf4-4eb8-cf58e837c4cf.htm" />
+        <HelpTOCNode Id="710663ab-957e-469c-bf58-86fdd897bc24" Title="Create Method " Url="html/76ab5430-a6c7-5148-13df-dd006c85f6f8.htm">
+          <HelpTOCNode Title="Create Method (String, DynamicJsonObject)" Url="html/6196fb27-a274-0a86-03f4-4fecc89a8a22.htm" />
+          <HelpTOCNode Title="Create Method (String, DynamicJsonObject, NameValueCollection)" Url="html/1ed8c970-1308-7e30-6039-fd33432bb5c1.htm" />
+          <HelpTOCNode Title="Create Method (String, String, DynamicJsonObject)" Url="html/3d71befa-b4d6-5cd0-25f2-8722c9fb897a.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="08cbf720-a21c-4521-8d53-39d7bc625b78" Title="Delete Method " Url="html/1794c03e-280d-1ef1-b78b-4e69359f22c4.htm">
+          <HelpTOCNode Title="Delete Method (String)" Url="html/7d5fa156-de31-ef92-5bd0-d9a6cc834408.htm" />
+          <HelpTOCNode Title="Delete Method (String, Int64)" Url="html/c024f971-287b-c2bf-5459-0452b380ad69.htm" />
+          <HelpTOCNode Title="Delete Method (String, String)" Url="html/9da8177f-dc54-394b-25a7-cf77dcd7f678.htm" />
+          <HelpTOCNode Title="Delete Method (String, String, Int64)" Url="html/c57ac87d-a8f9-7ef4-4b60-529f410a3211.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="DownloadAttachment Method " Url="html/43943c3f-3904-0743-c336-8f872140dc43.htm" />
+        <HelpTOCNode Title="GetAllowedAttributeValues Method " Url="html/a0e8abd1-451c-5e53-ea8a-c49faa20b802.htm" />
+        <HelpTOCNode Title="GetAttributesByType Method " Url="html/dbc3c330-bd96-0ce2-03da-d5aac778811c.htm" />
+        <HelpTOCNode Id="4c0632d6-ec17-4f88-9fd4-7ef865b61404" Title="GetByReference Method " Url="html/4de0dcb6-2be2-3eba-4cd7-5bb594f8b2e2.htm">
+          <HelpTOCNode Title="GetByReference Method (String, String[])" Url="html/d48a84d4-859f-67c9-584c-12f000a1fe9d.htm" />
+          <HelpTOCNode Title="GetByReference Method (String, Int64, String[])" Url="html/9555e935-3ceb-3d88-defb-5f4fc86b382d.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="GetByReferenceAndWorkspace Method " Url="html/1f856a6c-69dc-5950-05b8-cd48bcefb289.htm" />
+        <HelpTOCNode Title="GetCurrentUser Method " Url="html/b410b283-0f61-7be6-fabd-43c1985c7a56.htm" />
+        <HelpTOCNode Title="GetSubscription Method " Url="html/087391bf-87f9-2042-7456-508605d25391.htm" />
+        <HelpTOCNode Title="GetTypes Method " Url="html/15efbc97-c212-2301-b103-1459b6ed6b78.htm" />
+        <HelpTOCNode Title="Logout Method " Url="html/c2f904f6-fbfb-c003-500a-611b02a8fafb.htm" />
+        <HelpTOCNode Title="Post Method " Url="html/2a8ae8aa-a309-607b-153f-8f82170f919d.htm" />
+        <HelpTOCNode Title="Query Method " Url="html/79b7150e-27e3-4093-00bf-fce8a2630d98.htm" />
+        <HelpTOCNode Title="RemoveFromCollection Method " Url="html/2e1823f1-1d03-b78f-66d2-211ed9fcbd18.htm" />
+        <HelpTOCNode Title="SetDefaultConnectionLimit Method " Url="html/484045a3-7df3-39a4-cd32-4e05046e20d6.htm" />
+        <HelpTOCNode Id="813269e0-903d-4c97-b202-e39e9dc21ce1" Title="Update Method " Url="html/a219b765-536a-0bb2-bf21-a52ba578234e.htm">
+          <HelpTOCNode Title="Update Method (String, DynamicJsonObject)" Url="html/5403697b-4d9b-0f1a-db4e-9ff4235ef29d.htm" />
+          <HelpTOCNode Title="Update Method (String, DynamicJsonObject, NameValueCollection)" Url="html/d4b6c3f8-bfc9-7c39-9963-6a138569a3fc.htm" />
+          <HelpTOCNode Title="Update Method (String, String, DynamicJsonObject)" Url="html/a4b7a264-37c9-1514-3e1b-b7d16e18034c.htm" />
+          <HelpTOCNode Title="Update Method (String, String, DynamicJsonObject, NameValueCollection)" Url="html/47057c17-e7c6-4386-18ae-907698df2891.htm" />
+        </HelpTOCNode>
+      </HelpTOCNode>
+      <HelpTOCNode Id="1b166005-995f-43d6-b450-11986ddbd501" Title="RallyRestApi Fields" Url="html/41d14bd4-1f9b-434e-92a1-775c3fba2112.htm">
+        <HelpTOCNode Title="AUTH_ERROR Field" Url="html/c30a18a7-2c46-a75e-1bf1-5b7714e7f00f.htm" />
+        <HelpTOCNode Title="DEFAULT_SERVER Field" Url="html/c35f1ee2-802c-c8ab-14b2-5ba82250370b.htm" />
+        <HelpTOCNode Title="DEFAULT_WSAPI_VERSION Field" Url="html/7ee4a9d8-793f-eeb2-43c7-7643faf0f787.htm" />
+        <HelpTOCNode Title="SECURITY_ENDPOINT Field" Url="html/7df0649d-8f66-3e82-9952-4fc7c949552e.htm" />
+        <HelpTOCNode Title="ZSessionID Field" Url="html/f59ee6b8-808d-e15e-3b73-e69d98cefbfe.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="RallyRestApi.AuthenticationResult Enumeration" Url="html/3f54a5bb-34de-873c-5a9c-f4df152393c3.htm" />
+    <HelpTOCNode Title="RallyRestApi.HeaderType Enumeration" Url="html/df62da3c-3996-99b0-84ea-55364452efe4.htm" />
+    <HelpTOCNode Id="31d8ebf3-20c9-40ca-89a3-d05d0ae4bfac" Title="Ref Class" Url="html/284dcd68-287a-f2e9-4fc4-438e428b55f8.htm">
+      <HelpTOCNode Id="b5b85354-854a-48f4-b93c-20508d2d98c5" Title="Ref Methods" Url="html/247e89c1-6c2d-ed10-a657-348cc819f897.htm">
+        <HelpTOCNode Title="GetOidFromRef Method " Url="html/93394afd-935e-8cc2-708d-ced8644dd8ab.htm" />
+        <HelpTOCNode Title="GetRelativeRef Method " Url="html/55789b3e-ce6a-486f-5726-14453e78cda1.htm" />
+        <HelpTOCNode Title="GetTypeFromRef Method " Url="html/38a9d59b-f708-8df0-d7f5-3e88997a74d1.htm" />
+        <HelpTOCNode Title="IsRef Method " Url="html/436cc803-773e-c858-e95a-07fc44df798e.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="b6aa8978-f2db-4eb7-82b3-f4a6f3a823f4" Title="Request Class" Url="html/75313c54-2f8a-0603-703b-3632c09a4bc3.htm">
+      <HelpTOCNode Id="da4c4a41-f9ae-42bb-87d1-9330687782fa" Title="Request Constructor " Url="html/a4dbd8e4-e10a-f4b8-dce0-e230cd9af763.htm">
+        <HelpTOCNode Title="Request Constructor " Url="html/a5f594b8-d165-54ae-2b50-e4a590425376.htm" />
+        <HelpTOCNode Title="Request Constructor (String)" Url="html/6c1ae684-a47c-cedc-7b9a-bcbc3742b618.htm" />
+        <HelpTOCNode Title="Request Constructor (DynamicJsonObject)" Url="html/7ca29d5d-66ad-ec0f-0fa1-7a9604400e1e.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="042ecb39-3fe8-41b1-b01f-09da2a0af5e1" Title="Request Properties" Url="html/b9df2cc2-9bdb-affb-e062-a53e21bf2e52.htm">
+        <HelpTOCNode Title="ArtifactName Property " Url="html/e8adec23-f7fc-ad7b-10a7-1398e6215a95.htm" />
+        <HelpTOCNode Title="Fetch Property " Url="html/7f36d8b0-cc4c-b5f4-3e54-90bb036ac451.htm" />
+        <HelpTOCNode Title="Limit Property " Url="html/7ed4c691-4800-4028-6d1e-2315232e8e2f.htm" />
+        <HelpTOCNode Title="Order Property " Url="html/88f8bf93-8da2-8874-6beb-62a672139e8b.htm" />
+        <HelpTOCNode Title="PageSize Property " Url="html/b28f8aec-bcd6-b0bb-3fff-50bc8945634c.htm" />
+        <HelpTOCNode Title="Project Property " Url="html/e5e22f2a-c14b-ea8d-57fd-5fd59bf4bd46.htm" />
+        <HelpTOCNode Title="ProjectScopeDown Property " Url="html/ce18fb26-ffdc-a24b-ad69-56ff6add93a4.htm" />
+        <HelpTOCNode Title="ProjectScopeUp Property " Url="html/793598d6-7a9d-f683-7623-7747f8699f9c.htm" />
+        <HelpTOCNode Title="Query Property " Url="html/65752823-5025-890b-07c3-ceb950cda1a8.htm" />
+        <HelpTOCNode Title="Start Property " Url="html/a663bd58-110f-11d4-4a7d-0aaad3030b4a.htm" />
+        <HelpTOCNode Title="UseShallowFetch Property " Url="html/7386c832-37bf-3f63-9c18-9b604641fa14.htm" />
+        <HelpTOCNode Title="Workspace Property " Url="html/beb07c8f-70d7-b6cd-d43e-d34f5133dfea.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="08659662-0243-45ae-baee-d3766801cbf2" Title="Request Methods" Url="html/88e0e7df-8cfb-1d7f-2c78-fffbc187921f.htm">
+        <HelpTOCNode Title="AddParameter Method " Url="html/f97b880a-40f7-81ea-fc9a-8c1c4cf1a245.htm" />
+        <HelpTOCNode Title="Clone Method " Url="html/1858838b-00da-1d4a-0179-e1c8cdf57b53.htm" />
+        <HelpTOCNode Title="CreateFromUrl Method " Url="html/dd640806-f836-0376-dde4-a1b4baaab455.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="9ea377f9-dc95-47a5-a5e2-20ed5e1c6d96" Title="Request Fields" Url="html/c4c8aa63-51c1-8b0b-7935-6b25a430ff6d.htm">
+        <HelpTOCNode Title="MAX_PAGE_SIZE Field" Url="html/5f1e60f8-d703-3038-cc2e-5fef8ce781fd.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="23bdf95c-0b04-40d7-b46e-4b3a49e76286" Title="Rally.RestApi.Auth" Url="html/8cd3c0c5-48bd-d3a9-4a16-9577bade9e07.htm">
+    <HelpTOCNode Id="e6f5569e-fcc4-4059-8c20-cc1b4c64d8a1" Title="ApiAuthManager Class" Url="html/28855baf-4c96-79e7-b0d6-2d89f29ed37d.htm">
+      <HelpTOCNode Title="ApiAuthManager Constructor " Url="html/433bf9e0-bb9c-7f7b-8553-b143a4412bf0.htm" />
+      <HelpTOCNode Id="f50b0efa-efbb-4dc4-a0ac-198ac4a3df1c" Title="ApiAuthManager Properties" Url="html/0c37c76e-c638-e87c-af27-fcb3bb92e87d.htm">
+        <HelpTOCNode Title="Api Property " Url="html/16b9d0fe-e33b-db7f-15dd-7a549acd73c6.htm" />
+        <HelpTOCNode Title="AuthenticationStateChange Property " Url="html/44f0a3c5-cf29-2e24-4b91-3d068b1f9c9d.htm" />
+        <HelpTOCNode Title="IsUiSupported Property " Url="html/76469818-193e-9879-7b28-224598e84187.htm" />
+        <HelpTOCNode Title="LoginDetails Property " Url="html/27b26313-7d87-f58d-71b6-6cfff94ca391.htm" />
+        <HelpTOCNode Title="LoginFailureBadConnection Property " Url="html/85a62196-cd23-d3ed-ccb0-2f2a7eaf72ba.htm" />
+        <HelpTOCNode Title="LoginFailureBadServer Property " Url="html/9f0905d6-b1b6-4ad5-553f-f9a8467b3b25.htm" />
+        <HelpTOCNode Title="LoginFailureCredentials Property " Url="html/5707718d-8645-1e1a-3330-df7230cce76d.htm" />
+        <HelpTOCNode Title="LoginFailureLoginEmpty Property " Url="html/d7a7ced3-766b-6484-7e1f-fbfd544bf63b.htm" />
+        <HelpTOCNode Title="LoginFailureProxyCredentials Property " Url="html/82c50c50-5c59-5c3c-0aa2-2b889d6fd8b7.htm" />
+        <HelpTOCNode Title="LoginFailureServerEmpty Property " Url="html/715b1954-ddaf-3e3a-1f48-06b8024eef31.htm" />
+        <HelpTOCNode Title="LoginFailureUnknown Property " Url="html/ff73f47a-f3f1-bae6-4c7d-e177377210ea.htm" />
+        <HelpTOCNode Title="LoginWindowCancelText Property " Url="html/5f0198af-f04a-5900-9832-faa7e2964761.htm" />
+        <HelpTOCNode Title="LoginWindowConnectionTypeText Property " Url="html/246e9a68-0d78-f8f9-8ed0-c92b70f0005f.htm" />
+        <HelpTOCNode Title="LoginWindowCredentialsTabText Property " Url="html/80b95669-fd13-92c2-edeb-fa6eec8cb5f7.htm" />
+        <HelpTOCNode Title="LoginWindowDefaultProxyServer Property " Url="html/99ccd9e6-f038-84c2-1e51-d63bae9c10f0.htm" />
+        <HelpTOCNode Title="LoginWindowDefaultServer Property " Url="html/0bcc1316-6947-e50c-9e18-dce80721ca22.htm" />
+        <HelpTOCNode Title="LoginWindowHeaderLabelText Property " Url="html/9072afac-795b-10ae-34c3-bd1f01f14358.htm" />
+        <HelpTOCNode Title="LoginWindowLoginText Property " Url="html/7bfda5a3-71e3-2c12-c7a6-d661d9601d2d.htm" />
+        <HelpTOCNode Title="LoginWindowLogoutText Property " Url="html/c6f9f7da-306c-9a0f-a3d5-9cd49f402124.htm" />
+        <HelpTOCNode Title="LoginWindowProxyPwdLabelText Property " Url="html/361fe85d-f470-2143-3815-a357da6c1067.htm" />
+        <HelpTOCNode Title="LoginWindowProxyServerLabelText Property " Url="html/c5416a71-a57d-c7f1-33b8-1baf836b8ffe.htm" />
+        <HelpTOCNode Title="LoginWindowProxyServerTabText Property " Url="html/95cfc8c2-600d-4d81-785a-cb050ad8619d.htm" />
+        <HelpTOCNode Title="LoginWindowProxyUserNameLabelText Property " Url="html/e2aeaeee-c342-b786-125b-15ebb5fc8503.htm" />
+        <HelpTOCNode Title="LoginWindowPwdLabelText Property " Url="html/dfda7902-1f6c-f2ca-1da9-dd5aecdaf970.htm" />
+        <HelpTOCNode Title="LoginWindowRallyServerTabText Property " Url="html/4faea12c-67a6-7036-822a-58c1ee0225e8.htm" />
+        <HelpTOCNode Title="LoginWindowServerLabelText Property " Url="html/be2259c4-ff9f-d4ee-c323-873e5509c31b.htm" />
+        <HelpTOCNode Title="LoginWindowSsoInProgressText Property " Url="html/3e4f9e99-c1dc-0fb8-ee8a-f96bb8f02413.htm" />
+        <HelpTOCNode Title="LoginWindowTitle Property " Url="html/6e76e6e7-cd45-42ed-1805-b91ac0b25f8c.htm" />
+        <HelpTOCNode Title="LoginWindowTrustAllCertificatesText Property " Url="html/3f01a8d3-3a83-2393-b2af-a55e0aee8693.htm" />
+        <HelpTOCNode Title="LoginWindowUserNameLabelText Property " Url="html/e0317c2a-1c1e-e0c5-9e4b-e8d02d635c8f.htm" />
+        <HelpTOCNode Title="SsoAuthenticationComplete Property " Url="html/7f5a00e9-34e5-1c82-7ab5-09e7719db055.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="8e2e23e9-386a-49c5-ad50-ce7275a09a84" Title="ApiAuthManager Methods" Url="html/21bdc529-2c6d-e801-9480-a89481343e65.htm">
+        <HelpTOCNode Title="AutoAuthenticate Method " Url="html/19efadf5-3db2-1c6a-08bc-c888c112a347.htm" />
+        <HelpTOCNode Title="Configure Method " Url="html/9be4c505-717f-19a7-41b0-14b6a2fc09f6.htm" />
+        <HelpTOCNode Title="DeleteCachedLoginDetailsFromDisk Method " Url="html/3fe3333a-ac60-a43f-e213-0ff8266ba62b.htm" />
+        <HelpTOCNode Title="NotifyLoginWindowSsoComplete Method " Url="html/eb3b5aee-40c3-6771-9519-c5a5175764b7.htm" />
+        <HelpTOCNode Title="OpenSsoPageInternal Method " Url="html/db7874dc-06cb-a601-9be8-bd64777ab53e.htm" />
+        <HelpTOCNode Title="PerformAuthenticationCheck Method " Url="html/75f86e06-f927-957b-4d58-6c7b4986ee50.htm" />
+        <HelpTOCNode Title="PerformLogoutFromRally Method " Url="html/12b37305-e3fc-cf60-e21f-89c83d677a5a.htm" />
+        <HelpTOCNode Title="ReportSsoResults Method " Url="html/d91d9a69-0bea-4b49-ac2c-ed7912538bab.htm" />
+        <HelpTOCNode Title="ShowUserLoginWindow Method " Url="html/ebfccaef-d809-ac31-01c1-db3b5a3fe58c.htm" />
+        <HelpTOCNode Title="ShowUserLoginWindowInternal Method " Url="html/c57d080e-b11a-5ec3-a894-bc7e2e56941d.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="0a225046-1195-48e1-ae41-0431e7f5f2f5" Title="ApiConsoleAuthManager Class" Url="html/1681077c-972e-bc54-3a12-e8ea4432246a.htm">
+      <HelpTOCNode Title="ApiConsoleAuthManager Constructor " Url="html/b31a3de9-f7b1-8f7c-68e6-086defd395de.htm" />
+      <HelpTOCNode Title="ApiConsoleAuthManager Properties" Url="html/ce62723a-27b9-7e55-909b-9848256f0fc0.htm" />
+      <HelpTOCNode Id="5acfccc5-74ff-423d-8af8-4d3bca3e9ef7" Title="ApiConsoleAuthManager Methods" Url="html/79850bb8-8b81-5fbb-cb43-4b39da6601d2.htm">
+        <HelpTOCNode Title="NotifyLoginWindowSsoComplete Method " Url="html/eb2fe118-b811-9ddf-c664-9763c2cca8b3.htm" />
+        <HelpTOCNode Title="OpenSsoPageInternal Method " Url="html/df51c3d2-0e49-bf6d-28d5-3c46605814a0.htm" />
+        <HelpTOCNode Title="ShowUserLoginWindowInternal Method " Url="html/9a94728a-7876-8f7a-4c98-10a27b0bee90.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="AuthenticationStateChange Delegate" Url="html/47e99454-ca46-7d29-0e05-c5cee591cc47.htm" />
+    <HelpTOCNode Id="4583e61b-02c7-411c-8bf3-fd43a441c923" Title="IEncryptionRoutines Interface" Url="html/3d2fdd60-722e-687d-0979-db0ab4d7913d.htm">
+      <HelpTOCNode Id="26e4d485-a431-431e-ba4e-14659693a61f" Title="IEncryptionRoutines Methods" Url="html/594d4ef2-690b-6faf-08f7-b43502322b66.htm">
+        <HelpTOCNode Title="DecryptString Method " Url="html/047403b7-3dbe-95d6-51ef-33f3b3288c43.htm" />
+        <HelpTOCNode Title="EncryptString Method " Url="html/bc2d53ff-e32b-1fd9-4932-36fbf2455b44.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="85562a1a-948d-44ed-81a0-646b6a01e881" Title="LoginDetails Class" Url="html/58f837d2-9685-3b4c-03c1-e860cb291f2b.htm">
+      <HelpTOCNode Title="LoginDetails Constructor " Url="html/79143700-70de-85a2-0134-f2cf39be48da.htm" />
+      <HelpTOCNode Id="b063b4ef-2665-4b7b-8013-6547a3fee55a" Title="LoginDetails Properties" Url="html/b2a48d38-0d7a-a464-02e9-cf39b6db0d71.htm">
+        <HelpTOCNode Title="ConnectionType Property " Url="html/0d53b497-9030-64ae-bd05-2964b99ab6d1.htm" />
+        <HelpTOCNode Title="IdpServer Property " Url="html/d412385d-9796-4ccf-c7ac-6c1163ceda0c.htm" />
+        <HelpTOCNode Title="ProxyServer Property " Url="html/b8165d74-939f-bf42-f8c5-48adf618b902.htm" />
+        <HelpTOCNode Title="ProxyUsername Property " Url="html/1ef8e42e-fdb7-6fdb-9196-bb3d1745842b.htm" />
+        <HelpTOCNode Title="RallyServer Property " Url="html/6c3bac14-4307-421a-306d-d00d1746dd95.htm" />
+        <HelpTOCNode Title="TrustAllCertificates Property " Url="html/9e120500-e8bb-1d3d-a5ef-3e1998912c79.htm" />
+        <HelpTOCNode Title="Username Property " Url="html/e1541bd8-9d99-3a1c-a82c-90f977a19218.htm" />
+        <HelpTOCNode Title="ZSessionID Property " Url="html/218cfacf-51bd-d9d2-cdbd-8a63b93d3001.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="6b2b7290-24d2-4887-abbc-daeccf82446d" Title="LoginDetails Methods" Url="html/cdc29ce0-cd8f-c3c0-04c9-62807ca1913b.htm">
+        <HelpTOCNode Title="GetPassword Method " Url="html/87d7ad79-96e8-6b8e-6a3f-b65f2f34cbc2.htm" />
+        <HelpTOCNode Title="GetProxyPassword Method " Url="html/def40926-8454-7758-c001-28c24684db40.htm" />
+        <HelpTOCNode Title="SetPassword Method " Url="html/f4867ade-e1fe-a33f-2b5a-6d9b8cf2471e.htm" />
+        <HelpTOCNode Title="SetProxyPassword Method " Url="html/a3b8cc83-3039-3d93-eef1-414aff03a3ae.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="SsoAuthenticationComplete Delegate" Url="html/6eba8d67-7b6f-449c-3f69-b7d0eca7e945.htm" />
+  </HelpTOCNode>
+  <HelpTOCNode Id="cb33a767-06fa-45fd-9eb4-e79d64f62413" Title="Rally.RestApi.Connection" Url="html/c86c7537-ead1-0d67-e15e-e78cebd00f60.htm">
+    <HelpTOCNode Title="AuthorizationType Enumeration" Url="html/7ad2d9b6-858c-a780-5d6c-dc7a6191de57.htm" />
+    <HelpTOCNode Id="7fd5580c-ef28-4490-a089-6e5e0c4b96ca" Title="ConnectionInfo Class" Url="html/ecbc349e-aab0-1d1a-60a8-e4172fc6ce37.htm">
+      <HelpTOCNode Title="ConnectionInfo Constructor " Url="html/7dfd9994-5c21-203d-fde0-52e03f6503da.htm" />
+      <HelpTOCNode Id="9b265ddf-1cf0-498d-8e66-bd64e9724e57" Title="ConnectionInfo Properties" Url="html/301da60c-81f1-174f-d85f-65eeb4e209fd.htm">
+        <HelpTOCNode Title="ApiKey Property " Url="html/4c988fbb-3afa-c36f-1503-b628c95c73bf.htm" />
+        <HelpTOCNode Title="AuthType Property " Url="html/0ae0fd95-ce34-66cc-f8c7-a4bea0d21963.htm" />
+        <HelpTOCNode Title="IdpServer Property " Url="html/afadbbd5-5524-34d3-102d-6780092eb702.htm" />
+        <HelpTOCNode Title="Password Property " Url="html/a757880f-c5bd-71d7-f3c6-803b334ad4fd.htm" />
+        <HelpTOCNode Title="Port Property " Url="html/f6163f40-9ad5-c4ae-0157-d7b2699d845a.htm" />
+        <HelpTOCNode Title="Proxy Property " Url="html/d20300ac-8388-bfb3-cab8-64cf58bd21fd.htm" />
+        <HelpTOCNode Title="SecurityToken Property " Url="html/0dfc5392-5379-04a5-fa0d-720dee9b0f94.htm" />
+        <HelpTOCNode Title="Server Property " Url="html/23203965-c725-ea17-afbe-b6c00eb25779.htm" />
+        <HelpTOCNode Title="UserName Property " Url="html/7e54a1c5-becb-3c19-b111-1417dd585e2c.htm" />
+        <HelpTOCNode Title="ZSessionID Property " Url="html/3ac21eee-ee00-13d8-1b98-ae7736140fab.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="ConnectionInfo Methods" Url="html/cb6fd53c-7fca-a466-f643-b224669da52f.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Title="ConnectionType Enumeration" Url="html/8c1c4028-1c02-135c-a497-7becc70faa91.htm" />
+  </HelpTOCNode>
+  <HelpTOCNode Id="5bc4c817-3cca-42a6-92d7-33cb2f38efd5" Title="Rally.RestApi.Exceptions" Url="html/54eede4f-c631-3767-b5a1-55056f82e9c3.htm">
+    <HelpTOCNode Id="2b9c4b2e-720c-496b-8954-839379c4de37" Title="RallyFailedToDeserializeJson Class" Url="html/811a980a-86eb-a606-11ca-e3ff8d003c48.htm">
+      <HelpTOCNode Id="9c67b145-ee09-4416-a8d5-31ce73b713ad" Title="RallyFailedToDeserializeJson Properties" Url="html/550b8a25-aa97-cf1c-343a-b1b1cad65d0e.htm">
+        <HelpTOCNode Title="JsonData Property " Url="html/e7993f3d-c5f7-69f2-7fea-369b0d3568ea.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="RallyFailedToDeserializeJson Methods" Url="html/e7fa6db4-c0a6-a38d-7054-11455f11eb2c.htm" />
+      <HelpTOCNode Title="RallyFailedToDeserializeJson Events" Url="html/4fb75419-698a-8947-b62b-298434472691.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="b28accd5-1bd6-43cf-bb4e-fc4f294494d5" Title="RallyUnavailableException Class" Url="html/0fcf28d1-bd8f-9e7b-c93d-12dfe227c006.htm">
+      <HelpTOCNode Id="b6375202-77bd-45b0-a56b-50cc4380852c" Title="RallyUnavailableException Properties" Url="html/947d93d9-79e5-fbfc-baa4-daf168811d1c.htm">
+        <HelpTOCNode Title="ErrorMessage Property " Url="html/f17b91a0-48da-93b9-9e36-b44fece05622.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="RallyUnavailableException Methods" Url="html/f0b02209-7e34-6558-99ee-508c723000ea.htm" />
+      <HelpTOCNode Title="RallyUnavailableException Events" Url="html/5f197c06-079b-02f0-d332-e6c258857683.htm" />
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="ad8edd96-3f9a-49ed-9c5b-9389b5750953" Title="Rally.RestApi.Json" Url="html/93c00c4e-3dee-68cd-40e7-eb24425edf55.htm">
+    <HelpTOCNode Id="ce8828c0-e1c9-485d-ae84-cd1018ba4f08" Title="DynamicJsonObject Class" Url="html/6fa4730e-44b9-c371-b929-55a3e7c0459e.htm">
+      <HelpTOCNode Id="37e66042-1754-408d-b512-595fd02f7fe8" Title="DynamicJsonObject Constructor " Url="html/b580a465-8baa-e7cb-c2e6-c9f049c80c9c.htm">
+        <HelpTOCNode Title="DynamicJsonObject Constructor " Url="html/45f699be-97c1-17a9-d907-7043d711cc93.htm" />
+        <HelpTOCNode Title="DynamicJsonObject Constructor (IDictionary(String, Object))" Url="html/3c6cb2c4-bb8d-0fb1-7d9a-fe9eb4b247f2.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="093bfc10-7b3d-4e7f-8386-2fe76789780f" Title="DynamicJsonObject Properties" Url="html/9d938e24-78a2-d28d-1c45-553bd52def74.htm">
+        <HelpTOCNode Title="Fields Property " Url="html/02dd306c-3159-6e51-ff51-2296eed53d6a.htm" />
+        <HelpTOCNode Title="Item Property " Url="html/7ac36d5b-76d7-c671-aaa4-0ce6f60222ac.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="481d9cf9-3cfb-4102-995f-cd5a2c1d6fd8" Title="DynamicJsonObject Methods" Url="html/d60181dc-e19e-165c-6dea-6895265dd35e.htm">
+        <HelpTOCNode Title="Equals Method " Url="html/4344105d-2250-2ee0-fbff-6a3fed364661.htm" />
+        <HelpTOCNode Title="GetHashCode Method " Url="html/0974f91a-320d-93a4-7315-ab661aa47b22.htm" />
+        <HelpTOCNode Title="HasMember Method " Url="html/c9e8ae88-f76c-2d9b-51f3-c1b4ac41e392.htm" />
+        <HelpTOCNode Title="IsNumeric Method " Url="html/bf9c4053-f491-0a25-8e95-948aaf18025d.htm" />
+        <HelpTOCNode Title="ToDictionary Method " Url="html/7798c376-55d4-7c06-b905-83e950959426.htm" />
+        <HelpTOCNode Title="TryGetMember Method " Url="html/8fb13287-6255-60d6-49c5-6f3ff977435d.htm" />
+        <HelpTOCNode Title="TrySetMember Method " Url="html/8ced58bf-e314-a1f7-5d80-2463783c00e2.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="f5acf401-2483-49de-a3be-aed83f6abf07" Title="Rally.RestApi.Response" Url="html/9251e14e-6a86-5416-c737-ad96dc44cd32.htm">
+    <HelpTOCNode Id="79719365-92f5-4b50-8a50-692d36281a42" Title="AttachmentResult Class" Url="html/c2c92d6f-4927-d9f7-ac21-37a068abca07.htm">
+      <HelpTOCNode Id="fe6aa265-bf95-474a-a66f-72f04cf71d3e" Title="AttachmentResult Properties" Url="html/e8d67557-fbc0-7009-53a6-683551baff59.htm">
+        <HelpTOCNode Title="FileContents Property " Url="html/d6283627-775b-04c3-70a4-5c2e8578c239.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="AttachmentResult Methods" Url="html/7056c559-36b6-8ac0-abb4-637162e0d177.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="68c66ebe-25fc-41ac-8ece-dd99d9b35693" Title="CacheableQueryResult Class" Url="html/0d22c44e-6cc6-26d6-79f1-78597f152428.htm">
+      <HelpTOCNode Title="CacheableQueryResult Constructor " Url="html/21e1104b-891a-d576-1f20-53903cac1212.htm" />
+      <HelpTOCNode Id="b5db4499-ff80-4795-b3a6-44f011d11fef" Title="CacheableQueryResult Properties" Url="html/efdb53dd-cbef-4b76-befe-5f381f54dd4c.htm">
+        <HelpTOCNode Title="IsCachedResult Property " Url="html/7d7a78e4-3727-5f43-b15d-5c2fc51f0b1c.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="CacheableQueryResult Methods" Url="html/0efc161e-72d3-9bd4-03e1-07b0294589b0.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="0eacc34b-65cb-45c6-be0f-938cb49d1c6e" Title="CreateResult Class" Url="html/a47fe975-9f04-86ab-9a38-a8bbbc51ce13.htm">
+      <HelpTOCNode Title="CreateResult Constructor " Url="html/e37dc706-cd26-c113-1b56-5a4503ab74c5.htm" />
+      <HelpTOCNode Id="f2005fab-8933-4f40-a1f3-7643513d75ee" Title="CreateResult Properties" Url="html/c22538ad-fc94-41d6-c63c-9a893e2a69ee.htm">
+        <HelpTOCNode Title="Reference Property " Url="html/bb92d19c-0208-82cd-ad7d-c6984780a1f6.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="CreateResult Methods" Url="html/5af834df-6315-5530-cd51-664df0cfd38c.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="9eae6f40-a896-47f8-9dfb-d93897d80dae" Title="OperationResult Class" Url="html/fdf5cc41-31df-174a-87d1-94dd4c5c3312.htm">
+      <HelpTOCNode Title="OperationResult Constructor " Url="html/a265a26d-8aa6-5b4f-43eb-283d44eac49b.htm" />
+      <HelpTOCNode Id="28dc93b1-2b86-4163-8faf-586d1eda2529" Title="OperationResult Properties" Url="html/99cb0960-d836-a8f0-3fa8-0162fa3c98b0.htm">
+        <HelpTOCNode Title="Errors Property " Url="html/d7b7608c-1df4-533d-e9bb-64ff3a7dd057.htm" />
+        <HelpTOCNode Title="Object Property " Url="html/fe60557b-efbd-d0c4-d8e6-1840304c5055.htm" />
+        <HelpTOCNode Title="Results Property " Url="html/f56753b5-1482-56c7-37db-c69f1f34861f.htm" />
+        <HelpTOCNode Title="Success Property " Url="html/c0a91e7c-ffc4-d314-36c5-b9ffc0ad8b2d.htm" />
+        <HelpTOCNode Title="Warnings Property " Url="html/ae4bce27-974a-fe54-886e-13c67fa2cc90.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="OperationResult Methods" Url="html/9845b527-10b9-f1a3-bc20-f425cc155e85.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="3ad3868b-3e85-4488-bd1f-91b2705f0ca8" Title="QueryResult Class" Url="html/26039c96-b399-978d-5b3a-f515e2bdd0dd.htm">
+      <HelpTOCNode Title="QueryResult Constructor " Url="html/d2c5ca4b-21c2-e404-5d57-667bf9787f72.htm" />
+      <HelpTOCNode Id="58d19f93-51d9-482b-9b02-f54193b6cae7" Title="QueryResult Properties" Url="html/340cdf63-b59d-2ae9-c59d-93e5a32e21f6.htm">
+        <HelpTOCNode Title="Results Property " Url="html/4e7c09a4-9881-c84e-b61f-d978e06cf5ac.htm" />
+        <HelpTOCNode Title="StartIndex Property " Url="html/cdf118a4-a9ea-1804-bdfd-eb842a8a4e0f.htm" />
+        <HelpTOCNode Title="TotalResultCount Property " Url="html/ad2b550f-eaaa-6a1f-04ce-f91d6cef11e1.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="QueryResult Methods" Url="html/f6fc3948-96fc-af8e-bbf5-b3c6d8fa1a1c.htm" />
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="cfe69966-0003-4564-a5e4-7d9361da5057" Title="Rally.RestApi.UiForWinforms" Url="html/8499e6ce-0e71-6421-5dcd-8f6714a4f1ea.htm">
+    <HelpTOCNode Id="d6852cc6-ba3c-4dcd-8a7c-3c2f8e9b46a4" Title="RestApiAuthMgrWinforms Class" Url="html/70964b1c-6b84-4870-006e-c2ce9f6531e8.htm">
+      <HelpTOCNode Title="RestApiAuthMgrWinforms Constructor " Url="html/81ab3c8c-37d8-d1ba-30d0-28752dc0d528.htm" />
+      <HelpTOCNode Title="RestApiAuthMgrWinforms Properties" Url="html/57ee8d66-c259-61e3-0ef4-ddaad9351f76.htm" />
+      <HelpTOCNode Id="6b770bcc-5f14-4a8d-a05c-4c1d2cbd9c46" Title="RestApiAuthMgrWinforms Methods" Url="html/5a217655-f15a-2948-6e07-4b1d8d314625.htm">
+        <HelpTOCNode Title="NotifyLoginWindowSsoComplete Method " Url="html/67f01b89-770c-6697-10b8-57813a15c0fb.htm" />
+        <HelpTOCNode Title="OpenSsoPageInternal Method " Url="html/1355a5a7-5de5-4831-66a7-607f07c9c25d.htm" />
+        <HelpTOCNode Title="SetLogo Method " Url="html/fe77f3b6-08af-df41-c011-75ae03c681ab.htm" />
+        <HelpTOCNode Title="ShowUserLoginWindowInternal Method " Url="html/57f35165-c0ff-e434-5bb1-b133fbd2322a.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="9a02d86c-e7fe-408d-b237-ad29c38c4bd4" Title="Rally.RestApi.UiForWpf" Url="html/ab65ea12-03cb-7835-66e2-22f69c048f89.htm">
+    <HelpTOCNode Title="CustomWpfControlType Enumeration" Url="html/af235596-d3fb-8e2c-e0de-bc5aaa2183d9.htm" />
+    <HelpTOCNode Id="bf5062d8-9588-4d5c-8374-5b8d67ea72be" Title="RestApiAuthMgrWpf Class" Url="html/4ccefc1c-c4e2-c2c5-7094-a5a79862f56d.htm">
+      <HelpTOCNode Title="RestApiAuthMgrWpf Constructor " Url="html/11e49309-348e-c30b-1cdf-914c9c3cedbf.htm" />
+      <HelpTOCNode Id="975501c3-5241-426c-aff6-27bef8e37375" Title="RestApiAuthMgrWpf Properties" Url="html/13268cac-a6d6-263f-c732-0340a8b22266.htm">
+        <HelpTOCNode Title="AllowIdpBasedSso Property " Url="html/08493176-50a3-48fd-82ec-4a99214fc1a0.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="51971800-b4fb-4f27-8557-e24718fe185a" Title="RestApiAuthMgrWpf Methods" Url="html/92251653-c6b5-0db2-4eb1-c03a02c37d15.htm">
+        <HelpTOCNode Title="NotifyLoginWindowSsoComplete Method " Url="html/4f7e6b44-ec51-71c2-78bc-6f0a8bc83a9a.htm" />
+        <HelpTOCNode Title="OpenSsoPageInternal Method " Url="html/9bfc5515-6628-7d6c-9c19-57c2ebc7fe5b.htm" />
+        <HelpTOCNode Title="SetCustomControlType Method " Url="html/cc00d7e1-8a60-3878-98ef-eced67a6ee0d.htm" />
+        <HelpTOCNode Title="SetLogo Method " Url="html/110cb865-ea22-eae9-c1fa-cce1982a3071.htm" />
+        <HelpTOCNode Title="ShowUserLoginWindowInternal Method " Url="html/928ba368-be5c-8b47-c320-ac27ea1edfe8.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="d2d07da9-d20d-4306-9cf3-33de82063344" Title="RestApiAuthMgrWpf Events" Url="html/6be1dfe8-0166-00ad-6149-93f6e6ca7514.htm">
+        <HelpTOCNode Title="WindowStateChanged Event" Url="html/9d31cfa3-331c-ebf5-8fd6-2a5acc8b3b22.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="WindowStateChangedEvent Delegate" Url="html/a51a84e2-692f-6b4c-0a08-b3ef65bc4eba.htm" />
+    <HelpTOCNode Title="WindowStateOption Enumeration" Url="html/07253657-3bc7-87d3-8234-2ba9c879ee53.htm" />
+    <HelpTOCNode Title="WindowTypeOption Enumeration" Url="html/f2e1337e-efb5-5283-724c-f4fbab735dc5.htm" />
+  </HelpTOCNode>
+</HelpTOC>
