@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CA Agile Central Rest API for .NET")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A .Net 4.0 Toolkit for Accessing CA Agile Central's Webservice API")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("CA Technologies")]
 [assembly: AssemblyProduct("CA Agile Central Rest API for .NET")]

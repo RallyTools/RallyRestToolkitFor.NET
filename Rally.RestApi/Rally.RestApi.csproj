@@ -112,6 +112,7 @@
     </None>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Rally.RestApi.nuspec" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
