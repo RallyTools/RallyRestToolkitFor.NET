@@ -123,7 +123,7 @@ namespace Rally.RestApi.Test
             Assert.AreEqual(dynamicJson["Name"], testDefect.Name);
             
 			// Now delete it
-			TestHelperDeleteDefect(restApi, response.Reference);
+			TestHelperDeleteItem(restApi, response.Reference);
 		}
 
 		[TestMethod]
@@ -164,6 +164,9 @@ namespace Rally.RestApi.Test
             Assert.IsTrue(result.Success);
             Assert.AreEqual(1, result.Results.Count);
             Assert.IsNotNull(result.Results[0]["FormattedID"]);
+
+            // Now delete it
+            TestHelperDeleteItem(restApi, itemRef);
         }
 
         [TestMethod]
@@ -177,15 +180,22 @@ namespace Rally.RestApi.Test
             newDefect["Name"] = "New Defect Added via collection";
             newDefect["Requirement"] = itemRef;
             CreateResult newTaskResult = restApi.Create("defect", newDefect);
+
             DynamicJsonObject story = restApi.GetByReference(itemRef, "Defects");
             Assert.AreEqual(1, story["Defects"]["Count"]);
+
             DynamicJsonObject taskToRemove = new DynamicJsonObject();
             taskToRemove["_ref"] = newTaskResult.Reference;
             OperationResult result = restApi.RemoveFromCollection(itemRef, "Defects", new List<DynamicJsonObject>() { taskToRemove }, new NameValueCollection());
+
             Assert.IsTrue(result.Success);
             Assert.AreEqual(0, result.Results.Count);
             story = restApi.GetByReference(itemRef, "Defects");
             Assert.AreEqual(0, story["Defects"]["Count"]);
+
+            // Now delete the defect and story
+            TestHelperDeleteItem(restApi, newTaskResult.Reference);
+            TestHelperDeleteItem(restApi, itemRef);
         }
 
         [TestMethod]
@@ -241,7 +251,7 @@ namespace Rally.RestApi.Test
 			Assert.AreEqual(dynamicJson["Name"], updateDefect.Name);
 
 			// Now delete it
-			TestHelperDeleteDefect(restApi, defect);
+			TestHelperDeleteItem(restApi, defect);
 		}
 
 		private string TestHelperCreateDefect(RallyRestApi restApi, bool includeFullData = false)
@@ -261,11 +271,11 @@ namespace Rally.RestApi.Test
 			return response.Reference;
 		}
 
-		private void TestHelperDeleteDefect(RallyRestApi restApi, string reference)
+		private void TestHelperDeleteItem(RallyRestApi restApi, string reference)
 		{
 			OperationResult deleteResponse = restApi.Delete(Ref.GetRelativeRef(reference));
-			dynamic testDefectEmpty = restApi.GetByReference(reference);
-			Assert.IsNull(testDefectEmpty);
+			dynamic testEmpty = restApi.GetByReference(reference);
+			Assert.IsNull(testEmpty);
 		}
 
 		[TestMethod]
@@ -281,7 +291,7 @@ namespace Rally.RestApi.Test
 			Assert.AreEqual(defectOid, response.ObjectID.ToString());
 
 			// Now delete it
-			TestHelperDeleteDefect(restApi, defect);
+			TestHelperDeleteItem(restApi, defect);
 		}
 
 		[TestMethod]
