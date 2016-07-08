@@ -11,9 +11,14 @@ namespace Rally.RestApi.Response
 	public class OperationResult
 	{
 		/// <summary>
-		/// The object created
+		/// The object manipulated.  This will be populated for creates and updates.
 		/// </summary>
 		public DynamicJsonObject Object { get; set; }
+
+        /// <summary>
+        /// The objects manipulated.  This will be populated for collection adds.
+        /// </summary>
+        public List<DynamicJsonObject> Results { get; internal set; }
 
 		/// <summary>
 		/// A list of any errors that occurred during the request
@@ -38,6 +43,7 @@ namespace Rally.RestApi.Response
 		{
 			Errors = new List<string>();
 			Warnings = new List<string>();
+            Results = new List<DynamicJsonObject>();
 		}
 	}
 }

@@ -9,6 +9,7 @@ using Rally.RestApi.Response;
 using Rally.RestApi.Test.Properties;
 using Rally.RestApi.Connection;
 using Rally.RestApi.Json;
+using System.Collections.Specialized;
 
 namespace Rally.RestApi.Test
 {
@@ -115,13 +116,11 @@ namespace Rally.RestApi.Test
 
 		private void AssertCanCreate(RallyRestApi restApi)
 		{
-			var dynamicJson = new DynamicJsonObject();
-			dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
-			CreateResult response = restApi.Create("defect", dynamicJson);
+            CreateResult response = CreateDefect(restApi);
 			Assert.AreEqual(0, response.Errors.Count);
 			Assert.IsTrue(response.Reference.ToLower().Contains("defect"));
 			dynamic testDefect = restApi.GetByReference(response.Reference);
-			Assert.AreEqual(dynamicJson["Name"], testDefect.Name);
+			Assert.AreEqual("C# Json Rest Toolkit Test Defect", testDefect.Name);
 			defectOid = Ref.GetOidFromRef(response.Reference);
 		}
 
@@ -150,7 +149,44 @@ namespace Rally.RestApi.Test
 			Assert.IsFalse(creationResult.Success);
 		}
 
-		[TestMethod]
+        [TestMethod]
+        public void AddToCollection2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            var itemRef = CreateDefect(restApi).Reference;
+            DynamicJsonObject newTask = new DynamicJsonObject();
+            newTask["Name"] = "New Task Added via collection";
+            NameValueCollection parameters = new NameValueCollection();
+            parameters.Add("fetch", "FormattedID");
+            OperationResult result = restApi.AddToCollection(itemRef, "Tasks", new List<DynamicJsonObject>() { newTask }, parameters);
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(1, result.Results.Count);
+            Assert.IsNotNull(result.Results[0]["FormattedID"]);
+        }
+
+        [TestMethod]
+        public void RemoveFromCollection2x()
+        {
+            RallyRestApi restApi = GetRallyRestApi2x();
+            DynamicJsonObject newStory = new DynamicJsonObject();
+            newStory["Name"] = "Test Story";
+            var itemRef = restApi.Create("hierarchicalrequirement", newStory).Reference;
+            DynamicJsonObject newDefect = new DynamicJsonObject();
+            newDefect["Name"] = "New Defect Added via collection";
+            newDefect["Requirement"] = itemRef;
+            CreateResult newTaskResult = restApi.Create("defect", newDefect);
+            DynamicJsonObject story = restApi.GetByReference(itemRef, "Defects");
+            Assert.AreEqual(1, story["Defects"]["Count"]);
+            DynamicJsonObject taskToRemove = new DynamicJsonObject();
+            taskToRemove["_ref"] = newTaskResult.Reference;
+            OperationResult result = restApi.RemoveFromCollection(itemRef, "Defects", new List<DynamicJsonObject>() { taskToRemove }, new NameValueCollection());
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(0, result.Results.Count);
+            story = restApi.GetByReference(itemRef, "Defects");
+            Assert.AreEqual(0, story["Defects"]["Count"]);
+        }
+
+        [TestMethod]
 		public void Delete1x()
 		{
 			RallyRestApi restApi = GetRallyRestApi1x();
@@ -163,6 +199,13 @@ namespace Rally.RestApi.Test
 			RallyRestApi restApi = GetRallyRestApi2x();
 			AssertCanDelete(restApi);
 		}
+
+        private CreateResult CreateDefect(RallyRestApi restApi)
+        {
+            var dynamicJson = new DynamicJsonObject();
+            dynamicJson["Name"] = "C# Json Rest Toolkit Test Defect";
+            return restApi.Create("defect", dynamicJson);
+        }
 
 		private void AssertCanDelete(RallyRestApi restApi, bool includeFullData = false)
 		{
@@ -279,8 +322,10 @@ namespace Rally.RestApi.Test
 		public void FormatCreateString()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
-			Uri result = restApi.FormatCreateUri(null, "defect");
-			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js");
+            NameValueCollection parameters = new NameValueCollection();
+            parameters["fetch"] = "Name";
+			Uri result = restApi.FormatCreateUri("defect", parameters);
+			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/create.js?fetch=Name");
 			Assert.AreEqual(expected, result);
 		}
 
@@ -288,8 +333,10 @@ namespace Rally.RestApi.Test
 		public void FormatUpdateString()
 		{
 			RallyRestApi restApi = GetRallyRestApi();
-			Uri result = restApi.FormatUpdateUri("defect", "2121901027");
-			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js");
+            NameValueCollection parameters = new NameValueCollection();
+            parameters["fetch"] = "Name";
+            Uri result = restApi.FormatUpdateUri("defect", "2121901027", parameters);
+			var expected = new Uri(Settings.Default.TestServer + "/slm/webservice/" + RallyRestApi.DEFAULT_WSAPI_VERSION + "/defect/2121901027.js?fetch=Name");
 			Assert.AreEqual(expected, result);
 		}
 

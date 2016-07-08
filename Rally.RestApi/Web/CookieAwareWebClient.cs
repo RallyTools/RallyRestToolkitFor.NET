@@ -27,6 +27,7 @@ namespace Rally.RestApi.Web
 			{
 				webRequest.CookieContainer = Cookies;
 			}
+            webRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
 			request.Timeout = 300000;
 
