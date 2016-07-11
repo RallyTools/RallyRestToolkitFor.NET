@@ -14,5 +14,11 @@
     <Setting Name="ApiKey" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="WorkspaceOID" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">14949797488</Value>
+    </Setting>
+    <Setting Name="ProjectOID" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">1155237251</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

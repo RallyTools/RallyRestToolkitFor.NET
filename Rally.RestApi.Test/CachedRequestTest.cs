@@ -4,6 +4,7 @@ using Rally.RestApi.Web;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Rally.RestApi.Test.Properties;
 
 namespace Rally.RestApi.Test
 {
@@ -23,7 +24,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApi = RallyRestApiTest.GetRallyRestApi(wsapiVersion: "v2.0");
 			CookieAwareCacheableWebClient.ClearOldCacheFilesFromDisk(true);
-			long oid = 14949797488;
+			long oid = Settings.Default.WorkspaceOID;
 
 			CacheableQueryResult results = restApi.GetTypes(String.Format("/workspace/{0}", oid));
 			Assert.IsNotNull(results);
@@ -39,7 +40,7 @@ namespace Rally.RestApi.Test
 		{
 			RallyRestApi restApi = RallyRestApiTest.GetRallyRestApi(wsapiVersion: "v2.0");
 			CookieAwareCacheableWebClient.ClearOldCacheFilesFromDisk(true);
-			long oid = 1155237251;
+			long oid = Settings.Default.ProjectOID;
 
 			CacheableQueryResult results = restApi.GetTypes(String.Format("/schema/{0}", oid));
 			Assert.IsNotNull(results);
