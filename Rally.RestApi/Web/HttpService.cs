@@ -123,14 +123,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 cookiesBefore,
-															 responseHeaders,
-															 cookiesAfter,
-															 response);
+				TraceHelper.TraceHttpMessage("GET", startTime, target, requestHeaders, cookiesBefore, response, responseHeaders, cookiesAfter);
 			}
 		}
 		#endregion
@@ -159,15 +152,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 cookiesBefore,
-															 data,
-															 responseHeaders,
-															 cookiesAfter,
-															 response);
+				TraceHelper.TraceHttpMessage("POST", startTime, target, data, requestHeaders, cookiesBefore, response, responseHeaders, cookiesAfter);
 			}
 		}
 		#endregion
@@ -211,15 +196,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Post ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Request Data:\r\n{4}\r\nResponse Headers:\r\n{5}Cookies After:\r\n{6}Response Data\r\n{7}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 cookiesBefore,
-															 data,
-															 responseHeaders,
-															 cookiesAfter,
-															 response);
+				TraceHelper.TraceHttpMessage("POST", startTime, target, data, requestHeaders, cookiesBefore, response, responseHeaders, cookiesAfter);
 			}
 		}
 		#endregion
@@ -257,14 +234,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 cookiesBefore,
-															 responseHeaders,
-															 cookiesAfter,
-															 response);
+				TraceHelper.TraceHttpMessage("GET", startTime, target, requestHeaders, cookiesBefore, response, responseHeaders, cookiesAfter);
 			}
 		}
 		#endregion
@@ -300,12 +270,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Get ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Response Headers:\r\n{3}Response Data\r\n{4}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 responseHeaders,
-															 response);
+				TraceHelper.TraceHttpMessage("GET", startTime, target, requestHeaders, response, responseHeaders);
 			}
 		}
 		#endregion
@@ -353,14 +318,7 @@ namespace Rally.RestApi.Web
 			}
 			finally
 			{
-				Trace.TraceInformation("Delete ({0}):\r\n{1}\r\nRequest Headers:\r\n{2}Cookies Before:\r\n{3}Response Headers:\r\n{4}Cookies After:\r\n{5}Response Data\r\n{6}",
-															 DateTime.Now.Subtract(startTime).ToString(),
-															 target.ToString(),
-															 requestHeaders,
-															 cookiesBefore,
-															 responseHeaders,
-															 cookiesAfter,
-															 response);
+				TraceHelper.TraceHttpMessage("DELETE", startTime, target, requestHeaders, cookiesBefore, response, responseHeaders, cookiesAfter);
 			}
 		}
 		#endregion

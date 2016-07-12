@@ -171,8 +171,9 @@ namespace Rally.RestApi.Auth
 		/// for UI support.</param>
 		/// <param name="encryptionRoutines">The encryption routines to use for encryption/decryption of data. Only used for UI support.</param>
 		/// <param name="webServiceVersion">The version of the WSAPI API to use.</param>
+		/// <param name="traceInfo">Controls diagnostic trace information being logged</param>
 		protected ApiAuthManager(bool isUiSupported, string applicationToken, string encryptionKey,
-			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
+			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION, TraceFieldEnum traceInfo = RallyRestApi.DEFAULT_TRACE_FIELDS)
 		{
 			if (isUiSupported)
 			{
@@ -203,7 +204,7 @@ namespace Rally.RestApi.Auth
 			}
 
 			IsUiSupported = isUiSupported;
-			Api = new RallyRestApi(this, webServiceVersion: webServiceVersion);
+			Api = new RallyRestApi(this, webServiceVersion: webServiceVersion, traceInfo: traceInfo);
 		}
 		#endregion
 

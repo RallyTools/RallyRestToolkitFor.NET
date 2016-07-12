@@ -15,8 +15,9 @@ namespace Rally.RestApi.Auth
 		/// Constructor
 		/// </summary>
 		/// <param name="webServiceVersion">The version of the WSAPI API to use.</param>
-		public ApiConsoleAuthManager(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
-			: base(false, null, null, null, webServiceVersion)
+		/// <param name="traceInfo">Controls diagnostic trace information being logged</param>
+		public ApiConsoleAuthManager(string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION, TraceFieldEnum traceInfo = RallyRestApi.DEFAULT_TRACE_FIELDS)
+			: base(false, null, null, null, webServiceVersion, traceInfo)
 		{
 		}
 		#endregion
