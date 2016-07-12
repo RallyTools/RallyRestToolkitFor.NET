@@ -29,9 +29,10 @@ namespace Rally.RestApi.UiForWinforms
 		/// for UI support.</param>
 		/// <param name="encryptionRoutines">The encryption routines to use for encryption/decryption of data. Only used for UI support.</param>
 		/// <param name="webServiceVersion">The version of the WSAPI API to use.</param>
+		/// <param name="traceInfo">Controls diagnostic trace information being logged</param>
 		public RestApiAuthMgrWinforms(string applicationToken, string encryptionKey,
-			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION)
-			: base(true, applicationToken, encryptionKey, encryptionRoutines, webServiceVersion)
+			IEncryptionRoutines encryptionRoutines, string webServiceVersion = RallyRestApi.DEFAULT_WSAPI_VERSION, TraceFieldEnum traceInfo = RallyRestApi.DEFAULT_TRACE_FIELDS)
+			: base(true, applicationToken, encryptionKey, encryptionRoutines, webServiceVersion, traceInfo)
 		{
 		}
 		#endregion

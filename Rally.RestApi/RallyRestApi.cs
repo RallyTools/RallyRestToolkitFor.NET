@@ -120,6 +120,10 @@ namespace Rally.RestApi
 		/// </summary>
 		public const string DEFAULT_WSAPI_VERSION = "v2.0";
 		/// <summary>
+		/// The default Trace fields
+		/// </summary>
+		public const TraceFieldEnum DEFAULT_TRACE_FIELDS = TraceFieldEnum.Data | TraceFieldEnum.Headers | TraceFieldEnum.Cookies;
+		/// <summary>
 		/// The default server to use: (https://rally1.rallydev.com)
 		/// </summary>
 		public const string DEFAULT_SERVER = "https://rally1.rallydev.com";
@@ -132,6 +136,7 @@ namespace Rally.RestApi
 		#region Properties and Fields
 		private ApiAuthManager authManger;
 		private HttpService httpService;
+		private int maxRetries;
 		private readonly DynamicJsonSerializer serializer = new DynamicJsonSerializer();
 		/// <summary>
 		/// The HTTP headers to be included on all REST requests
@@ -176,6 +181,8 @@ namespace Rally.RestApi
 		/// <param name="authManger">The authorization manager to use when authentication requires it. If no driver is 
 		/// provided a console authentication manager will be used which does not allow SSO authentication.</param>
 		/// <param name="webServiceVersion">The WSAPI version to use (defaults to DEFAULT_WSAPI_VERSION)</param>
+		/// <param name="maxRetries">Requests will be attempted a number of times (defaults to 3)</param>
+		/// <param name="traceInfo">Controls diagnostic trace information being logged</param>
 		/// <example>
 		/// For a console application, no authentication manager is needed as shown in this example.
 		/// <code language="C#">
@@ -196,13 +203,15 @@ namespace Rally.RestApi
 		/// wpfAuthMgr = new RestApiAuthMgrWpf(applicationToken, encryptionKey, encryptionUtilities);
 		/// </code>
 		/// </example>
-		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION)
+		public RallyRestApi(ApiAuthManager authManger = null, string webServiceVersion = DEFAULT_WSAPI_VERSION, int maxRetries = 3, TraceFieldEnum traceInfo = RallyRestApi.DEFAULT_TRACE_FIELDS)
 		{
 			// NOTE: The example for using the RestApiAuthMgrWpf is also shown there. Make sure you 
 			// update both if you change it.
 
+			TraceHelper.TraceFields = traceInfo;
+
 			if (authManger == null)
-				authManger = new ApiConsoleAuthManager();
+				authManger = new ApiConsoleAuthManager(webServiceVersion, traceInfo);
 
 			this.authManger = authManger;
 
@@ -211,6 +220,8 @@ namespace Rally.RestApi
 				WsapiVersion = DEFAULT_WSAPI_VERSION;
 
 			AuthenticationState = AuthenticationResult.NotAuthorized;
+
+			this.maxRetries = maxRetries;
 		}
 		#endregion
 
@@ -593,7 +604,7 @@ namespace Rally.RestApi
 				alreadyDownloadedItems = request.Start - 1 + request.PageSize;
 			}
 
-			Trace.TraceInformation("The number of threaded requests is : {0}", subsequentQueries.Count);
+			TraceHelper.TraceMessage("The number of threaded requests is : {0}", subsequentQueries.Count);
 
 			var resultDictionary = new Dictionary<int, QueryResult>();
 			Parallel.ForEach(subsequentQueries, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS_ALLOWED }, request1 =>
@@ -1339,7 +1350,7 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				DynamicJsonObject response = serializer.Deserialize(httpService.GetAsPost(GetSecuredUri(uri), data, processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < this.maxRetries)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
@@ -1351,7 +1362,7 @@ namespace Rally.RestApi
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 3)
+				if (retryCounter < this.maxRetries)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoGetAsPost(request, true, ++retryCounter);
@@ -1378,7 +1389,7 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				DynamicJsonObject response = serializer.Deserialize(httpService.Get(uri, processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < this.maxRetries)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
@@ -1390,7 +1401,7 @@ namespace Rally.RestApi
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 3)
+				if (retryCounter < this.maxRetries)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoGet(uri, true, ++retryCounter);
@@ -1417,7 +1428,7 @@ namespace Rally.RestApi
 				Dictionary<string, string> processedHeaders = GetProcessedHeaders();
 				var response = serializer.Deserialize(httpService.Post(GetSecuredUri(uri), serializer.Serialize(data), processedHeaders));
 
-				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < 3)
+				if (retry && response[response.Fields.First()].Errors.Count > 0 && retryCounter < this.maxRetries)
 				{
 					ConnectionInfo.SecurityToken = GetSecurityToken();
 					httpService = new HttpService(authManger, ConnectionInfo);
@@ -1429,7 +1440,7 @@ namespace Rally.RestApi
 			}
 			catch (Exception)
 			{
-				if (retryCounter < 3)
+				if (retryCounter < this.maxRetries)
 				{
 					Thread.Sleep(retrySleepTime * retryCounter);
 					return DoPost(uri, data, true, ++retryCounter);
@@ -1479,7 +1490,7 @@ namespace Rally.RestApi
 		{
 			try
 			{
-				DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef(SECURITY_ENDPOINT)));
+				DynamicJsonObject securityTokenResponse = DoGet(new Uri(GetFullyQualifiedRef(SECURITY_ENDPOINT)), this.maxRetries > 1);
 				return securityTokenResponse["OperationResult"]["SecurityToken"];
 			}
 			catch
