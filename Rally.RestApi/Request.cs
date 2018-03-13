@@ -75,7 +75,7 @@ namespace Rally.RestApi
 		/// <summary>
 		/// The maximum page size (200).
 		/// </summary>
-		public const int MAX_PAGE_SIZE = 200;
+		public const int MAX_PAGE_SIZE = 2000;
 
 		internal Dictionary<string, dynamic> Parameters { get; private set; }
 
