@@ -148,5 +148,22 @@ namespace Rally.RestApi.Test
             Assert.AreNotEqual("somethingElse", request.Parameters["something"]);
             Assert.AreEqual("somethingValue", request.Parameters["something"]);
 	    }
-	}
+
+        [TestMethod]
+        public void TestDefaultPageSize()
+        {
+            var request = new Request("defect");
+            Assert.AreEqual(request.PageSize, Request.DEFAULT_PAGE_SIZE);
+            Assert.IsTrue(request.RequestUrl.Contains(String.Format("pagesize={0}", Request.DEFAULT_PAGE_SIZE)));
+        }
+
+        [TestMethod]
+        public void TestBiggerThan200PageSize()
+        {
+            var request = new Request("defect");
+            request.PageSize = 1000;
+            Assert.AreEqual(request.PageSize, 1000);
+            Assert.IsTrue(request.RequestUrl.Contains("pagesize=1000"));
+        }
+    }
 }

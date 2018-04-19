@@ -65,17 +65,18 @@ namespace Rally.RestApi
 			this.collection = collection;
 			Parameters = new Dictionary<string, dynamic>();
 			Fetch = new List<string>();
-			PageSize = MAX_PAGE_SIZE;
+			PageSize = DEFAULT_PAGE_SIZE;
 			Start = 1;
-			Limit = PageSize;
+            Limit = PageSize;
 		}
 		#endregion
 
 		#region Properties and Fields
-		/// <summary>
-		/// The maximum page size (200).
+
+        /// <summary>
+		/// The default page size (200).
 		/// </summary>
-		public const int MAX_PAGE_SIZE = 200;
+        public const int DEFAULT_PAGE_SIZE = 200;
 
 		internal Dictionary<string, dynamic> Parameters { get; private set; }
 
@@ -89,7 +90,7 @@ namespace Rally.RestApi
 		/// </summary>
 		public string ArtifactName { get; set; }
 		/// <summary>
-		/// Page size for results. Must be between 1 and MAX_PAGE_SIZE, default is MAX_PAGE_SIZE. 
+		/// Page size for results. Must be between 1 and MAX_PAGE_SIZE, default is DEFAULT_PAGE_SIZE. 
 		/// </summary>
 		public int PageSize { get; set; }
 		/// <summary>
@@ -230,8 +231,7 @@ namespace Rally.RestApi
 		{
 			StringBuilder sb = new StringBuilder();
 			Dictionary<string, string> data = new Dictionary<string, string>();
-			int pageSize = Math.Min(Math.Min(MAX_PAGE_SIZE, PageSize), Limit);
-			data.Add("pagesize", pageSize.ToString());
+			data.Add("pagesize", PageSize.ToString());
 			if (Fetch.Count == 0)
 				data.Add("fetch", "true");
 			else

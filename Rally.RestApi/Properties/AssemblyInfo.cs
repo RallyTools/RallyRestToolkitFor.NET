@@ -31,8 +31,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.2.1.0")]
-[assembly: AssemblyFileVersion("3.2.1.0")]
+[assembly: AssemblyVersion("3.3.1.0")]
+[assembly: AssemblyFileVersion("3.3.1.0")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rally.RestApi.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100a94bfacc7d8802c720773e9c39f73874c8afdecccfa6c6c1d59fc7ce4fbb0417249f12781168855a9bc8403632decc1b88c1e0f91c01b14af97e087a8d3f62d4f79399760b15d3cb0711723abfd2718494460ade8c3aa2d3450ac05b62987fb1fd3bca54e35706b8de19a2f89aba65c9741ec9046d36a317e09fdc660bbd18bc")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rally.RestApi.UiForWinforms, PublicKey=0024000004800000940000000602000000240000525341310004000001000100a94bfacc7d8802c720773e9c39f73874c8afdecccfa6c6c1d59fc7ce4fbb0417249f12781168855a9bc8403632decc1b88c1e0f91c01b14af97e087a8d3f62d4f79399760b15d3cb0711723abfd2718494460ade8c3aa2d3450ac05b62987fb1fd3bca54e35706b8de19a2f89aba65c9741ec9046d36a317e09fdc660bbd18bc")]
