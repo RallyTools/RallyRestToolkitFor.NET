@@ -303,7 +303,7 @@ namespace Rally.RestApi.Web
 				}
 				cookiesBefore = MakeDisplayableCookieString(cookies);
 				requestHeaders = request.Headers.ToString();
-                request.Proxy = connectionInfo.Proxy;
+				request.Proxy = connectionInfo.Proxy;
 				var httpResponse = (HttpWebResponse)request.GetResponse();
 				cookiesAfter = MakeDisplayableCookieString(cookies);
 				responseHeaders = httpResponse.Headers.ToString();
