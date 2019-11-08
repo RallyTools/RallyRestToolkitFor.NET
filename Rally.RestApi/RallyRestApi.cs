@@ -523,8 +523,7 @@ namespace Rally.RestApi
 				throw new InvalidOperationException(AUTH_ERROR);
 
 			Uri uri = new Uri(String.Format("{0}slm/webservice/{1}/{2}", httpService.Server.AbsoluteUri, WsapiVersion, relativeUri));
-			string postData = serializer.Serialize(data);
-			return serializer.Deserialize(httpService.Post(uri, postData, GetProcessedHeaders()));
+            return DoPost(uri, data, true);
 		}
 		#endregion
 
